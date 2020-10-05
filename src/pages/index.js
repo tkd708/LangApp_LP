@@ -35,7 +35,7 @@ export default () => (
       </TextBlock>
       <TextBlockImg
         id="perks"
-        title="We have the tools to help you suceed"
+        title="Short "
         subtitle="Startup is perfect for helping to to start and grow your business. As
           you begin to gain new clients and expand you will see the benefits of
           a super-fast Gatsby website"
@@ -62,6 +62,7 @@ export default () => (
         </div>
       </TextBlockImg>
       <Packages
+        id="packages"
         title="Our Packages"
         para="Choose the perfect solution for you. With benefits to suit all budgets Startup can offer amazing value and expert advice"
       >
