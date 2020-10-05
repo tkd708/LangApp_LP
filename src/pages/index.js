@@ -23,11 +23,14 @@ export default () => (
       <Banner />
       <TextBlock
         id="about"
-        title="LangApp is here to help you build your vocabrary efficiently!"
-        paragraph="With a super-fast Gatsby powered website you have the perfect platform to get your idea off the ground. Its the perfect template to help turn your idea into a reality."
+        title="Aqcuiring is different from knowing"
+        paragraph="
+        Attending conversation classes but hard to tell your own progress? You know the expressions but can't use them in conversation? Always end up with the same expressions?
+        LangApp is here to help you expand your vocabrary ready for conversation by visualising your own words spoken.
+"
       >
         <Link to="perks" smooth={true} duration={500}>
-          <Button label="Tell Me More" cta="Tell Me More!" />
+          <Button label="Tell Me More" cta="How can I?" />
         </Link>
       </TextBlock>
       <TextBlockImg
