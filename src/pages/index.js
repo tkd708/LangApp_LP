@@ -23,7 +23,7 @@ export default () => (
       <Banner />
       <TextBlock
         id="about"
-        title="Developing a new business is never easy, but Startup is here to help"
+        title="LangApp is here to help you build your vocabrary efficiently!"
         paragraph="With a super-fast Gatsby powered website you have the perfect platform to get your idea off the ground. Its the perfect template to help turn your idea into a reality."
       >
         <Link to="perks" smooth={true} duration={500}>
