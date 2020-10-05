@@ -4,7 +4,7 @@ import styled from "styled-components"
 const Packages = ({ title, para, children }) => {
   return (
     <PackagesWrapper>
-      <div className="text-area">
+      <div className="text-area" id="prices">
         <h2>{title}</h2>
         <p>{para}</p>
       </div>

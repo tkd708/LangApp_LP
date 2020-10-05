@@ -9,7 +9,7 @@ import { motion } from "framer-motion"
 const Banner = () => {
   const data = useStaticQuery(graphql`
     query {
-      file(relativePath: { eq: "flames.jpg" }) {
+      file(relativePath: { eq: "LangApp-background.jpg" }) {
         childImageSharp {
           fluid(maxWidth: 2000, quality: 90) {
             ...GatsbyImageSharpFluid_withWebp
@@ -46,8 +46,7 @@ const Banner = () => {
             variants={variants}
             transition={{ ease: "easeOut", duration: 0.8, delay: 1.5 }}
           >
-            LangApp is a solution to boost your conversation skills by From
-            knowing to acquiring expressions
+            A solution to boost your conversation skills
           </motion.p>
           <Link to="about" smooth={true} duration={500}>
             <span className="sr-only">Jump to about</span>

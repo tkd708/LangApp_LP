@@ -42,6 +42,19 @@ const Contact = ({ title, subtitle, id }) => {
           </div>
 
           <div className="input-area">
+            <input
+              type="select"
+              name="plan"
+              aria-label="Plan"
+              required
+              autoComplete="off"
+            />
+            <label className="label-name" for="plan">
+              <span className="content-name">Plan interested</span>
+            </label>
+          </div>
+
+          <div className="input-area">
             <textarea
               type="text"
               name="message"
@@ -56,7 +69,11 @@ const Contact = ({ title, subtitle, id }) => {
           </div>
 
           <div className="input-area button-area">
-            <Button label="Send Contact Form" cta="Send" type="submit" />
+            <Button
+              label="Send Contact Form"
+              cta="Show us your interests!"
+              type="submit"
+            />
           </div>
         </form>
       </div>

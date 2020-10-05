@@ -5,8 +5,13 @@ export default [
   },
   {
     path: "/",
-    text: "packages",
+    text: "features",
   },
+  {
+    path: "/",
+    text: "prices",
+  },
+
   {
     path: "/",
     text: "contact",

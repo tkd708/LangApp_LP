@@ -10,9 +10,9 @@ import Package from "../components/Package/package"
 import Contact from "../components/Contact/contact"
 import { Link } from "react-scroll"
 
-import perk1Img from "../images/speed.svg"
-import perk2Img from "../images/piggy-bank.svg"
-import perk3Img from "../images/friendly-staff.svg"
+import perk1Img from "../images/language-exchange.jpg"
+import perk2Img from "../images/speech-to-text.png"
+import perk3Img from "../images/word-cloud.png"
 
 import { IconContext } from "react-icons"
 import { MdDone, MdClear } from "react-icons/md"
@@ -29,42 +29,42 @@ export default () => (
         LangApp is here to help you expand your vocabrary ready for conversation by visualising your own words spoken.
 "
       >
-        <Link to="perks" smooth={true} duration={500}>
+        <Link to="features" smooth={true} duration={500}>
           <Button label="Tell Me More" cta="How can I?" />
         </Link>
       </TextBlock>
       <TextBlockImg
-        id="perks"
-        title="Short "
-        subtitle="Startup is perfect for helping to to start and grow your business. As
+        id="features"
+        title="Features of LangApp "
+        subtitle="LangApp is perfect for helping to to start and grow your business. As
           you begin to gain new clients and expand you will see the benefits of
           a super-fast Gatsby website"
       >
         <div className="flex-container trio-block">
           <Perk
             img={perk1Img}
-            alt="Super fast speed increases"
-            title="Speedy"
-            content="Super-fast response times ensure your business is not affected"
+            alt="Instant conversation"
+            title="Instant conversation"
+            content="You will be instantly connected to short and yet informative conversation with native speakers"
           />
           <Perk
             img={perk2Img}
-            alt="Great savings to be made"
-            title="Affordable"
-            content="A choice of packages to suit every business type and size"
+            alt="Auto-transcription"
+            title="Auto-transcription"
+            content="Auto-generate transcription can support to review the conversation and corrections from the buddy"
           />
           <Perk
             img={perk3Img}
-            alt="Super fast speed increases"
-            title="Friendly"
-            content="Advisors who are available 24/7, all with exprt knowledge"
+            alt="Expression stock and analysis"
+            title="Expression stock and analysis"
+            content="Your own words and expressions are stored in the app and analysed to visualise your output vocabrary"
           />
         </div>
       </TextBlockImg>
       <Packages
-        id="packages"
-        title="Our Packages"
-        para="Choose the perfect solution for you. With benefits to suit all budgets Startup can offer amazing value and expert advice"
+        id="prices"
+        title="Prices"
+        para="Choose the perfect solution for you. With benefits to suit all budgets LangApp can offer amazing value and expert advice"
       >
         <IconContext.Provider
           value={{
@@ -73,7 +73,7 @@ export default () => (
             style: { verticalAlign: "middle", marginRight: "5px" },
           }}
         >
-          <Package title="Standard">
+          <Package title="Free">
             <ul>
               <li>
                 <MdDone />1 User
@@ -95,7 +95,7 @@ export default () => (
               <Button label="I want this" cta="I want this!" />
             </Link>
           </Package>
-          <Package title="Hyper" active={true}>
+          <Package title="Intense" active={true}>
             <ul>
               <li>
                 <MdDone />
@@ -118,7 +118,7 @@ export default () => (
               <Button label="I want this" cta="I want this!" />
             </Link>
           </Package>
-          <Package title="Super">
+          <Package title="Standard">
             <ul>
               <li>
                 <MdDone />
@@ -145,8 +145,8 @@ export default () => (
       </Packages>
       <Contact
         id="contact"
-        title="Contact Startup today and see how we can help your business grow"
-        subtitle="Every second counts when you're looking to get your new business started. Drop Startup a message and one of our representatives will be in contact"
+        title="CONTACT US"
+        subtitle="LangApp is currently under development and needs your intrerests and requests towards product launch... we want to hear your voices!"
       />
     </Layout>
   </>
