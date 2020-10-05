@@ -8,7 +8,7 @@ const Contact = ({ title, subtitle, id }) => {
       <div className="content-container">
         <h2>{title}</h2>
         <p>{subtitle}</p>
-        <form name="contact" netlify>
+        <form name="contact" method="POST" data-netlify="true">
           <div className="input-area">
             <input
               type="text"
