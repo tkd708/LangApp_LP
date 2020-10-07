@@ -9,7 +9,7 @@ import { motion } from "framer-motion"
 const Banner = () => {
   const data = useStaticQuery(graphql`
     query {
-      file(relativePath: { eq: "language-exchange4.png" }) {
+      file(relativePath: { eq: "language-exchange5.jpg" }) {
         childImageSharp {
           fluid(maxWidth: 2000, quality: 90) {
             ...GatsbyImageSharpFluid_withWebp
@@ -28,12 +28,13 @@ const Banner = () => {
     <BannerWrapper>
       <BackgroundImage
         Tag="section"
-        className="hero-image"
+        className="hero-image grayscale"
         fluid={data.file.childImageSharp.fluid}
       >
         <div className="hero-content">
           <motion.h1
             initial="hidden"
+            className="logo"
             animate="visible"
             variants={variants}
             transition={{ ease: "easeOut", duration: 0.8, delay: 1 }}
@@ -48,6 +49,15 @@ const Banner = () => {
           >
             A solution to boost your conversation skills
           </motion.p>
+          <iframe
+            className="youtube"
+            id="ytplayer"
+            type="text/html"
+            width="640"
+            height="360"
+            src="https://www.youtube.com/embed/ujDtm0hZyII?autoplay=1&origin=http://langapp.netlify.app"
+            frameborder="0"
+          />
           <Link to="about" smooth={true} duration={500}>
             <span className="sr-only">Jump to about</span>
             <Button
@@ -67,6 +77,16 @@ const BannerWrapper = styled.section`
   .gatsby-image-wrapper {
     height: 100vh;
     color: #fff;
+    }
+
+    .logo {
+    }
+    .grayscale {
+    }
+
+    .youtube {
+        align-self: center;
+        margin-bottom: 50px;
     }
 
     .hero-content {

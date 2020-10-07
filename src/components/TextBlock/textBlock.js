@@ -29,6 +29,14 @@ const TextBlock = ({ title, paragraph, children, id }) => {
           transition={{ ease: "easeOut", duration: 1.25, delay: 0.35 }}
         >
           <h2>{title}</h2>
+          <p>Attend conversation classes but hard to tell your own progress?</p>
+          <p>Know the expressions but can't use them in conversation?</p>
+          <p>Always end up with using the same expressions?</p>
+          <h3>
+            LangApp is here to help you boost your conversation skills by
+            expanding your speaking vocabrary!
+          </h3>
+
           <p>{paragraph}</p>
           {children}
         </motion.div>

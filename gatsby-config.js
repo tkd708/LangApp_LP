@@ -5,15 +5,17 @@
  */
 
 const path = require(`path`)
+require("dotenv").config()
 
 module.exports = {
   siteMetadata: {
-    title: "Startup",
+    title: "LangApp",
     titleTemplate: "%s | Helping startups get started",
-    description: "A simple one-page site for new businesses that uses GatsbyJS",
-    author: "Morgan Baker",
+    description:
+      "A web/mobile application to boost your language speaking vocabrary",
+    author: "Naoya Takeda",
     image: "/yellow-metal-design-decoration.jpg",
-    siteUrl: "https://www.morganbaker.dev",
+    siteUrl: "https://www.langapp.netlify.app",
     twitterUsername: "@twitter",
   },
   plugins: [

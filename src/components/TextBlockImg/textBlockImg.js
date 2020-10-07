@@ -6,7 +6,7 @@ import styled from "styled-components"
 const TextBlockImg = ({ title, children, subtitle, id }) => {
   const data = useStaticQuery(graphql`
     query {
-      file(relativePath: { eq: "language-exchange3.png" }) {
+      file(relativePath: { eq: "language-learning2.png" }) {
         childImageSharp {
           fluid(maxWidth: 2000, quality: 90) {
             ...GatsbyImageSharpFluid_withWebp
@@ -17,6 +17,7 @@ const TextBlockImg = ({ title, children, subtitle, id }) => {
   `)
   return (
     <BackgroundImage
+      //className="background-img"
       id="features"
       Tag="section"
       fluid={data.file.childImageSharp.fluid}
@@ -35,6 +36,10 @@ const TextBlockImg = ({ title, children, subtitle, id }) => {
 const TextBlockImgWrapper = styled.section`
   text-align: center;
   padding: 100px 30px;
+
+  .background-img {
+    filter: grayscale(80%);
+  }
 
   .content-container {
     max-width: 500px;

@@ -17,29 +17,27 @@ import perk3Img from "../images/word-cloud.png"
 import { IconContext } from "react-icons"
 import { MdDone, MdClear } from "react-icons/md"
 
+// LP example
+// https://www.autopilothq.com/
+// https://www.hubspot.com/crm/e010a
+
+// Starters
+// https://www.gatsbyjs.com/starters/gillkyle/gatsby-starter-landing-page
+// https://www.gatsbyjs.com/starters/codebushi/gatsby-starter-lander
+// https://www.gatsbyjs.com/starters/anubhavsrivastava/gatsby-starter-newage
+// https://www.gatsbyjs.com/starters/anubhavsrivastava/gatsby-starter-eventually
+// https://www.gatsbyjs.com/starters/app-generator/gatsbyjs-starter-tailwindplay
+
 export default () => (
   <>
     <Layout>
       <Banner />
-      <TextBlock
-        id="about"
-        title="Aqcuiring is different from knowing"
-        paragraph="
-        Attending conversation classes but hard to tell your own progress? You know the expressions but can't use them in conversation? Always end up with the same expressions?
-        LangApp is here to help you expand your vocabrary ready for conversation by visualising your own words spoken.
-"
-      >
+      <TextBlock id="about" title="Learn from your own words" paragraph="">
         <Link to="features" smooth={true} duration={500}>
-          <Button label="Tell Me More" cta="How can I?" />
+          <Button label="Tell Me More" cta="How it works?" />
         </Link>
       </TextBlock>
-      <TextBlockImg
-        id="features"
-        title="Features of LangApp "
-        subtitle="LangApp is perfect for helping to to start and grow your business. As
-          you begin to gain new clients and expand you will see the benefits of
-          a super-fast Gatsby website"
-      >
+      <TextBlockImg id="features" title="Features of LangApp " subtitle="">
         <div className="flex-container trio-block">
           <Perk
             img={perk1Img}
@@ -55,9 +53,9 @@ export default () => (
           />
           <Perk
             img={perk3Img}
-            alt="Expression stock and analysis"
-            title="Expression stock and analysis"
-            content="Your own words and expressions are stored in the app and analysed to visualise your output vocabrary"
+            alt="Expression dashbord"
+            title="Expression dashboard"
+            content="Your own words and expressions are stored in the app and analysed to visualise your output vocabrary, suggesting ways to improve"
           />
         </div>
       </TextBlockImg>

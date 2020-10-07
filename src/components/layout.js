@@ -12,7 +12,7 @@ const Layout = ({ children }) => {
       <SEO />
       <Navbar />
       <div className="layout">{children}</div>
-      <Footer />
+      {/* <Footer /> */}
     </LayoutWrapper>
   )
 }
