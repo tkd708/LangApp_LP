@@ -9,7 +9,7 @@ import { motion } from "framer-motion"
 const Banner = () => {
   const data = useStaticQuery(graphql`
     query {
-      file(relativePath: { eq: "LangApp-background.jpg" }) {
+      file(relativePath: { eq: "language-exchange4.png" }) {
         childImageSharp {
           fluid(maxWidth: 2000, quality: 90) {
             ...GatsbyImageSharpFluid_withWebp
