@@ -101,6 +101,9 @@ module.exports.handler = async function (event, context) {
     statusCode: 200,
     // http status code
     body: JSON.stringify({
+      eventHeaders: event.headers,
+      eventBody: event.body,
+      eventRequest: event.queryStringParameters,
       msg: "Hello, World! This is better " + Math.round(Math.random() * 10),
       txt: "sample text"
     })
