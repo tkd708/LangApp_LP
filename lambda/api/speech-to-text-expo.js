@@ -31,26 +31,6 @@ module.exports.handler = async function(event, context) {
     const encodedPath = './lambda/api/Encoded.m4a';
     const file = fs.readFileSync(path);
 
-    ffmpeg()
-        .input(path)
-        .outputOptions([
-            '-f s16le',
-            '-acodec pcm_s16le',
-            '-vn',
-            '-ac 1',
-            '-ar 41k',
-            '-map_metadata -1',
-        ])
-        .save(encodedPath)
-
-            const savedFile = fs.readFileSync(encodedPath);
-
-            //console.log(savedFile);
-
-            const audioBytes = savedFile.toString('base64');
-            const audio = {
-                content: audioBytes,
-            };
             const sttConfig = {
                 enableAutomaticPunctuation: false,
                 encoding: 'LINEAR16',
@@ -62,7 +42,7 @@ module.exports.handler = async function(event, context) {
             };
 
             const request = {
-                audio: audio,
+                audio: 'audio',
                 config: sttConfig,
             };
 
@@ -79,6 +59,8 @@ module.exports.handler = async function(event, context) {
   return {
     statusCode: 200, // http status code
     body: JSON.stringify({
+      eventHeaders: event.headers,
+      eventBody: event.body,
       eventRequest: event.queryStringParameters,
       msg: "google api keys",
       Transcription: transcription
