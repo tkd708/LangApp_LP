@@ -124,10 +124,6 @@ module.exports.handler = async function (event, context) {
     credentials: keys
   }); //console.log(client)
 
-  ffmpeg.setFfmpegPath(ffmpegPath);
-  const path = './lambda/api/Recording (5).m4a';
-  const encodedPath = './lambda/api/Encoded.m4a';
-  const file = fs.readFileSync(path);
   const sttConfig = {
     enableAutomaticPunctuation: false,
     encoding: 'LINEAR16',
