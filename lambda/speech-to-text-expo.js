@@ -119,8 +119,10 @@ module.exports.handler = async function (event, context) {
     auth_provider_x509_cert_url: process.env.GATSBY_auth_provider_x509_cert_url,
     client_x509_cert_url: process.env.GATSBY_client_x509_cert_url
   }; //console.log('test' + keys)
-  //const client = new speech.SpeechClient({credentials: keys});
-  //console.log(client)
+
+  const client = new speech.SpeechClient({
+    credentials: keys
+  }); //console.log(client)
 
   const sttConfig = {
     enableAutomaticPunctuation: false,
@@ -136,18 +138,16 @@ module.exports.handler = async function (event, context) {
   const request = {
     audio: 'audio',
     config: sttConfig
-  }; //const [response] = await client.recognize(event.body);
-  //console.log(response.results.alternatives[0]);
-  //const transcription = response.results
-  //    .map((result) => result.alternatives[0].transcript)
-  //    .join('\n');
-  //console.log(`Transcription: ${transcription}`);
+  };
+  const [response] = await client.recognize(event.body); //console.log(response.results.alternatives[0]);
+
+  const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n'); //console.log(`Transcription: ${transcription}`);
 
   return {
     statusCode: 200,
     // http status code
     body: JSON.stringify({
-      Transcription: keys
+      Transcription: transcription
     })
   };
 };
