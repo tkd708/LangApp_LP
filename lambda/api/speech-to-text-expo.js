@@ -23,7 +23,7 @@ module.exports.handler = async function(event, context) {
     };
     
     //console.log('test' + keys)
-    const client = new speech.SpeechClient({credentials: keys});
+    //const client = new speech.SpeechClient({credentials: keys});
     //console.log(client)
 
             const sttConfig = {
@@ -41,12 +41,12 @@ module.exports.handler = async function(event, context) {
                 config: sttConfig,
             };
 
-            const [response] = await client.recognize(event.body);
+            //const [response] = await client.recognize(event.body);
             //console.log(response.results.alternatives[0]);
 
-            const transcription = response.results
-                .map((result) => result.alternatives[0].transcript)
-                .join('\n');
+            //const transcription = response.results
+            //    .map((result) => result.alternatives[0].transcript)
+            //    .join('\n');
 
             //console.log(`Transcription: ${transcription}`);
         
@@ -54,7 +54,7 @@ module.exports.handler = async function(event, context) {
   return {
     statusCode: 200, // http status code
     body: JSON.stringify({
-      Transcription: transcription
+      Transcription: keys
     })
   }
 }
