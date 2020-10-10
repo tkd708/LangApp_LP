@@ -1,5 +1,5 @@
-const speech = require('@google-cloud/speech');    
-const axios = require('axios');
+//const speech = require('@google-cloud/speech');    
+//const axios = require('axios');
 
 module.exports.handler = async function(event, context) {
   //console.log("queryStringParameters", event.queryStringParameters)
@@ -17,15 +17,15 @@ module.exports.handler = async function(event, context) {
         client_x509_cert_url: process.env['client_x509_cert_url']
     };
     //console.log(keys)
-    const client = new speech.SpeechClient({credentials: keys});
-    console.log(client)
+    //const client = new speech.SpeechClient({credentials: keys});
+    //console.log(client)
 
 
   return {
     statusCode: 200, // http status code
     body: JSON.stringify({
       msg: "google api keys",
-      audio: client
+      audio: keys
     })
   }
 }
