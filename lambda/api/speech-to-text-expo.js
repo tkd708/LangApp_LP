@@ -79,6 +79,7 @@ module.exports.handler = async function(event, context) {
   return {
     statusCode: 200, // http status code
     body: JSON.stringify({
+      eventRequest: event.queryStringParameters,
       msg: "google api keys",
       Transcription: transcription
     })

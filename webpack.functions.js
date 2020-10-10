@@ -1,5 +1,10 @@
-const Dotenv = require('dotenv-webpack')
+const nodeExternals = require('webpack-node-externals');
+const webpack = require('webpack')
 
 module.exports = {
-  plugins: [new Dotenv()],
-}
+  externals: [nodeExternals()],
+  mode: "development",
+  plugins: [
+    new webpack.DefinePlugin({ "global.GENTLY": false })
+  ],
+};
