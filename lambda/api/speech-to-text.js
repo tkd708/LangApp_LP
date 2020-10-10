@@ -43,37 +43,36 @@ module.exports.handler = async function(event, context) {
         ])
         .save(encodedPath)
 
-            const savedFile = fs.readFileSync(encodedPath);
+    const savedFile = fs.readFileSync(encodedPath);
+    //console.log(savedFile);
 
-            //console.log(savedFile);
+    const audioBytes = savedFile.toString('base64');
+    const audio = {
+        content: audioBytes,
+    };
+    const sttConfig = {
+        enableAutomaticPunctuation: false,
+        encoding: 'LINEAR16',
+        sampleRateHertz: 41000,
+        languageCode: 'en_US', // ja-JP, en-US, es-CO, fr-FR
+        //enableSpeakerDiarization: true,
+        //diarizationSpeakerCount: 2, // no. of speakers
+        model: 'default', // default, phone_call
+    };
 
-            const audioBytes = savedFile.toString('base64');
-            const audio = {
-                content: audioBytes,
-            };
-            const sttConfig = {
-                enableAutomaticPunctuation: false,
-                encoding: 'LINEAR16',
-                sampleRateHertz: 41000,
-                languageCode: 'en_US', // ja-JP, en-US, es-CO, fr-FR
-                //enableSpeakerDiarization: true,
-                //diarizationSpeakerCount: 2, // no. of speakers
-                model: 'default', // default, phone_call
-            };
+    const request = {
+        audio: audio,
+        config: sttConfig,
+    };
 
-            const request = {
-                audio: audio,
-                config: sttConfig,
-            };
+    const [response] = await client.recognize(request);
+    //console.log(response.results.alternatives[0]);
 
-            const [response] = await client.recognize(request);
-            //console.log(response.results.alternatives[0]);
+    const transcription = response.results
+        .map((result) => result.alternatives[0].transcript)
+        .join('\n');
 
-            const transcription = response.results
-                .map((result) => result.alternatives[0].transcript)
-                .join('\n');
-
-            console.log(`Transcription: ${transcription}`);
+    console.log(`Transcription: ${transcription}`);
         
 
   return {

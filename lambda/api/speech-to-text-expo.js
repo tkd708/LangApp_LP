@@ -24,37 +24,39 @@ module.exports.handler = async function(event, context) {
 
     //console.log('test' + keys)
     const client = new speech.SpeechClient({credentials: keys});
-    //console.log(client)
+    console.log(client)
 
-            const sttConfig = {
-                enableAutomaticPunctuation: false,
-                encoding: 'LINEAR16',
-                sampleRateHertz: 41000,
-                languageCode: 'en_US', // ja-JP, en-US, es-CO, fr-FR
-                //enableSpeakerDiarization: true,
-                //diarizationSpeakerCount: 2, // no. of speakers
-                model: 'default', // default, phone_call
-            };
+    const sttConfig = {
+        enableAutomaticPunctuation: false,
+        encoding: 'LINEAR16',
+        sampleRateHertz: 41000,
+        languageCode: 'en_US', // ja-JP, en-US, es-CO, fr-FR
+        //enableSpeakerDiarization: true,
+        //diarizationSpeakerCount: 2, // no. of speakers
+        model: 'default', // default, phone_call
+    };
 
-            const request = {
-                audio: 'audio',
-                config: sttConfig,
-            };
+    const request = {
+        audio: {
+        content: 'audioBytes',
+    },
+        config: sttConfig,
+    };
 
-            const [response] = await client.recognize(event.body);
-            //console.log(response.results.alternatives[0]);
+    const [response] = await client.recognize(request);
+    //console.log(response.results.alternatives[0]);
 
-            const transcription = response.results
-                .map((result) => result.alternatives[0].transcript)
-                .join('\n');
+    const transcription = response.results
+        .map((result) => result.alternatives[0].transcript)
+        .join('\n');
 
-            //console.log(`Transcription: ${transcription}`);
+    console.log(`Transcription: ${transcription}`);
         
 
   return {
     statusCode: 200, // http status code
     body: JSON.stringify({
-      Transcription: transcription
+      Transcription: response
     })
   }
 }

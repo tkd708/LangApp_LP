@@ -122,8 +122,8 @@ module.exports.handler = async function (event, context) {
 
   const client = new speech.SpeechClient({
     credentials: keys
-  }); //console.log(client)
-
+  });
+  console.log(client);
   const sttConfig = {
     enableAutomaticPunctuation: false,
     encoding: 'LINEAR16',
@@ -136,18 +136,20 @@ module.exports.handler = async function (event, context) {
 
   };
   const request = {
-    audio: 'audio',
+    audio: {
+      content: 'audioBytes'
+    },
     config: sttConfig
   };
-  const [response] = await client.recognize(event.body); //console.log(response.results.alternatives[0]);
+  const [response] = await client.recognize(request); //console.log(response.results.alternatives[0]);
 
-  const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n'); //console.log(`Transcription: ${transcription}`);
-
+  const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
+  console.log(`Transcription: ${transcription}`);
   return {
     statusCode: 200,
     // http status code
     body: JSON.stringify({
-      Transcription: transcription
+      Transcription: response
     })
   };
 };
