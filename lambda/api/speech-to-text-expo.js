@@ -41,23 +41,19 @@ module.exports.handler = async function(event, context) {
                 config: sttConfig,
             };
 
-            const [response] = await client.recognize(request);
+            const [response] = await client.recognize(event.body);
             //console.log(response.results.alternatives[0]);
 
             const transcription = response.results
                 .map((result) => result.alternatives[0].transcript)
                 .join('\n');
 
-            console.log(`Transcription: ${transcription}`);
+            //console.log(`Transcription: ${transcription}`);
         
 
   return {
     statusCode: 200, // http status code
     body: JSON.stringify({
-      eventHeaders: event.headers,
-      eventBody: event.body,
-      eventRequest: event.queryStringParameters,
-      msg: "google api keys",
       Transcription: transcription
     })
   }
