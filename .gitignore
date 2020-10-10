@@ -56,7 +56,7 @@ typings/
 
 # gatsby files
 .cache/
-public
+#public #...set as deploy directory in netlify.toml
 
 # Mac files
 .DS_Store
