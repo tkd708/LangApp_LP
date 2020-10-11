@@ -140,8 +140,8 @@ module.exports.handler = async function (event, context) {
       content: 'audioBytes'
     },
     config: sttConfig
-  };
-  const [response] = await client.recognize(event.body); //const [response] = await client.recognize(request);
+  }; //const [response] = await client.recognize(event.body);
+  //const [response] = await client.recognize(request);
   //console.log(response.results.alternatives[0]);
   //const transcription = response.results
   //    .map((result) => result.alternatives[0].transcript)
@@ -152,10 +152,10 @@ module.exports.handler = async function (event, context) {
     statusCode: 200,
     // http status code
     body: JSON.stringify({
-      //keys: keys,
+      keys: keys,
       request: event.body,
       //client: client,
-      response: response,
+      //response: response,
       transcription: 'response to be here'
     })
   };
