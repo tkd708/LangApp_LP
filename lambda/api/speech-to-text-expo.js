@@ -5,10 +5,33 @@ require('dotenv').config();
 const fs = require('fs');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
+ffmpeg.setFfmpegPath(ffmpegPath);
 
 module.exports.handler = async function(event, context) {
   //console.log("queryStringParameters", event.queryStringParameters)
 
+  const path = './lambda/api/Recording (5).m4a';
+  const encodedPath = './lambda/api//Encoded.m4a';
+      ffmpeg()
+        .input(path)
+        .outputOptions([
+            '-f s16le',
+            '-acodec pcm_s16le',
+            '-vn',
+            '-ac 1',
+            '-ar 41k',
+            '-map_metadata -1',
+        ])
+        .save(encodedPath)
+   const savedFile = fs.readFileSync(encodedPath);
+
+            //console.log(savedFile);
+
+            const audioBytes = savedFile.toString('base64');
+            const audio = {
+                content: audioBytes,
+            };
+    
   // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
     const keys = {
         type: process.env.GATSBY_type,
@@ -27,7 +50,7 @@ module.exports.handler = async function(event, context) {
     const client = new speech.SpeechClient({credentials: keys});
     //console.log(client)
 
-    console.log(event.body)
+    //console.log(event.body)
 
     const sttConfig = {
         enableAutomaticPunctuation: false,
@@ -41,14 +64,14 @@ module.exports.handler = async function(event, context) {
 
     const request = {
         audio: {
-        content: 'audioBytes',
+        content: audioBytes,
     },
         config: sttConfig,
     };
 
-    const [response] = await client.recognize(event.body);
-    //const [response] = await client.recognize(request);
-    console.log(response);
+    //const [response] = await client.recognize(event.body);
+    const [response] = await client.recognize(request);
+    //console.log(response);
 
     const transcription = response.results
         .map((result) => result.alternatives[0].transcript)
