@@ -112,7 +112,7 @@ module.exports.handler = async function (event, context) {
     project_id: process.env.GATSBY_project_id,
     private_key_id: process.env.GATSBY_private_key_id,
     private_key: process.env.GATSBY_private_key.replace(/\\n/gm, "\n"),
-    // in env settings of Netlify line breaks are forced to become \\n... convert them back
+    // in env settings of Netlify UI line breaks are forced to become \\n... convert them back
     client_email: process.env.GATSBY_client_email,
     client_id: process.env.GATSBY_client_id,
     auth_uri: process.env.GATSBY_auth_uri,
@@ -120,9 +120,11 @@ module.exports.handler = async function (event, context) {
     auth_provider_x509_cert_url: process.env.GATSBY_auth_provider_x509_cert_url,
     client_x509_cert_url: process.env.GATSBY_client_x509_cert_url
   }; //console.log('test' + keys)
-  //const client = new speech.SpeechClient({credentials: keys});
-  //console.log(client)
 
+  const client = new speech.SpeechClient({
+    credentials: keys
+  });
+  console.log(client);
   const sttConfig = {
     enableAutomaticPunctuation: false,
     encoding: 'LINEAR16',
