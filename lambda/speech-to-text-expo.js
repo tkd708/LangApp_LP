@@ -109,7 +109,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 
 module.exports.handler = async function (event, context) {
   //console.log("queryStringParameters", event.queryStringParameters)
-  const savedFile = fs.readFileSync('./static/Encoded.m4a'); //const savedFile = fs.readFileSync(encodedPath);
+  const savedFile = fs.readFileSync('./Encoded.m4a'); //const savedFile = fs.readFileSync(encodedPath);
 
   const audioBytes = savedFile.toString('base64');
   const audio = {
@@ -161,7 +161,7 @@ module.exports.handler = async function (event, context) {
     // http status code
     body: JSON.stringify({
       //keys: keys,
-      //encode: encoded2,
+      encode: savedFile,
       request: event.body,
       //client: client,
       //response: response,
