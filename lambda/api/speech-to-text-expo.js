@@ -24,7 +24,7 @@ module.exports.handler = async function(event, context) {
 
     //console.log('test' + keys)
     const client = new speech.SpeechClient({credentials: keys});
-    console.log(client)
+    //console.log(client)
 
     const sttConfig = {
         enableAutomaticPunctuation: false,
@@ -43,7 +43,7 @@ module.exports.handler = async function(event, context) {
         config: sttConfig,
     };
 
-    //const [response] = await client.recognize(event.body);
+    const [response] = await client.recognize(event.body);
     //const [response] = await client.recognize(request);
     //console.log(response.results.alternatives[0]);
 
@@ -60,7 +60,7 @@ module.exports.handler = async function(event, context) {
         //keys: keys,
         request: event.body,
         //client: client,
-        //response: response,
+        response: response,
       transcription: 'response to be here'
     })
   }
