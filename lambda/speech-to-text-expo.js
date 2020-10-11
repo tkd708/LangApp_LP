@@ -93,7 +93,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(__dirname) {const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech");
+const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech");
 
 const axios = __webpack_require__(/*! axios */ "axios");
 
@@ -108,12 +108,13 @@ const ffmpegPath = __webpack_require__(/*! @ffmpeg-installer/ffmpeg */ "@ffmpeg-
 const ffmpeg = __webpack_require__(/*! fluent-ffmpeg */ "fluent-ffmpeg");
 
 ffmpeg.setFfmpegPath(ffmpegPath);
-const fileName = "./Encoded.m4a";
-const resolved = process.env.LAMBDA_TASK_ROOT ? path.resolve(process.env.LAMBDA_TASK_ROOT, fileName) : path.resolve(__dirname, fileName);
 
 module.exports.handler = async function (event, context) {
   //console.log("queryStringParameters", event.queryStringParameters)
-  //const savedFile = fs.readFileSync(require.resolve('./Encoded.m4a'))
+  const fileName = "Encoded.m4a";
+  const resolved = process.env.LAMBDA_TASK_ROOT ? path.resolve(process.env.LAMBDA_TASK_ROOT, fileName) : './lambda/api/' + fileName;
+  console.log(resolved); //const savedFile = fs.readFileSync(require.resolve('./Encoded.m4a'))
+
   const savedFile = fs.readFileSync(resolved); //const savedFile = fs.readFileSync(encodedPath);
 
   const audioBytes = savedFile.toString('base64');
@@ -166,7 +167,8 @@ module.exports.handler = async function (event, context) {
     // http status code
     body: JSON.stringify({
       //keys: keys,
-      encode: savedFile,
+      //encode: savedFile,
+      filePath: revolved,
       request: event.body,
       //client: client,
       //response: response,
@@ -174,7 +176,6 @@ module.exports.handler = async function (event, context) {
     })
   };
 };
-/* WEBPACK VAR INJECTION */}.call(this, "/"))
 
 /***/ }),
 
