@@ -86,17 +86,6 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./Encoded.m4a":
-/*!*********************!*\
-  !*** ./Encoded.m4a ***!
-  \*********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-throw new Error("Module parse failed: Unexpected character '\u0000' (1:0)\nYou may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders\n(Source code omitted for this binary file)");
-
-/***/ }),
-
 /***/ "./speech-to-text-expo.js":
 /*!********************************!*\
   !*** ./speech-to-text-expo.js ***!
@@ -104,11 +93,13 @@ throw new Error("Module parse failed: Unexpected character '\u0000' (1:0)\nYou m
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech");
+/* WEBPACK VAR INJECTION */(function(__dirname) {const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech");
 
 const axios = __webpack_require__(/*! axios */ "axios");
 
 __webpack_require__(/*! dotenv */ "dotenv").config();
+
+const path = __webpack_require__(/*! path */ "path");
 
 const fs = __webpack_require__(/*! fs */ "fs");
 
@@ -117,11 +108,13 @@ const ffmpegPath = __webpack_require__(/*! @ffmpeg-installer/ffmpeg */ "@ffmpeg-
 const ffmpeg = __webpack_require__(/*! fluent-ffmpeg */ "fluent-ffmpeg");
 
 ffmpeg.setFfmpegPath(ffmpegPath);
+const fileName = "./Encoded.m4a";
+const resolved = process.env.LAMBDA_TASK_ROOT ? path.resolve(process.env.LAMBDA_TASK_ROOT, fileName) : path.resolve(__dirname, fileName);
 
 module.exports.handler = async function (event, context) {
   //console.log("queryStringParameters", event.queryStringParameters)
-  const savedFile = fs.readFileSync(/*require.resolve*/(/*! ./Encoded.m4a */ "./Encoded.m4a")); //const savedFile = fs.readFileSync('./Encoded.m4a');
-  //const savedFile = fs.readFileSync(encodedPath);
+  //const savedFile = fs.readFileSync(require.resolve('./Encoded.m4a'))
+  const savedFile = fs.readFileSync(resolved); //const savedFile = fs.readFileSync(encodedPath);
 
   const audioBytes = savedFile.toString('base64');
   const audio = {
@@ -181,6 +174,7 @@ module.exports.handler = async function (event, context) {
     })
   };
 };
+/* WEBPACK VAR INJECTION */}.call(this, "/"))
 
 /***/ }),
 
@@ -247,6 +241,17 @@ module.exports = require("fluent-ffmpeg");
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
+
+/***/ }),
+
+/***/ "path":
+/*!***********************!*\
+  !*** external "path" ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("path");
 
 /***/ })
 
