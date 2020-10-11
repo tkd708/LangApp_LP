@@ -143,9 +143,9 @@ module.exports.handler = async function (event, context) {
     },
     config: sttConfig
   };
-  const [response] = await client.recognize(event.body); //const [response] = await client.recognize(request);
-  //console.log(response.results.alternatives[0]);
+  const [response] = await client.recognize(request); //const [response] = await client.recognize(request);
 
+  console.log(response);
   const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n'); //console.log(`Transcription: ${transcription}`);
 
   return {
