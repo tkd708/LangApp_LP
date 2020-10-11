@@ -18,11 +18,11 @@ module.exports.handler = async function(event, context) {
     //console.log(resolved)
     
     //const savedFile = fs.readFileSync(require.resolve('./Encoded.m4a'))
-    const buff = new Buffer(event.body.audio.content, 'base64');
-    console.log(buff);
-    var snd = new Audio("data:audio/wav;base64," + event.body.audio.content);
-    snd.play();
-    console.log(snd);
+    //const buff = new Buffer(event.body.audio.content, 'base64');
+    //console.log(buff);
+    //var snd = new Audio("data:audio/wav;base64," + event.body.audio.content);
+    //snd.play();
+    //console.log(snd);
     //const savedFile = fs.readFileSync(resolved);
     //const savedFile = fs.readFileSync(encodedPath);
     //const audioBytes = savedFile.toString('base64');
