@@ -24,7 +24,7 @@ module.exports.handler = async function(event, context) {
 
     //console.log('test' + keys)
     const client = new speech.SpeechClient({credentials: keys});
-    //console.log(client)
+    console.log(client)
 
     const sttConfig = {
         enableAutomaticPunctuation: false,
@@ -59,7 +59,7 @@ module.exports.handler = async function(event, context) {
     body: JSON.stringify({
         //keys: keys,
         request: event.body,
-        client: client,
+        //client: client,
         //response: response,
       transcription: 'response to be here'
     })
