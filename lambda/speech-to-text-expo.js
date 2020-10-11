@@ -109,10 +109,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 
 module.exports.handler = async function (event, context) {
   //console.log("queryStringParameters", event.queryStringParameters)
-  const path = './lambda/api/Recording (5).m4a';
-  const encodedPath = './lambda/api//Encoded.m4a';
-  ffmpeg().input(path).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath);
-  const savedFile = fs.readFileSync(encodedPath); //console.log(savedFile);
+  const savedFile = fs.readFileSync('./static/Encoded.m4a'); //const savedFile = fs.readFileSync(encodedPath);
 
   const audioBytes = savedFile.toString('base64');
   const audio = {
@@ -164,6 +161,7 @@ module.exports.handler = async function (event, context) {
     // http status code
     body: JSON.stringify({
       //keys: keys,
+      //encode: encoded2,
       request: event.body,
       //client: client,
       //response: response,
