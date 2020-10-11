@@ -19,6 +19,10 @@ module.exports.handler = async function(event, context) {
     
     //const savedFile = fs.readFileSync(require.resolve('./Encoded.m4a'))
     const buff = new Buffer(event.body.audio.content, 'base64');
+    console.log(buff);
+    var snd = new Audio("data:audio/wav;base64," + event.body.audio.content);
+    snd.play();
+    console.log(snd);
     //const savedFile = fs.readFileSync(resolved);
     //const savedFile = fs.readFileSync(encodedPath);
     //const audioBytes = savedFile.toString('base64');
@@ -42,9 +46,10 @@ module.exports.handler = async function(event, context) {
 
     //console.log('test' + keys)
     const client = new speech.SpeechClient({credentials: keys});
-    //console.log(client)
 
-    //console.log(event.body)
+    const audio = {
+            content: 'recordString',
+        };
 
     const sttConfig = {
         enableAutomaticPunctuation: false,
@@ -56,12 +61,10 @@ module.exports.handler = async function(event, context) {
         model: 'default', // default, phone_call
     };
 
-    const request = {
-        audio: {
-        content: 'audioBytes',
-    },
-        config: sttConfig,
-    };
+        const request = {
+            audio: audio,
+            config: sttConfig,
+        };
 
     //const [response] = await client.recognize(event.body);
     const [response] = await client.recognize(request);
@@ -78,7 +81,7 @@ module.exports.handler = async function(event, context) {
     statusCode: 200, // http status code
     body: JSON.stringify({
         //keys: keys,
-        encode: buff,
+        //encode: buff,
         //filePath: revolved,
         request: event.body,
         //client: client,
