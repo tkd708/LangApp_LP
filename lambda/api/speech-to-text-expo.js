@@ -13,7 +13,7 @@ module.exports.handler = async function(event, context) {
         type: process.env.GATSBY_type,
         project_id: process.env.GATSBY_project_id,
         private_key_id: process.env.GATSBY_private_key_id,
-        private_key: process.env.GATSBY_private_key,
+        private_key: process.env.GATSBY_private_key.replace(/\\n/gm, "\n"), // in env settings of Netlify line breaks are forced to become \\n... convert them back
         client_email: process.env.GATSBY_client_email,
         client_id: process.env.GATSBY_client_id,
         auth_uri: process.env.GATSBY_auth_uri,
@@ -60,7 +60,7 @@ module.exports.handler = async function(event, context) {
         keys: keys,
         request: event.body,
         //client: client,
-        //response: response,
+        response: response,
       transcription: 'response to be here'
     })
   }
