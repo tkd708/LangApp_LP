@@ -46,7 +46,7 @@ module.exports.handler = async function(event, context) {
         config: sttConfig,
     };
 
-    const [response] = await client.recognize(request);
+    const [response] = await client.recognize(event.body);
     //const [response] = await client.recognize(request);
     console.log(response);
 
