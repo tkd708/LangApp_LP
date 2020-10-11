@@ -120,10 +120,8 @@ module.exports.handler = async function (event, context) {
     auth_provider_x509_cert_url: process.env.GATSBY_auth_provider_x509_cert_url,
     client_x509_cert_url: process.env.GATSBY_client_x509_cert_url
   }; //console.log('test' + keys)
-
-  const client = new speech.SpeechClient({
-    credentials: keys
-  }); //console.log(client)
+  //const client = new speech.SpeechClient({credentials: keys});
+  //console.log(client)
 
   const sttConfig = {
     enableAutomaticPunctuation: false,
@@ -156,7 +154,7 @@ module.exports.handler = async function (event, context) {
       keys: keys,
       request: event.body,
       //client: client,
-      response: response,
+      //response: response,
       transcription: 'response to be here'
     })
   };

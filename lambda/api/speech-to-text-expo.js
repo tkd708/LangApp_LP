@@ -23,7 +23,7 @@ module.exports.handler = async function(event, context) {
     };
 
     //console.log('test' + keys)
-    const client = new speech.SpeechClient({credentials: keys});
+    //const client = new speech.SpeechClient({credentials: keys});
     //console.log(client)
 
     const sttConfig = {
@@ -60,7 +60,7 @@ module.exports.handler = async function(event, context) {
         keys: keys,
         request: event.body,
         //client: client,
-        response: response,
+        //response: response,
       transcription: 'response to be here'
     })
   }
