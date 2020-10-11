@@ -104,6 +104,7 @@ module.exports.handler = async function (event, context) {
     // http status code
     body: JSON.stringify({
       eventAll: event,
+      event64: event.isBase64Encoded,
       eventHeaders: event.headers,
       eventBody: event.body,
       eventRequest: event.queryStringParameters,
