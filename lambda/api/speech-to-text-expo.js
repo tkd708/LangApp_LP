@@ -43,7 +43,7 @@ module.exports.handler = async function(event, context) {
         config: sttConfig,
     };
 
-    //const [response] = await client.recognize(event.body);
+    const [response] = await client.recognize(event.body);
     //const [response] = await client.recognize(request);
     //console.log(response.results.alternatives[0]);
 
@@ -59,7 +59,8 @@ module.exports.handler = async function(event, context) {
     body: JSON.stringify({
         keys: keys,
         request: event.body,
-      Transcription: 'response to be here'
+        response: response,
+      transcription: 'response to be here'
     })
   }
 }
