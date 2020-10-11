@@ -18,12 +18,13 @@ module.exports.handler = async function(event, context) {
     //console.log(resolved)
     
     //const savedFile = fs.readFileSync(require.resolve('./Encoded.m4a'))
-    const savedFile = fs.readFileSync(resolved);
+    const buff = new Buffer(event.body.audio.content, 'base64');
+    //const savedFile = fs.readFileSync(resolved);
     //const savedFile = fs.readFileSync(encodedPath);
-    const audioBytes = savedFile.toString('base64');
-    const audio = {
-        content: audioBytes,
-    };
+    //const audioBytes = savedFile.toString('base64');
+    //const audio = {
+    //    content: audioBytes,
+    //};
 
   // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
     const keys = {
@@ -57,7 +58,7 @@ module.exports.handler = async function(event, context) {
 
     const request = {
         audio: {
-        content: audioBytes,
+        content: 'audioBytes',
     },
         config: sttConfig,
     };
@@ -77,8 +78,8 @@ module.exports.handler = async function(event, context) {
     statusCode: 200, // http status code
     body: JSON.stringify({
         //keys: keys,
-        //encode: savedFile,
-        filePath: revolved,
+        encode: buff,
+        //filePath: revolved,
         request: event.body,
         //client: client,
         //response: response,
