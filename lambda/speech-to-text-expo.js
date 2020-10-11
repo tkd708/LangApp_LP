@@ -86,6 +86,17 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./Encoded.m4a":
+/*!*********************!*\
+  !*** ./Encoded.m4a ***!
+  \*********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+throw new Error("Module parse failed: Unexpected character '\u0000' (1:0)\nYou may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders\n(Source code omitted for this binary file)");
+
+/***/ }),
+
 /***/ "./speech-to-text-expo.js":
 /*!********************************!*\
   !*** ./speech-to-text-expo.js ***!
@@ -109,7 +120,8 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 
 module.exports.handler = async function (event, context) {
   //console.log("queryStringParameters", event.queryStringParameters)
-  const savedFile = fs.readFileSync('./Encoded.m4a'); //const savedFile = fs.readFileSync(encodedPath);
+  const savedFile = fs.readFileSync(/*require.resolve*/(/*! ./Encoded.m4a */ "./Encoded.m4a")); //const savedFile = fs.readFileSync('./Encoded.m4a');
+  //const savedFile = fs.readFileSync(encodedPath);
 
   const audioBytes = savedFile.toString('base64');
   const audio = {

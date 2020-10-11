@@ -10,7 +10,8 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 module.exports.handler = async function(event, context) {
   //console.log("queryStringParameters", event.queryStringParameters)
 
-    const savedFile = fs.readFileSync('./Encoded.m4a');
+    const savedFile = fs.readFileSync(require.resolve('./Encoded.m4a'))
+    //const savedFile = fs.readFileSync('./Encoded.m4a');
     //const savedFile = fs.readFileSync(encodedPath);
     const audioBytes = savedFile.toString('base64');
     const audio = {
