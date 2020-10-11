@@ -125,6 +125,7 @@ module.exports.handler = async function (event, context) {
     credentials: keys
   }); //console.log(client)
 
+  console.log(event.body);
   const sttConfig = {
     enableAutomaticPunctuation: false,
     encoding: 'LINEAR16',
@@ -152,7 +153,7 @@ module.exports.handler = async function (event, context) {
     // http status code
     body: JSON.stringify({
       //keys: keys,
-      //request: event.body,
+      request: event.body,
       //client: client,
       //response: response,
       transcript: transcription
