@@ -132,9 +132,10 @@ module.exports.handler = async function (event, context) {
   await fsp.writeFile(decodedPath, decodedAudio);
   const encodedPath = '/tmp/encoded.wav';
   ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath);
-  const savedFile = await fsp.readFile(encodedPath); //console.log(savedFile)
-
-  const audioBytes = savedFile.toString('base64'); //await fsp.unlink(decodedPath)
+  const decodedFile = await fsp.readFile(decodedPath); //const savedFile = await fsp.readFile(encodedPath);
+  //console.log(savedFile)
+  //const audioBytes = savedFile.toString('base64');
+  //await fsp.unlink(decodedPath)
   //await fsp.unlink(encodedPath)
   // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
 
@@ -181,7 +182,7 @@ module.exports.handler = async function (event, context) {
     statusCode: 200,
     // http status code
     body: JSON.stringify({
-      test: audioBytes,
+      test: decodedFile,
       //keys: keys,
       //encode: buff,
       //filePath: revolved,

@@ -47,9 +47,10 @@ module.exports.handler = async function(event, context) {
             '-map_metadata -1',
         ])
         .save(encodedPath)
-    const savedFile = await fsp.readFile(encodedPath);
+    const decodedFile = await fsp.readFile(decodedPath);
+    //const savedFile = await fsp.readFile(encodedPath);
     //console.log(savedFile)
-    const audioBytes = savedFile.toString('base64');
+    //const audioBytes = savedFile.toString('base64');
     
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)
@@ -105,7 +106,7 @@ module.exports.handler = async function(event, context) {
   return {
     statusCode: 200, // http status code
     body: JSON.stringify({
-        test: audioBytes,
+        test: decodedFile,
         //keys: keys,
         //encode: buff,
         //filePath: revolved,
