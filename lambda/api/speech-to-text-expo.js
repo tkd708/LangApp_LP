@@ -33,8 +33,8 @@ module.exports.handler = async function(event, context) {
     const decodedAudio = new Buffer(JSON.parse(event.body).audio.content, 'base64');
     const decodedPath = '/tmp/decoded.wav';
     await fsp.writeFile(decodedPath, decodedAudio);
-    const decodedFile = await fsp.readFile(decodedPath).toString('base64');
-    console.log(decodedFile.slice(0,100))
+    const decodedFile = await fsp.readFile(decodedPath);
+    console.log(decodedFile.toString('base64').slice(0,100))
     const encodedPath = '/tmp/encoded.wav';
 
     ffmpeg()
