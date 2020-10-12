@@ -29,7 +29,7 @@ module.exports.handler = async function(event, context) {
     //const encodedPath = './lambda/api/encodedTest.m4a';
 
     // in Netlify functions
-    const decodedAudio = new Buffer('eventbodyaudiocontent', 'base64');
+    const decodedAudio = new Buffer('UklGRvj3AgBXQVZFSlVOSxwAAAAAAA', 'base64');
     //const decodedAudio = new Buffer(event.body.audio.content, 'base64');
     const decodedPath = '/tmp/decoded.m4a';
     await fsp.writeFile(decodedPath, decodedAudio);
