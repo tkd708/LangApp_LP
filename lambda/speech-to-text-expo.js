@@ -125,10 +125,12 @@ module.exports.handler = async function (event, context) {
   //await fsp.writeFile(decodedPath, decodedAudio);
   //const encodedPath = './lambda/api/encodedTest.m4a';
   // in Netlify functions
-  const decodedAudio = new Buffer(event.body.audio.content, 'base64');
-  const decodedPath = '/tmp/decoded.m4a';
+  console.log(event.body.audio.content.slice(0, 100));
+  const decodedAudio = new Buffer('UklGRvj3AgBXQVZFSlVOSxwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZm10IBAAAAABAAEARKwAAIhYAQACABAARkxMUqgPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'base64'); //const decodedAudio = new Buffer(event.body.audio.content, 'base64');
+
+  const decodedPath = '/tmp/decoded.wav';
   await fsp.writeFile(decodedPath, decodedAudio);
-  const encodedPath = '/tmp/encoded.m4a';
+  const encodedPath = '/tmp/encoded.wav';
   ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath);
   const savedFile = await fsp.readFile(encodedPath); //console.log(savedFile)
 
@@ -153,7 +155,7 @@ module.exports.handler = async function (event, context) {
     credentials: keys
   });
   const audio = {
-    content: audioBytes
+    content: 'audioBytes'
   };
   const sttConfig = {
     enableAutomaticPunctuation: false,
