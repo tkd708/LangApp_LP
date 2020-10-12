@@ -124,7 +124,13 @@ module.exports.handler = async function (event, context) {
   //const decodedPath = './lambda/api/decodedTest.m4a';
   //await fsp.writeFile(decodedPath, decodedAudio);
   //const encodedPath = './lambda/api/encodedTest.m4a';
-  // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
+  // in Netlify functions
+  //console.log(event.body.audio.content.slice(0, 100))
+  const decodedAudio = new Buffer(JSON.parse(event.body).audio.content, 'base64');
+  const decodedPath = '/tmp/decoded.wav';
+  await fsp.writeFile(decodedPath, decodedAudio);
+  const decodedFile = await fsp.readFile(decodedPath).toString('base64').slice(0, 100); // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
+
   const keys = {
     type: process.env.GATSBY_type,
     project_id: process.env.GATSBY_project_id,
@@ -168,7 +174,7 @@ module.exports.handler = async function (event, context) {
     statusCode: 200,
     // http status code
     body: JSON.stringify({
-      //test: decodedFile,
+      test: decodedFile,
       //keys: keys,
       //encode: buff,
       //filePath: revolved,
