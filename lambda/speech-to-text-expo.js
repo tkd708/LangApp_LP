@@ -99,8 +99,6 @@ const axios = __webpack_require__(/*! axios */ "axios");
 
 __webpack_require__(/*! dotenv */ "dotenv").config();
 
-const path = __webpack_require__(/*! path */ "path");
-
 const fs = __webpack_require__(/*! fs */ "fs");
 
 const ffmpegPath = __webpack_require__(/*! @ffmpeg-installer/ffmpeg */ "@ffmpeg-installer/ffmpeg").path;
@@ -111,25 +109,31 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 const fsp = fs.promises;
 
 module.exports.handler = async function (event, context) {
-  //console.log("queryStringParameters", event.queryStringParameters)
-  //const fileName = "Recording (5).m4a"
-  const fileName = "/tmp/test.json"; //const resolved = (process.env.LAMBDA_TASK_ROOT)? path.resolve(process.env.LAMBDA_TASK_ROOT, fileName): './lambda/api/'+ fileName
+  // filesystem example
+  //const resolved = "/tmp/test.json";
+  //const testJSON = {'text':'test test test'}
+  //await fsp.writeFile(resolved, JSON.stringify(testJSON));
+  //const testText = await fsp.readFile(resolved);
+  //const testParsed = JSON.parse(testText)
+  //await fsp.unlink(resolved)
+  // test locally
+  //const resolved = "./lambda/api/Recording (5).m4a";
+  //const testFile = await fsp.readFile(resolved);
+  //const test64 = testFile.toString('base64');
+  //const decodedAudio = new Buffer(test64, 'base64');
+  //const decodedPath = './lambda/api/decodedTest.m4a';
+  //await fsp.writeFile(decodedPath, decodedAudio);
+  //const encodedPath = './lambda/api/encodedTest.m4a';
+  // in Netlify functions
+  const decodedAudio = new Buffer(event.body.audio.content, 'base64');
+  const decodedPath = '/tmp/decoded.m4a';
+  await fsp.writeFile(decodedPath, decodedAudio);
+  const encodedPath = '/tmp/encoded.m4a';
+  ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath);
+  const savedFile = await fsp.readFile(encodedPath); //console.log(savedFile)
 
-  const resolved = fileName; //console.log(resolved)
-  //const savedFile = fs.readFileSync(resolved).toString('base64');
-  //const buff = new Buffer(savedFile, 'base64');
-  //console.log(buff);
-  //const buff = new Buffer(event.body.audio.content, 'base64');
-  //console.log(buff);
-
-  const testJSON = {
-    'text': 'test test test'
-  };
-  console.log('will be written' + testJSON);
-  await fsp.writeFile(resolved, JSON.stringify(testJSON));
-  const testText = await fsp.readFile(resolved);
-  const testParsed = JSON.parse(testText);
-  console.log('loaded' + testParsed); //await fsp.deleteFile(resolved);
+  const audioBytes = savedFile.toString('base64'); //await fsp.unlink(decodedPath)
+  //await fsp.unlink(encodedPath)
   // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
 
   const keys = {
@@ -149,7 +153,7 @@ module.exports.handler = async function (event, context) {
     credentials: keys
   });
   const audio = {
-    content: 'recordString'
+    content: audioBytes
   };
   const sttConfig = {
     enableAutomaticPunctuation: false,
@@ -175,7 +179,7 @@ module.exports.handler = async function (event, context) {
     statusCode: 200,
     // http status code
     body: JSON.stringify({
-      test: testParsed,
+      //test: audioBytes,
       //keys: keys,
       //encode: buff,
       //filePath: revolved,
@@ -252,17 +256,6 @@ module.exports = require("fluent-ffmpeg");
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
-
-/***/ }),
-
-/***/ "path":
-/*!***********************!*\
-  !*** external "path" ***!
-  \***********************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("path");
 
 /***/ })
 
