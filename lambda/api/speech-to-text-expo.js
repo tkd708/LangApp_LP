@@ -30,7 +30,7 @@ module.exports.handler = async function(event, context) {
 
     // in Netlify functions
     //console.log(event.body.audio.content.slice(0, 100))
-    const decodedAudio = new Buffer(JSON.parse(event.body).audio.content, 'base64');
+    const decodedAudio = new Buffer.from(JSON.parse(event.body).audio.content, 'base64');
     const decodedPath = '/tmp/decoded.wav';
     await fsp.writeFile(decodedPath, decodedAudio);
     const decodedFile = await fsp.readFile(decodedPath);
