@@ -124,21 +124,7 @@ module.exports.handler = async function (event, context) {
   //const decodedPath = './lambda/api/decodedTest.m4a';
   //await fsp.writeFile(decodedPath, decodedAudio);
   //const encodedPath = './lambda/api/encodedTest.m4a';
-  // in Netlify functions
-  //console.log(event.body.audio.content.slice(0, 100))
-  const decodedAudio = new Buffer('UklGRvj3AgBXQVZFSlVOSxwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZm10IBAAAAABAAEARKwAAIhYAQACABAARkxMUqgPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'base64'); //const decodedAudio = new Buffer(event.body.audio.content, 'base64');
-
-  const decodedPath = '/tmp/decoded.wav';
-  await fsp.writeFile(decodedPath, decodedAudio);
-  const encodedPath = '/tmp/encoded.wav';
-  ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath);
-  const decodedFile = await fsp.readFile(decodedPath); //const savedFile = await fsp.readFile(encodedPath);
-  //console.log(savedFile)
-  //const audioBytes = savedFile.toString('base64');
-  //await fsp.unlink(decodedPath)
-  //await fsp.unlink(encodedPath)
   // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
-
   const keys = {
     type: process.env.GATSBY_type,
     project_id: process.env.GATSBY_project_id,
@@ -182,7 +168,7 @@ module.exports.handler = async function (event, context) {
     statusCode: 200,
     // http status code
     body: JSON.stringify({
-      test: decodedFile,
+      //test: decodedFile,
       //keys: keys,
       //encode: buff,
       //filePath: revolved,
