@@ -8,27 +8,32 @@ const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
 
+const fsp = fs.promises;
 
 module.exports.handler = async function(event, context) {
   //console.log("queryStringParameters", event.queryStringParameters)
 
   
-    //const fileName = "Encoded.m4a"
-    //const resolved = (process.env.LAMBDA_TASK_ROOT)? path.resolve(process.env.LAMBDA_TASK_ROOT, fileName): './lambda/api/'+ fileName
+    //const fileName = "Recording (5).m4a"
+    const fileName = "test.json"
+    const resolved = (process.env.LAMBDA_TASK_ROOT)? path.resolve(process.env.LAMBDA_TASK_ROOT, fileName): './lambda/api/'+ fileName
     //console.log(resolved)
-    
-    //const savedFile = fs.readFileSync(require.resolve('./Encoded.m4a'))
+    //const savedFile = fs.readFileSync(resolved).toString('base64');
+    //const buff = new Buffer(savedFile, 'base64');
+    //console.log(buff);
     //const buff = new Buffer(event.body.audio.content, 'base64');
     //console.log(buff);
-    //var snd = new Audio("data:audio/wav;base64," + event.body.audio.content);
-    //snd.play();
-    //console.log(snd);
-    //const savedFile = fs.readFileSync(resolved);
-    //const savedFile = fs.readFileSync(encodedPath);
-    //const audioBytes = savedFile.toString('base64');
-    //const audio = {
-    //    content: audioBytes,
-    //};
+
+    const testJSON = {'text':'test test test'}
+    console.log('will be written' + testJSON);
+    await fsp.writeFile(resolved, JSON.stringify(testJSON));
+    const testText = await fsp.readFile(resolved);
+    const testParsed = JSON.parse(testText)
+    console.log('loaded' + testParsed)
+    //await fsp.deleteFile(resolved);
+
+
+
 
   // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
     const keys = {
@@ -80,6 +85,7 @@ module.exports.handler = async function(event, context) {
   return {
     statusCode: 200, // http status code
     body: JSON.stringify({
+        test: testParsed,
         //keys: keys,
         //encode: buff,
         //filePath: revolved,
