@@ -29,7 +29,8 @@ module.exports.handler = async function(event, context) {
     //const encodedPath = './lambda/api/encodedTest.m4a';
 
     // in Netlify functions
-    const decodedAudio = new Buffer(event.body.audio.content, 'base64');
+    const decodedAudio = new Buffer('eventbodyaudiocontent', 'base64');
+    //const decodedAudio = new Buffer(event.body.audio.content, 'base64');
     const decodedPath = '/tmp/decoded.m4a';
     await fsp.writeFile(decodedPath, decodedAudio);
     const encodedPath = '/tmp/encoded.m4a';
@@ -71,7 +72,7 @@ module.exports.handler = async function(event, context) {
     const client = new speech.SpeechClient({credentials: keys});
 
     const audio = {
-            content: audioBytes,
+            content: 'audioBytes',
         };
 
     const sttConfig = {
