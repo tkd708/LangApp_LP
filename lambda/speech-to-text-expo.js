@@ -113,8 +113,9 @@ const fsp = fs.promises;
 module.exports.handler = async function (event, context) {
   //console.log("queryStringParameters", event.queryStringParameters)
   //const fileName = "Recording (5).m4a"
-  const fileName = "test.json";
-  const resolved = process.env.LAMBDA_TASK_ROOT ? path.resolve(process.env.LAMBDA_TASK_ROOT, fileName) : './lambda/api/' + fileName; //console.log(resolved)
+  const fileName = "/tmp/test.json"; //const resolved = (process.env.LAMBDA_TASK_ROOT)? path.resolve(process.env.LAMBDA_TASK_ROOT, fileName): './lambda/api/'+ fileName
+
+  const resolved = fileName; //console.log(resolved)
   //const savedFile = fs.readFileSync(resolved).toString('base64');
   //const buff = new Buffer(savedFile, 'base64');
   //console.log(buff);

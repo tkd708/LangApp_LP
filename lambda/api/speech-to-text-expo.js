@@ -15,8 +15,10 @@ module.exports.handler = async function(event, context) {
 
   
     //const fileName = "Recording (5).m4a"
-    const fileName = "test.json"
-    const resolved = (process.env.LAMBDA_TASK_ROOT)? path.resolve(process.env.LAMBDA_TASK_ROOT, fileName): './lambda/api/'+ fileName
+    const fileName = "/tmp/test.json"
+    //const resolved = (process.env.LAMBDA_TASK_ROOT)? path.resolve(process.env.LAMBDA_TASK_ROOT, fileName): './lambda/api/'+ fileName
+    const resolved = fileName;
+
     //console.log(resolved)
     //const savedFile = fs.readFileSync(resolved).toString('base64');
     //const buff = new Buffer(savedFile, 'base64');
@@ -31,7 +33,6 @@ module.exports.handler = async function(event, context) {
     const testParsed = JSON.parse(testText)
     console.log('loaded' + testParsed)
     //await fsp.deleteFile(resolved);
-
 
 
 
