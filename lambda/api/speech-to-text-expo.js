@@ -60,8 +60,10 @@ module.exports.handler = async function(event, context) {
             })
         }
     
-        await ffmpeg_encode_audio();
+        await ffmpeg_encode_audio()
         
+        console.log('encoding done and will be read');
+
         //const audio_encoded = fs.readFileSync(encodedPath).toString('base64');
         const audio_encoded = await fsp.readFile(encodedPath);
         console.log('encoded audio: ' + audio_encoded.toString('base64').slice(0,100));
