@@ -81,15 +81,15 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./speech-to-text-expo.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./speech-to-text-expo copy.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./speech-to-text-expo.js":
-/*!********************************!*\
-  !*** ./speech-to-text-expo.js ***!
-  \********************************/
+/***/ "./speech-to-text-expo copy.js":
+/*!*************************************!*\
+  !*** ./speech-to-text-expo copy.js ***!
+  \*************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -121,7 +121,24 @@ module.exports.handler = async function (event, context) {
   };
   const client = new speech.SpeechClient({
     credentials: keys
-  });
+  }); // filesystem example
+  //const resolved = "/tmp/test.json";
+  //const testJSON = {'text':'test test test'}
+  //await fsp.writeFile(resolved, JSON.stringify(testJSON));
+  //const testText = await fsp.readFile(resolved);
+  //const testParsed = JSON.parse(testText)
+  //await fsp.unlink(resolved)
+  // test locally
+  //const resolved = "./lambda/api/Recording (5).m4a";
+  //const testFile = await fsp.readFile(resolved);
+  //const test64 = testFile.toString('base64');
+  //const decodedAudio = new Buffer(test64, 'base64');
+  //const decodedPath = './lambda/api/decodedTest.m4a';
+  //await fsp.writeFile(decodedPath, decodedAudio);
+  //const encodedPath = './lambda/api/encodedTest.m4a';
+  // in Netlify functions
+  //console.log(event.body.audio.content.slice(0, 100))
+
   const decodedAudio = new Buffer.from(JSON.parse(event.body).audio.content, 'base64');
   const decodedPath = '/tmp/decoded.wav'; //await fsp.writeFile(decodedPath, decodedAudio);
 
@@ -129,16 +146,12 @@ module.exports.handler = async function (event, context) {
 
   console.log('received and read audio: ' + decodedFile.toString('base64').slice(0, 100));
   const encodedPath = '/tmp/encoded.wav';
+  ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async () => {
+    console.log('encoding done'); // encoded file cannot be read outside of the scope?
+    //const audio_encoded = await fsp.readFile(encodedPath).toString('base64');
 
-  const getTranscript = async () => {
-    const ffmpeg_encode_audio = () => {
-      return new Promise((resolve, reject) => {
-        ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath);
-      });
-    };
+    const audio_encoded = fs.readFileSync(encodedPath).toString('base64'); //console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100));
 
-    await ffmpeg_encode_audio();
-    const audio_encoded = fs.readFileSync(encodedPath).toString('base64');
     console.log('encoded audio: ' + audio_encoded.slice(0, 100));
     const audio = {
       content: audio_encoded
@@ -160,11 +173,9 @@ module.exports.handler = async function (event, context) {
     console.log(response);
     const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
     console.log(`Transcription: ${transcription}`);
-  }; //await fsp.unlink(decodedPath)
+  }); //await fsp.unlink(decodedPath)
   //await fsp.unlink(encodedPath)    
 
-
-  getTranscript();
   return {
     statusCode: 200,
     // http status code
