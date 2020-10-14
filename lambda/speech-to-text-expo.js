@@ -172,9 +172,9 @@ module.exports.handler = async function (event, context) {
   };
 
   const transcript = await getTranscript();
-  console.log(`Transcription out of the scope: ${transcript}`);
-  await fsp.unlink(decodedPath);
-  await fsp.unlink(encodedPath);
+  console.log(`Transcription out of the scope: ${transcript}`); //await fsp.unlink(decodedPath)
+  //await fsp.unlink(encodedPath)    
+
   return {
     statusCode: 200,
     // http status code
