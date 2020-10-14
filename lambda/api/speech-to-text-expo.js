@@ -52,7 +52,7 @@ module.exports.handler = async function(event, context) {
     fs.writeFile(decodedPath, decodedAudio);
     //const decodedFile = await fsp.readFile(decodedPath);
     //console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
-    //const encodedPath = '/tmp/encoded.wav';
+    const encodedPath = '/tmp/encoded.wav';
 
     ffmpeg()
         .input(decodedPath)

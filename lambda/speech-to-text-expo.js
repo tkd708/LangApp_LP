@@ -147,8 +147,8 @@ module.exports.handler = async function (event, context) {
 
   fs.writeFile(decodedPath, decodedAudio); //const decodedFile = await fsp.readFile(decodedPath);
   //console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
-  //const encodedPath = '/tmp/encoded.wav';
 
+  const encodedPath = '/tmp/encoded.wav';
   ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async () => {
     console.log('encoding done'); // encoded file cannot be read outside of the scope?
     //const audio_encoded = await fsp.readFile(encodedPath).toString('base64');
