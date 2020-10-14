@@ -2,12 +2,13 @@ import React from "react"
 import styled from "styled-components"
 import Button from "../Button/button"
 
-const Contact = ({ title, subtitle, id }) => {
+const Contact = ({ id }) => {
   return (
     <ContactWrapper id="contact">
       <div className="content-container">
-        <h2>{title}</h2>
-        <p>{subtitle}</p>
+        <h2>CONTACT US</h2>
+        <p>{`LangApp is currently under development and needs your voice...`}</p>
+        <p>{`We'd love to in touch with you!`}</p>
         <form
           name="contact"
           method="POST"
@@ -40,7 +41,7 @@ const Contact = ({ title, subtitle, id }) => {
               <span className="content-name">Email</span>
             </label>
           </div>
-
+{/*
           <div className="input-area">
             <input
               type="select"
@@ -53,7 +54,8 @@ const Contact = ({ title, subtitle, id }) => {
               <span className="content-name">Plan interested</span>
             </label>
           </div>
-
+*/}
+{/* 
           <div className="input-area">
             <textarea
               type="text"
@@ -67,7 +69,7 @@ const Contact = ({ title, subtitle, id }) => {
               <span className="content-name">Message</span>
             </label>
           </div>
-
+*/}
           <div className="input-area button-area">
             <Button
               label="Send Contact Form"

@@ -59,6 +59,7 @@ export default () => (
           />
         </div>
       </TextBlockImg>
+      {/* 
       <Packages
         id="prices"
         title="Prices"
@@ -141,10 +142,9 @@ export default () => (
           </Package>
         </IconContext.Provider>
       </Packages>
+      */}
       <Contact
         id="contact"
-        title="CONTACT US"
-        subtitle="LangApp is currently under development and needs your intrerests and requests towards product launch... we want to hear your voices!"
       />
     </Layout>
   </>

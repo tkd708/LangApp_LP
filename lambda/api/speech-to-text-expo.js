@@ -72,9 +72,9 @@ module.exports.handler = async function(event, context) {
             const audioBytes = savedFile.toString('base64');
             console.log(audioBytes.slice(0,100))
 
-                const audio = {
-            content: audioBytes,
-        };
+            const audio = {
+                content: audioBytes
+            };
 
             const sttConfig = {
         enableAutomaticPunctuation: false,
@@ -88,14 +88,14 @@ module.exports.handler = async function(event, context) {
             audio: audio,
             config: sttConfig,
         };
-    const [response] = await client.recognize(request);
-    console.log(response);
+    //const [response] = await client.recognize(request);
+    //console.log(response);
 
-    const transcription = response.results
-        .map((result) => result.alternatives[0].transcript)
-        .join('\n');
+    //const transcription = response.results
+    //    .map((result) => result.alternatives[0].transcript)
+    //    .join('\n');
 
-    console.log(`Transcription: ${transcription}`);
+    //console.log(`Transcription: ${transcription}`);
         })
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)

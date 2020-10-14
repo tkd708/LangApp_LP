@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import links from "../../constants/links"
 import styled from "styled-components"
-import Logo from "../../images/startup-logo.svg"
+import Logo from "../../images/LangApp.svg"
 import { Link, animateScroll as scroll } from "react-scroll"
 
 const Navbar = () => {
@@ -13,7 +13,7 @@ const Navbar = () => {
   return (
     <NavWrapper>
       <div className="masthead flex-container">
-        <img src={Logo} alt="Startup Logo" />
+        <img src={Logo} alt="LangApp Logo" />
         <button
           className={
             isOpen

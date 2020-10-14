@@ -7,11 +7,10 @@ export default [
     path: "/",
     text: "features",
   },
-  {
-    path: "/",
-    text: "prices",
-  },
-
+//  {
+//    path: "/",
+//    text: "prices",
+//  },
   {
     path: "/",
     text: "contact",

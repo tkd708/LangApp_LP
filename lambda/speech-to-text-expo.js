@@ -170,11 +170,12 @@ module.exports.handler = async function (event, context) {
     const request = {
       audio: audio,
       config: sttConfig
-    };
-    const [response] = await client.recognize(request);
-    console.log(response);
-    const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
-    console.log(`Transcription: ${transcription}`);
+    }; //const [response] = await client.recognize(request);
+    //console.log(response);
+    //const transcription = response.results
+    //    .map((result) => result.alternatives[0].transcript)
+    //    .join('\n');
+    //console.log(`Transcription: ${transcription}`);
   }); //await fsp.unlink(decodedPath)
   //await fsp.unlink(encodedPath)
 
