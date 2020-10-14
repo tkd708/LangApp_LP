@@ -65,12 +65,13 @@ module.exports.handler = async function(event, context) {
         ])
         .save(encodedPath)
         .on('end', async (resolve) => {
-            console.log('resolve: ' + resolve)
+            console.log('encoding done');
+            console.log('resolve: ' + resolve);
             // encoded file cannot be read outside of the scope?
             const savedFile = await fsp.readFile(encodedPath);
-            console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100))
+            console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100));
             const audioBytes = savedFile.toString('base64');
-            console.log(audioBytes.slice(0,100))
+            console.log(audioBytes.slice(0,100));
 
             const audio = {
                 content: audioBytes
