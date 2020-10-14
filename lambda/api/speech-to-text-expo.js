@@ -55,8 +55,10 @@ module.exports.handler = async function(event, context) {
                         '-map_metadata -1',
                         ])
                     .save(encodedPath)
-                console.log('encoding done');
-                resolve();
+                    .on('end', async () => {
+                        console.log('encoding done');
+                        resolve();
+                    })
             })
         }
     
@@ -64,38 +66,37 @@ module.exports.handler = async function(event, context) {
         
         console.log('encoding done and will be read');
 
-        //const audio_encoded = fs.readFileSync(encodedPath).toString('base64');
         const audio_encoded = await fsp.readFile(encodedPath);
         console.log('encoded audio: ' + audio_encoded.toString('base64').slice(0,100));
 
-            const audio = {
-                content: audio_encoded.toString('base64')
-            };
+        const audio = {
+            content: audio_encoded.toString('base64')
+        };
 
-            const sttConfig = {
-                enableAutomaticPunctuation: false,
-                encoding: 'LINEAR16',
-                sampleRateHertz: 41000,
-                languageCode: 'en_US', // ja-JP, en-US, es-CO, fr-FR
-                model: 'default', // default, phone_call
-            }
-
-            const request = {
-                audio: audio,
-                config: sttConfig,
-            };
-
-            console.log('transcription will start');
-            const [response] = await client.recognize(request);
-            console.log(response);
-
-            const transcription = response.results
-                .map((result) => result.alternatives[0].transcript)
-                .join('\n');
-
-            console.log(`Transcription: ${transcription}`);
-            return transcription
+        const sttConfig = {
+            enableAutomaticPunctuation: false,
+            encoding: 'LINEAR16',
+            sampleRateHertz: 41000,
+            languageCode: 'en_US', // ja-JP, en-US, es-CO, fr-FR
+            model: 'default', // default, phone_call
         }
+
+        const request = {
+            audio: audio,
+            config: sttConfig,
+        };
+
+        console.log('transcription will start');
+        const [response] = await client.recognize(request);
+        console.log(response);
+
+        const transcription = response.results
+            .map((result) => result.alternatives[0].transcript)
+            .join('\n');
+
+        console.log(`Transcription: ${transcription}`);
+        return transcription
+    }
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)    
 
