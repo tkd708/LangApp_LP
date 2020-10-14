@@ -29,7 +29,7 @@ module.exports.handler = async function(event, context) {
     //await fsp.writeFile(decodedPath, decodedAudio);
     fs.writeFileSync(decodedPath, decodedAudio);
     //const decodedFile = await fsp.readFile(decodedPath);
-    console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
+    //console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
     const encodedPath = '/tmp/encoded.wav';
 
     const getTranscript = async() => {
