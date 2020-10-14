@@ -68,7 +68,7 @@ module.exports.handler = async function(event, context) {
             const savedFile = await fsp.readFile(encodedPath);
             //console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100))
             const audioBytes = savedFile.toString('base64');
-            //console.log(audioBytes.slice(0,100))
+            console.log(audioBytes.slice(0,100))
 
                 const audio = {
             content: audioBytes,
@@ -95,7 +95,8 @@ module.exports.handler = async function(event, context) {
 
     console.log(`Transcription: ${transcription}`);
         })
-    
+                console.log(audioBytes.slice(0,100))
+
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)
 

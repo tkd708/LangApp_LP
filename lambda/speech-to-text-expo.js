@@ -151,8 +151,8 @@ module.exports.handler = async function (event, context) {
     // encoded file cannot be read outside of the scope?
     const savedFile = await fsp.readFile(encodedPath); //console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100))
 
-    const audioBytes = savedFile.toString('base64'); //console.log(audioBytes.slice(0,100))
-
+    const audioBytes = savedFile.toString('base64');
+    console.log(audioBytes.slice(0, 100));
     const audio = {
       content: audioBytes
     };
@@ -173,7 +173,8 @@ module.exports.handler = async function (event, context) {
     console.log(response);
     const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
     console.log(`Transcription: ${transcription}`);
-  }); //await fsp.unlink(decodedPath)
+  });
+  console.log(audioBytes.slice(0, 100)); //await fsp.unlink(decodedPath)
   //await fsp.unlink(encodedPath)
   // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
 
