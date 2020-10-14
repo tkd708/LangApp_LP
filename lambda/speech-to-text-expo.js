@@ -149,7 +149,7 @@ module.exports.handler = async function (event, context) {
   //console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
 
   const encodedPath = '/tmp/encoded.wav';
-  ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async () => {
+  const request_encoded = ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async () => {
     console.log('encoding done'); // encoded file cannot be read outside of the scope?
     //const audio_encoded = await fsp.readFile(encodedPath).toString('base64');
 
@@ -175,10 +175,11 @@ module.exports.handler = async function (event, context) {
       audio: audio,
       config: sttConfig
     };
+    return request;
   }); //await fsp.unlink(decodedPath)
   //await fsp.unlink(encodedPath)
-  //console.log(request_encoded.audio.content.slice(0,100));
 
+  console.log(request_encoded.audio.content.slice(0, 100));
   const audio = {
     content: 'audioBytes'
   };

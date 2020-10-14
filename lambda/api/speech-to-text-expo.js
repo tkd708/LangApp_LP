@@ -54,7 +54,7 @@ module.exports.handler = async function(event, context) {
     //console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
     const encodedPath = '/tmp/encoded.wav';
 
-    ffmpeg()
+    const request_encoded = ffmpeg()
         .input(decodedPath)
         .outputOptions([
             '-f s16le',
@@ -93,10 +93,12 @@ module.exports.handler = async function(event, context) {
             audio: audio,
             config: sttConfig,
         };
+
+        return(request)
         })
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)
-    //console.log(request_encoded.audio.content.slice(0,100));
+    console.log(request_encoded.audio.content.slice(0,100));
 
 
     const audio = {
