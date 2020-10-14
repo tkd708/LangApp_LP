@@ -93,7 +93,7 @@ module.exports.handler = async function(event, context) {
         request: event.body,
         //client: client,
         //response: response,
-      transcript: transcription
+      transcript: "transcription"
     })
   }
 }
