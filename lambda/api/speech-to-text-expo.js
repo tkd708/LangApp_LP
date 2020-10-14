@@ -34,7 +34,7 @@ module.exports.handler = async function(event, context) {
     const decodedPath = '/tmp/decoded.wav';
     await fsp.writeFile(decodedPath, decodedAudio);
     const decodedFile = await fsp.readFile(decodedPath);
-    console.log(decodedFile.toString('base64').slice(0,100))
+    console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
     const encodedPath = '/tmp/encoded.wav';
 
     ffmpeg()
@@ -49,6 +49,7 @@ module.exports.handler = async function(event, context) {
         ])
         .save(encodedPath)
     const savedFile = await fsp.readFile(encodedPath);
+    console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100))
     const audioBytes = savedFile.toString('base64');
     console.log(audioBytes.slice(0,100))
     
