@@ -48,10 +48,13 @@ module.exports.handler = async function(event, context) {
             '-map_metadata -1',
         ])
         .save(encodedPath)
-    const savedFile = await fsp.readFile(encodedPath);
-    console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100))
-    const audioBytes = savedFile.toString('base64');
-    console.log(audioBytes.slice(0,100))
+        .on('end', async (resolve) => {
+            console.log(resolve);
+            const savedFile = await fsp.readFile(encodedPath);
+            console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100))
+            const audioBytes = savedFile.toString('base64');
+            console.log(audioBytes.slice(0,100))
+        })
     
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)
