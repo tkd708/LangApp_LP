@@ -122,19 +122,14 @@ module.exports.handler = async function (event, context) {
   };
   const client = new speech.SpeechClient({
     credentials: keys
-  }); //in netlify
-
-  const decodedAudio = new Buffer.from(JSON.parse(event.body).audio.content, 'base64');
+  });
+  const decodedAudio = new Buffer.from(JSON.parse(event.body).audio, 'base64');
   const decodedPath = '/tmp/decoded.wav';
   await fsp.writeFile(decodedPath, decodedAudio);
   fs.writeFileSync(decodedPath, decodedAudio);
   const decodedFile = await fsp.readFile(decodedPath);
   console.log('received and read audio: ' + decodedFile.toString('base64').slice(0, 100));
-  const encodedPath = '/tmp/encoded.wav'; //local test
-  //const decodedPath = "./lambda/api/Recording (5).m4a";
-  //const testAudio = await fsp.readFile(decodedPath);
-  //console.log('received and read audio: '+ testAudio.toString('base64').slice(0,100))
-  //const encodedPath = './lambda/api/encodedTest.m4a';
+  const encodedPath = '/tmp/encoded.wav';
 
   const getTranscript = async () => {
     console.log('encoding will start');
@@ -174,23 +169,17 @@ module.exports.handler = async function (event, context) {
     const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
     console.log(`Transcription: ${transcription}`);
     return transcription;
-  }; //await fsp.unlink(decodedPath)
-  //await fsp.unlink(encodedPath)    
-
+  };
 
   const transcript = await getTranscript();
   console.log(`Transcription out of the scope: ${transcript}`);
+  await fsp.unlink(decodedPath);
+  await fsp.unlink(encodedPath);
   return {
     statusCode: 200,
     // http status code
     body: JSON.stringify({
-      //test: decodedFile,
-      //keys: keys,
-      //encode: buff,
-      //filePath: revolved,
       request: event.body,
-      //client: client,
-      //response: response,
       transcript: transcript
     })
   };

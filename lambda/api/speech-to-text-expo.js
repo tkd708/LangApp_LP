@@ -95,7 +95,6 @@ module.exports.handler = async function(event, context) {
     await fsp.unlink(decodedPath)
     await fsp.unlink(encodedPath)    
 
-
   return {
     statusCode: 200, // http status code
     body: JSON.stringify({
