@@ -87,7 +87,8 @@ module.exports.handler = async function(event, context) {
                 config: sttConfig,
             };
         }).then(
-         console.log(request.audio.content.slice(0,100))
+            console.log('promise kept')
+         //console.log(request.audio.content.slice(0,100))
         )
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)

@@ -169,7 +169,8 @@ module.exports.handler = async function (event, context) {
       audio: audio,
       config: sttConfig
     };
-  }).then(console.log(request.audio.content.slice(0, 100))); //await fsp.unlink(decodedPath)
+  }).then(console.log('promise kept') //console.log(request.audio.content.slice(0,100))
+  ); //await fsp.unlink(decodedPath)
   //await fsp.unlink(encodedPath)
 
   const audio = {
