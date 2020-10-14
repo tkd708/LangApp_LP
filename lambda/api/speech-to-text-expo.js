@@ -11,7 +11,8 @@ const fsp = fs.promises;
 
 module.exports.handler = async function(event, context) {
   
-        const keys = {
+    // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
+    const keys = {
         type: process.env.GATSBY_type,
         project_id: process.env.GATSBY_project_id,
         private_key_id: process.env.GATSBY_private_key_id,
@@ -95,28 +96,10 @@ module.exports.handler = async function(event, context) {
 
     console.log(`Transcription: ${transcription}`);
         })
-                console.log(audioBytes.slice(0,100))
-
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)
 
 
-  // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
-    const keys2 = {
-        type: process.env.GATSBY_type,
-        project_id: process.env.GATSBY_project_id,
-        private_key_id: process.env.GATSBY_private_key_id,
-        private_key: process.env.GATSBY_private_key.replace(/\\n/gm, "\n"), 
-        client_email: process.env.GATSBY_client_email,
-        client_id: process.env.GATSBY_client_id,
-        auth_uri: process.env.GATSBY_auth_uri,
-        token_uri: process.env.GATSBY_token_uri,
-        auth_provider_x509_cert_url: process.env.GATSBY_auth_provider_x509_cert_url,
-        client_x509_cert_url: process.env.GATSBY_client_x509_cert_url
-    };
-
-    //console.log('test' + keys)
-    //const client = new speech.SpeechClient({credentials: keys});
 
     const audio = {
             content:'audioBytes',
