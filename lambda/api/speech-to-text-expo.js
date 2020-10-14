@@ -95,7 +95,6 @@ module.exports.handler = async function(event, context) {
     const audio = {
             content:'audioBytes',
         };
-
     const sttConfig = {
         enableAutomaticPunctuation: false,
         encoding: 'LINEAR16',
