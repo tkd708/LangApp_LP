@@ -145,7 +145,7 @@ module.exports.handler = async function (event, context) {
   const decodedAudio = new Buffer.from(JSON.parse(event.body).audio.content, 'base64');
   const decodedPath = '/tmp/decoded.wav'; //await fsp.writeFile(decodedPath, decodedAudio);
 
-  sp.writeFile(decodedPath, decodedAudio); //const decodedFile = await fsp.readFile(decodedPath);
+  fs.writeFile(decodedPath, decodedAudio); //const decodedFile = await fsp.readFile(decodedPath);
   //console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
   //const encodedPath = '/tmp/encoded.wav';
 
