@@ -101,7 +101,8 @@ const ffmpegPath = __webpack_require__(/*! @ffmpeg-installer/ffmpeg */ "@ffmpeg-
 
 const ffmpeg = __webpack_require__(/*! fluent-ffmpeg */ "fluent-ffmpeg");
 
-ffmpeg.setFfmpegPath(ffmpegPath); //const fsp = fs.promises; ...not necessary?
+ffmpeg.setFfmpegPath(ffmpegPath);
+const fsp = fs.promises;
 
 const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech");
 
@@ -123,11 +124,11 @@ module.exports.handler = async function (event, context) {
     credentials: keys
   });
   const decodedAudio = new Buffer.from(JSON.parse(event.body).audio.content, 'base64');
-  const decodedPath = '/tmp/decoded.wav'; //await fsp.writeFile(decodedPath, decodedAudio);
+  const decodedPath = '/tmp/decoded.wav';
+  await fsp.writeFile(decodedPath, decodedAudio); //fs.writeFileSync(decodedPath, decodedAudio);
 
-  fs.writeFileSync(decodedPath, decodedAudio); //const decodedFile = await fsp.readFile(decodedPath);
-  //console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
-
+  const decodedFile = await fsp.readFile(decodedPath);
+  console.log('received and read audio: ' + decodedFile.toString('base64').slice(0, 100));
   const encodedPath = '/tmp/encoded.wav';
 
   const getTranscript = async () => {
@@ -137,8 +138,9 @@ module.exports.handler = async function (event, context) {
       });
     };
 
-    await ffmpeg_encode_audio();
-    const audio_encoded = fs.readFileSync(encodedPath).toString('base64');
+    await ffmpeg_encode_audio(); //const audio_encoded = fs.readFileSync(encodedPath).toString('base64');
+
+    const audio_encoded = await fsp.readFile(encodedPath).toString('base64');
     console.log('encoded audio: ' + audio_encoded.slice(0, 100));
     const audio = {
       content: audio_encoded
