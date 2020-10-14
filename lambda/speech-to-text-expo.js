@@ -132,13 +132,16 @@ module.exports.handler = async function (event, context) {
   const encodedPath = '/tmp/encoded.wav';
 
   const getTranscript = async () => {
+    console.log('encoding will start');
+
     const ffmpeg_encode_audio = () => {
       return new Promise((resolve, reject) => {
         ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath);
       });
     };
 
-    await ffmpeg_encode_audio(); //const audio_encoded = fs.readFileSync(encodedPath).toString('base64');
+    await ffmpeg_encode_audio();
+    console.log('encoding done'); //const audio_encoded = fs.readFileSync(encodedPath).toString('base64');
 
     const audio_encoded = await fsp.readFile(encodedPath).toString('base64');
     console.log('encoded audio: ' + audio_encoded.slice(0, 100));
@@ -158,6 +161,7 @@ module.exports.handler = async function (event, context) {
       audio: audio,
       config: sttConfig
     };
+    console.log('transcription will start');
     const [response] = await client.recognize(request);
     console.log(response);
     const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
