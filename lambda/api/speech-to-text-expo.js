@@ -90,7 +90,7 @@ module.exports.handler = async function(event, context) {
             config: sttConfig,
         };
 
-        return request
+        return (request)
         })
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)
