@@ -91,11 +91,11 @@ module.exports.handler = async function(event, context) {
     const [response] = await client.recognize(request);
     console.log(response);
 
-    //const transcription = response.results
-    //    .map((result) => result.alternatives[0].transcript)
-    //    .join('\n');
+    const transcription = response.results
+        .map((result) => result.alternatives[0].transcript)
+        .join('\n');
 
-    //console.log(`Transcription: ${transcription}`);
+    console.log(`Transcription: ${transcription}`);
         })
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)
