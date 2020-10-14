@@ -148,14 +148,13 @@ module.exports.handler = async function (event, context) {
   const decodedFile = await fsp.readFile(decodedPath);
   console.log('received and read audio: ' + decodedFile.toString('base64').slice(0, 100));
   const encodedPath = '/tmp/encoded.wav';
-  ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async resolve => {
-    console.log('encoding done');
-    console.log('resolve: ' + resolve); // encoded file cannot be read outside of the scope?
+  ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async () => {
+    console.log('encoding done'); // encoded file cannot be read outside of the scope?
 
-    const savedFile = await fsp.readFile(encodedPath);
-    console.log('encoded audio: ' + savedFile.toString('base64').slice(0, 100));
+    const savedFile = await fsp.readFile(encodedPath); //console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100));
+
     const audioBytes = savedFile.toString('base64');
-    console.log(audioBytes.slice(0, 100));
+    console.log('encoded audio: ' + audioBytes.slice(0, 100));
     const audio = {
       content: audioBytes
     };
@@ -171,9 +170,9 @@ module.exports.handler = async function (event, context) {
     const request = {
       audio: audio,
       config: sttConfig
-    }; //const [response] = await client.recognize(request);
-    //console.log(response);
-    //const transcription = response.results
+    };
+    const [response] = await client.recognize(request);
+    console.log(response); //const transcription = response.results
     //    .map((result) => result.alternatives[0].transcript)
     //    .join('\n');
     //console.log(`Transcription: ${transcription}`);
