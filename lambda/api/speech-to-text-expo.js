@@ -48,12 +48,13 @@ module.exports.handler = async function(event, context) {
     //console.log(event.body.audio.content.slice(0, 100))
     const decodedAudio = new Buffer.from(JSON.parse(event.body).audio.content, 'base64');
     const decodedPath = '/tmp/decoded.wav';
-    await fsp.writeFile(decodedPath, decodedAudio);
-    const decodedFile = await fsp.readFile(decodedPath);
-    console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
-    const encodedPath = '/tmp/encoded.wav';
+    //await fsp.writeFile(decodedPath, decodedAudio);
+    sp.writeFile(decodedPath, decodedAudio);
+    //const decodedFile = await fsp.readFile(decodedPath);
+    //console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
+    //const encodedPath = '/tmp/encoded.wav';
 
-    ffmpeg()
+    const request_encoded = ffmpeg()
         .input(decodedPath)
         .outputOptions([
             '-f s16le',
@@ -67,13 +68,13 @@ module.exports.handler = async function(event, context) {
         .on('end', async () => {
             console.log('encoding done');
             // encoded file cannot be read outside of the scope?
-            const savedFile = await fsp.readFile(encodedPath);
+            //const audio_encoded = await fsp.readFile(encodedPath).toString('base64');
+            const audio_encoded = fs.readFile(encodedPath).toString('base64');
             //console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100));
-            const audioBytes = savedFile.toString('base64');
-            console.log('encoded audio: ' + audioBytes.slice(0,100));
+            console.log('encoded audio: ' + audio_encoded.slice(0,100));
 
             const audio = {
-                content: audioBytes
+                content: audio_encoded
             };
 
             const sttConfig = {
@@ -88,18 +89,12 @@ module.exports.handler = async function(event, context) {
             audio: audio,
             config: sttConfig,
         };
-    const [response] = await client.recognize(request);
-    console.log(response);
 
-    const transcription = response.results
-        .map((result) => result.alternatives[0].transcript)
-        .join('\n');
-
-    console.log(`Transcription: ${transcription}`);
+        return request
         })
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)
-
+    console.log(request_encoded.audio.content.slice(0,100));
 
 
     const audio = {
