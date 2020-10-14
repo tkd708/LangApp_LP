@@ -84,17 +84,19 @@ module.exports.handler = async function(event, context) {
         languageCode: 'en_US', // ja-JP, en-US, es-CO, fr-FR
         model: 'default', // default, phone_call
     };
+    //const audio_encoded2 = fs.readFile(encodedPath).toString('base64');
+            //console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100));
+            console.log('encoded audio accessed outside of the scope: ' + audio_encoded.slice(0,100));
+
 
         const request = {
             audio: audio,
             config: sttConfig,
         };
-
-        return (request)
         })
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)
-    console.log(request_encoded.audio.content.slice(0,100));
+    //console.log(request_encoded.audio.content.slice(0,100));
 
 
     const audio = {
