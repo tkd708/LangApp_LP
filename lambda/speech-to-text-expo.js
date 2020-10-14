@@ -141,14 +141,15 @@ module.exports.handler = async function (event, context) {
 
     const ffmpeg_encode_audio = () => {
       return new Promise((resolve, reject) => {
-        ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath);
-        console.log('encoding done');
-        resolve();
+        ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async () => {
+          console.log('encoding done');
+          resolve();
+        });
       });
     };
 
-    await ffmpeg_encode_audio(); //const audio_encoded = fs.readFileSync(encodedPath).toString('base64');
-
+    await ffmpeg_encode_audio();
+    console.log('encoding done and will be read');
     const audio_encoded = await fsp.readFile(encodedPath);
     console.log('encoded audio: ' + audio_encoded.toString('base64').slice(0, 100));
     const audio = {
