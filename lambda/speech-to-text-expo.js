@@ -93,10 +93,6 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech");
-
-const axios = __webpack_require__(/*! axios */ "axios");
-
 __webpack_require__(/*! dotenv */ "dotenv").config();
 
 const fs = __webpack_require__(/*! fs */ "fs");
@@ -105,8 +101,9 @@ const ffmpegPath = __webpack_require__(/*! @ffmpeg-installer/ffmpeg */ "@ffmpeg-
 
 const ffmpeg = __webpack_require__(/*! fluent-ffmpeg */ "fluent-ffmpeg");
 
-ffmpeg.setFfmpegPath(ffmpegPath);
-const fsp = fs.promises;
+ffmpeg.setFfmpegPath(ffmpegPath); //const fsp = fs.promises; ...not necessary?
+
+const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech");
 
 module.exports.handler = async function (event, context) {
   // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
@@ -149,7 +146,7 @@ module.exports.handler = async function (event, context) {
   //console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
 
   const encodedPath = '/tmp/encoded.wav';
-  const request_encoded = ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async () => {
+  ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async () => {
     console.log('encoding done'); // encoded file cannot be read outside of the scope?
     //const audio_encoded = await fsp.readFile(encodedPath).toString('base64');
 
@@ -167,19 +164,14 @@ module.exports.handler = async function (event, context) {
       // ja-JP, en-US, es-CO, fr-FR
       model: 'default' // default, phone_call
 
-    }; //const audio_encoded2 = fs.readFile(encodedPath).toString('base64');
-    //console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100));
-
-    console.log('encoded audio accessed outside of the scope: ' + audio_encoded.slice(0, 100));
+    };
     const request = {
       audio: audio,
       config: sttConfig
     };
-    return request;
-  }); //await fsp.unlink(decodedPath)
+  }).then(console.log(request.audio.content.slice(0, 100))); //await fsp.unlink(decodedPath)
   //await fsp.unlink(encodedPath)
 
-  console.log(request_encoded.audio.content.slice(0, 100));
   const audio = {
     content: 'audioBytes'
   };
@@ -240,17 +232,6 @@ module.exports = require("@ffmpeg-installer/ffmpeg");
 /***/ (function(module, exports) {
 
 module.exports = require("@google-cloud/speech");
-
-/***/ }),
-
-/***/ "axios":
-/*!************************!*\
-  !*** external "axios" ***!
-  \************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("axios");
 
 /***/ }),
 

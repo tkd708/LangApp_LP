@@ -1,13 +1,10 @@
-const speech = require('@google-cloud/speech');    
-const axios = require('axios')
 require('dotenv').config();
-
 const fs = require('fs');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
-
-const fsp = fs.promises;
+//const fsp = fs.promises; ...not necessary?
+const speech = require('@google-cloud/speech');    
 
 module.exports.handler = async function(event, context) {
   
@@ -54,7 +51,7 @@ module.exports.handler = async function(event, context) {
     //console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
     const encodedPath = '/tmp/encoded.wav';
 
-    const request_encoded = ffmpeg()
+    ffmpeg()
         .input(decodedPath)
         .outputOptions([
             '-f s16le',
@@ -78,28 +75,22 @@ module.exports.handler = async function(event, context) {
             };
 
             const sttConfig = {
-        enableAutomaticPunctuation: false,
-        encoding: 'LINEAR16',
-        sampleRateHertz: 41000,
-        languageCode: 'en_US', // ja-JP, en-US, es-CO, fr-FR
-        model: 'default', // default, phone_call
-    };
-    //const audio_encoded2 = fs.readFile(encodedPath).toString('base64');
-            //console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100));
-            console.log('encoded audio accessed outside of the scope: ' + audio_encoded.slice(0,100));
+                enableAutomaticPunctuation: false,
+                encoding: 'LINEAR16',
+                sampleRateHertz: 41000,
+                languageCode: 'en_US', // ja-JP, en-US, es-CO, fr-FR
+                model: 'default', // default, phone_call
+            }
 
-
-        const request = {
-            audio: audio,
-            config: sttConfig,
-        };
-
-        return(request)
-        })
+            const request = {
+                audio: audio,
+                config: sttConfig,
+            };
+        }).then(
+         console.log(request.audio.content.slice(0,100))
+        )
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)
-    console.log(request_encoded.audio.content.slice(0,100));
-
 
     const audio = {
             content:'audioBytes',
