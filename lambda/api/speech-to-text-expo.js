@@ -49,7 +49,7 @@ module.exports.handler = async function(event, context) {
     const decodedAudio = new Buffer.from(JSON.parse(event.body).audio.content, 'base64');
     const decodedPath = '/tmp/decoded.wav';
     //await fsp.writeFile(decodedPath, decodedAudio);
-    fs.writeFile(decodedPath, decodedAudio);
+    fs.writeFileSync(decodedPath, decodedAudio);
     //const decodedFile = await fsp.readFile(decodedPath);
     //console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
     const encodedPath = '/tmp/encoded.wav';
@@ -69,7 +69,7 @@ module.exports.handler = async function(event, context) {
             console.log('encoding done');
             // encoded file cannot be read outside of the scope?
             //const audio_encoded = await fsp.readFile(encodedPath).toString('base64');
-            const audio_encoded = fs.readFile(encodedPath).toString('base64');
+            const audio_encoded = fs.readFileSync(encodedPath).toString('base64');
             //console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100));
             console.log('encoded audio: ' + audio_encoded.slice(0,100));
 
