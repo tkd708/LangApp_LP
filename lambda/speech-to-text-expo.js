@@ -122,14 +122,19 @@ module.exports.handler = async function (event, context) {
   };
   const client = new speech.SpeechClient({
     credentials: keys
-  });
+  }); //in netlify
+
   const decodedAudio = new Buffer.from(JSON.parse(event.body).audio.content, 'base64');
   const decodedPath = '/tmp/decoded.wav';
-  await fsp.writeFile(decodedPath, decodedAudio); //fs.writeFileSync(decodedPath, decodedAudio);
-
+  await fsp.writeFile(decodedPath, decodedAudio);
+  fs.writeFileSync(decodedPath, decodedAudio);
   const decodedFile = await fsp.readFile(decodedPath);
   console.log('received and read audio: ' + decodedFile.toString('base64').slice(0, 100));
-  const encodedPath = '/tmp/encoded.wav';
+  const encodedPath = '/tmp/encoded.wav'; //local test
+  //const decodedPath = "./lambda/api/Recording (5).m4a";
+  //const testAudio = await fsp.readFile(decodedPath);
+  //console.log('received and read audio: '+ testAudio.toString('base64').slice(0,100))
+  //const encodedPath = './lambda/api/encodedTest.m4a';
 
   const getTranscript = async () => {
     console.log('encoding will start');
@@ -137,16 +142,17 @@ module.exports.handler = async function (event, context) {
     const ffmpeg_encode_audio = () => {
       return new Promise((resolve, reject) => {
         ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath);
+        console.log('encoding done');
+        resolve();
       });
     };
 
-    await ffmpeg_encode_audio();
-    console.log('encoding done'); //const audio_encoded = fs.readFileSync(encodedPath).toString('base64');
+    await ffmpeg_encode_audio(); //const audio_encoded = fs.readFileSync(encodedPath).toString('base64');
 
-    const audio_encoded = await fsp.readFile(encodedPath).toString('base64');
-    console.log('encoded audio: ' + audio_encoded.slice(0, 100));
+    const audio_encoded = await fsp.readFile(encodedPath);
+    console.log('encoded audio: ' + audio_encoded.toString('base64').slice(0, 100));
     const audio = {
-      content: audio_encoded
+      content: audio_encoded.toString('base64')
     };
     const sttConfig = {
       enableAutomaticPunctuation: false,
@@ -166,11 +172,13 @@ module.exports.handler = async function (event, context) {
     console.log(response);
     const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
     console.log(`Transcription: ${transcription}`);
+    return transcription;
   }; //await fsp.unlink(decodedPath)
   //await fsp.unlink(encodedPath)    
 
 
-  getTranscript();
+  const transcript = await getTranscript();
+  console.log(`Transcription out of the scope: ${transcript}`);
   return {
     statusCode: 200,
     // http status code
@@ -182,7 +190,7 @@ module.exports.handler = async function (event, context) {
       request: event.body,
       //client: client,
       //response: response,
-      transcript: "transcription"
+      transcript: transcript
     })
   };
 };
