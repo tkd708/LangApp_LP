@@ -143,8 +143,8 @@ module.exports.handler = async function (event, context) {
   const decodedPath = '/tmp/decoded.wav'; //await fsp.writeFile(decodedPath, decodedAudio);
 
   fs.writeFileSync(decodedPath, decodedAudio); //const decodedFile = await fsp.readFile(decodedPath);
-  //console.log('received and read audio: '+ decodedFile.toString('base64').slice(0,100))
 
+  console.log('received and read audio: ' + decodedFile.toString('base64').slice(0, 100));
   const encodedPath = '/tmp/encoded.wav';
   ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async () => {
     console.log('encoding done'); // encoded file cannot be read outside of the scope?
@@ -169,32 +169,12 @@ module.exports.handler = async function (event, context) {
       audio: audio,
       config: sttConfig
     };
-  }).then(console.log('promise kept') //console.log(request.audio.content.slice(0,100))
-  ); //await fsp.unlink(decodedPath)
-  //await fsp.unlink(encodedPath)
-
-  const audio = {
-    content: 'audioBytes'
-  };
-  const sttConfig = {
-    enableAutomaticPunctuation: false,
-    encoding: 'LINEAR16',
-    sampleRateHertz: 41000,
-    languageCode: 'en_US',
-    // ja-JP, en-US, es-CO, fr-FR
-    //enableSpeakerDiarization: true,
-    //diarizationSpeakerCount: 2, // no. of speakers
-    model: 'default' // default, phone_call
-
-  };
-  const request = {
-    audio: audio,
-    config: sttConfig
-  }; //const [response] = await client.recognize(event.body);
-
-  const [response] = await client.recognize(request); //console.log(response);
-
-  const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n'); //console.log(`Transcription: ${transcription}`);
+    const [response] = await client.recognize(request);
+    console.log(response);
+    const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
+    console.log(`Transcription: ${transcription}`);
+  }); //await fsp.unlink(decodedPath)
+  //await fsp.unlink(encodedPath)    
 
   return {
     statusCode: 200,
