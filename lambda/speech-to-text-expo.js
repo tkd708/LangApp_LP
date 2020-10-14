@@ -132,12 +132,32 @@ module.exports.handler = async function (event, context) {
   const decodedFile = await fsp.readFile(decodedPath);
   console.log('received and read audio: ' + decodedFile.toString('base64').slice(0, 100));
   const encodedPath = '/tmp/encoded.wav';
-  ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async resolve => {
-    console.log(resolve);
-    const savedFile = await fsp.readFile(encodedPath);
-    console.log('encoded audio: ' + savedFile.toString('base64').slice(0, 100));
-    const audioBytes = savedFile.toString('base64');
-    console.log(audioBytes.slice(0, 100));
+  ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async () => {
+    // encoded file cannot be read outside of the scope?
+    const savedFile = await fsp.readFile(encodedPath); //console.log('encoded audio: '+ savedFile.toString('base64').slice(0,100))
+
+    const audioBytes = savedFile.toString('base64'); //console.log(audioBytes.slice(0,100))
+
+    const audio = {
+      content: audioBytes
+    };
+    const sttConfig = {
+      enableAutomaticPunctuation: false,
+      encoding: 'LINEAR16',
+      sampleRateHertz: 41000,
+      languageCode: 'en_US',
+      // ja-JP, en-US, es-CO, fr-FR
+      model: 'default' // default, phone_call
+
+    };
+    const request = {
+      audio: audio,
+      config: sttConfig
+    };
+    const [response] = await client.recognize(request);
+    console.log(response);
+    const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
+    console.log(`Transcription: ${transcription}`);
   }); //await fsp.unlink(decodedPath)
   //await fsp.unlink(encodedPath)
   // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
