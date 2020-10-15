@@ -8,7 +8,7 @@ const speech = require('@google-cloud/speech');
 
 module.exports.handler = async function(event, context) {
     var t = new Date
-    console.log('API started on: ' + t.toLocaleTimeString())
+    console.log('API started on: ' + t.toLocaleTimeString({ second: '2-digit' }))
 
     // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
     const keys = {
@@ -36,7 +36,7 @@ module.exports.handler = async function(event, context) {
 
     const getTranscript = async() => {
             var t = new Date
-            console.log('Encoding started on: ' + t.toLocaleTimeString())
+            console.log('Encoding started on: ' + t.toLocaleTimeString({ second: '2-digit' }))
 
         const ffmpeg_encode_audio = () => {
             return new Promise((resolve, reject)=>{
@@ -61,7 +61,7 @@ module.exports.handler = async function(event, context) {
         await ffmpeg_encode_audio()
         
         var t = new Date
-        console.log('Encoding done: ' + t.toLocaleTimeString())
+        console.log('Encoding done: ' + t.toLocaleTimeString({ second: '2-digit' }))
 
         const audio_encoded = await fsp.readFile(encodedPath);
         //console.log('encoded audio: ' + audio_encoded.toString('base64').slice(0,100));
@@ -84,7 +84,7 @@ module.exports.handler = async function(event, context) {
         };
 
         var t = new Date
-        console.log('Transcription started on: ' + t.toLocaleTimeString())
+        console.log('Transcription started on: ' + t.toLocaleTimeString({ second: '2-digit' }))
         const [response] = await client.recognize(request);
         console.log(response);
 
@@ -94,7 +94,7 @@ module.exports.handler = async function(event, context) {
 
         //console.log(`Transcription: ${transcription}`);
         var t = new Date
-        console.log('Transcription done: ' + t.toLocaleTimeString())
+        console.log('Transcription done: ' + t.toLocaleTimeString({ second: '2-digit' }))
         
         return transcription
     }
