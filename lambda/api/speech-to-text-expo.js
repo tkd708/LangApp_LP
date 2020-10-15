@@ -7,7 +7,8 @@ const fsp = fs.promises;
 const speech = require('@google-cloud/speech');    
 
 module.exports.handler = async function(event, context) {
-  
+    console.log('API started on: ' + new Date.toLocaleTimeString())
+
     // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
     const keys = {
         type: process.env.GATSBY_type,
@@ -33,7 +34,7 @@ module.exports.handler = async function(event, context) {
     const encodedPath = '/tmp/encoded.wav';
 
     const getTranscript = async() => {
-        console.log('encoding will start');
+        console.log('Encoding started on: ' + new Date.toLocaleTimeString())
 
         const ffmpeg_encode_audio = () => {
             return new Promise((resolve, reject)=>{
@@ -54,13 +55,13 @@ module.exports.handler = async function(event, context) {
                     })
             })
         }
-    
+            
         await ffmpeg_encode_audio()
         
-        console.log('encoding done and will be read');
+        console.log('Encoding done: ' + new Date.toLocaleTimeString())
 
         const audio_encoded = await fsp.readFile(encodedPath);
-        console.log('encoded audio: ' + audio_encoded.toString('base64').slice(0,100));
+        //console.log('encoded audio: ' + audio_encoded.toString('base64').slice(0,100));
 
         const audio = {
             content: audio_encoded.toString('base64')
@@ -79,7 +80,7 @@ module.exports.handler = async function(event, context) {
             config: sttConfig,
         };
 
-        console.log('transcription will start');
+        console.log('Transcription started: ' + new Date.toLocaleTimeString())
         const [response] = await client.recognize(request);
         console.log(response);
 
@@ -87,11 +88,13 @@ module.exports.handler = async function(event, context) {
             .map((result) => result.alternatives[0].transcript)
             .join('\n');
 
-        console.log(`Transcription: ${transcription}`);
+        //console.log(`Transcription: ${transcription}`);
+        console.log('Transcription done: ' + new Date.toLocaleTimeString())
+
         return transcription
     }
     const transcript = await getTranscript()
-    console.log(`Transcription out of the scope: ${transcript}`);
+    //console.log(`Transcription out of the scope: ${transcript}`);
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)    
 
