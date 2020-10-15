@@ -107,7 +107,8 @@ const fsp = fs.promises;
 const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech");
 
 module.exports.handler = async function (event, context) {
-  console.log('API started on: ' + new Date.toLocaleTimeString()); // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
+  var t = new Date();
+  console.log('API started on: ' + t.toLocaleTimeString()); // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
 
   const keys = {
     type: process.env.GATSBY_type,
@@ -133,7 +134,8 @@ module.exports.handler = async function (event, context) {
   const encodedPath = '/tmp/encoded.wav';
 
   const getTranscript = async () => {
-    console.log('Encoding started on: ' + new Date.toLocaleTimeString());
+    var t = new Date();
+    console.log('Encoding started on: ' + t.toLocaleTimeString());
 
     const ffmpeg_encode_audio = () => {
       return new Promise((resolve, reject) => {
@@ -145,7 +147,8 @@ module.exports.handler = async function (event, context) {
     };
 
     await ffmpeg_encode_audio();
-    console.log('Encoding done: ' + new Date.toLocaleTimeString());
+    var t = new Date();
+    console.log('Encoding done: ' + t.toLocaleTimeString());
     const audio_encoded = await fsp.readFile(encodedPath); //console.log('encoded audio: ' + audio_encoded.toString('base64').slice(0,100));
 
     const audio = {
@@ -164,12 +167,14 @@ module.exports.handler = async function (event, context) {
       audio: audio,
       config: sttConfig
     };
-    console.log('Transcription started: ' + new Date.toLocaleTimeString());
+    var t = new Date();
+    console.log('Transcription started on: ' + t.toLocaleTimeString());
     const [response] = await client.recognize(request);
     console.log(response);
     const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n'); //console.log(`Transcription: ${transcription}`);
 
-    console.log('Transcription done: ' + new Date.toLocaleTimeString());
+    var t = new Date();
+    console.log('Transcription done: ' + t.toLocaleTimeString());
     return transcription;
   };
 
