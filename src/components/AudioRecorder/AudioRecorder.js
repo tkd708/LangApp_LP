@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ReactMic } from 'react-mic';
 
-const reader = new FileReader();
-
 class AudioRecorder extends React.Component {
   constructor(props) {
     super(props);
@@ -23,11 +21,12 @@ class AudioRecorder extends React.Component {
     console.log('chunk of real-time data is: ', recordedBlob);
   }
 
+
   onStop(recordedBlob) {
     console.log('recordedBlob is: ', recordedBlob);
+    const reader = new FileReader();
     const blob64 = reader.readAsDataURL(recordedBlob)
     console.log(blob64.slice(0,100))
-
   }
 
   render() {
