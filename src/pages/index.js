@@ -17,7 +17,7 @@ import perk3Img from "../images/word-cloud.png"
 import { IconContext } from "react-icons"
 import { MdDone, MdClear } from "react-icons/md"
 
-import VideoChat from '../components/VideoChat';
+import VideoChat from '../components/VideoChat/VideoChat.js';
 
 // LP example
 // https://www.autopilothq.com/
