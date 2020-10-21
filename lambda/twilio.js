@@ -113,7 +113,8 @@ module.exports.handler = async function (event, context) {
       'headers': {
         "Test-Header": "Test",
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type"
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE"
       },
       'body': "Done"
     };
@@ -148,7 +149,8 @@ module.exports.handler = async function (event, context) {
     // http status code
     headers: {
       "Access-Control-Allow-Origin": "*",
-      "Test-Header-Options": "TEST"
+      "Test-Header-Options": "TEST",
+      "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE"
     },
     body: JSON.stringify({
       //eventBody: event.body,
