@@ -17,6 +17,8 @@ import perk3Img from "../images/word-cloud.png"
 import { IconContext } from "react-icons"
 import { MdDone, MdClear } from "react-icons/md"
 
+import VideoChat from '../components/VideoChat';
+
 // LP example
 // https://www.autopilothq.com/
 // https://www.hubspot.com/crm/e010a
@@ -146,6 +148,7 @@ export default () => (
       <Contact
         id="contact"
       />
+        <VideoChat />
     </Layout>
   </>
 )
