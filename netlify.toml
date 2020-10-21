@@ -2,10 +2,5 @@
   publish = "public"
   command = "npm run build:lambda && gatsby build"
   functions = "./lambda"
-  base = "/"
 
   
-[[headers]]
-for = "/*"
-[headers.values]
-Access-Control-Allow-Origin = "*"

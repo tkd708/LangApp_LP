@@ -12,7 +12,7 @@ module.exports.handler = async function(event, context) {
             process.env.GATSBY_TWILIO_API_KEY,
             process.env.GATSBY_TWILIO_API_SECRET
         );
-        };
+    };
 
     const videoToken = (identity, room) => {
         let videoGrant;
@@ -25,12 +25,12 @@ module.exports.handler = async function(event, context) {
         token.addGrant(videoGrant);
         token.identity = identity;
         return token;
-        };
+    };
 
     console.log('request: ' + event.body);
     console.log('request: ' + JSON.stringify(event.body));
 
-    const token = videoToken(event.body.identity, event.body.room)
+    const token = videoToken(JSON.parse(event.body).identity, JSON.parse(event.body).room)
 
     console.log('raw token: ' + token);
     console.log('raw token: ' + JSON.stringify(token));
