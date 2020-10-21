@@ -1,6 +1,6 @@
 [build]
   publish = "public"
-  command = "npm run build:lambda"
+  command = "npm run build:lambda && gatsby develop"
   functions = "./lambda"
   base = "/"
 
