@@ -150,7 +150,6 @@ export default () => (
         id="contact"
       />
         <VideoChat />
-        <AudioRecorder />
     </Layout>
   </>
 )
