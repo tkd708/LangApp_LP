@@ -5,7 +5,7 @@ const { VideoGrant } = AccessToken;
 
 
 module.exports.handler = async function(event, context) {
-    console.log('headers: '+event.headers)
+    console.log('headers: '+ event.headers)
     console.log('method: ' + event.httpMethod)
 
     if (event.httpMethod == "OPTIONS"){
