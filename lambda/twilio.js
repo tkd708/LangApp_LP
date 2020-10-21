@@ -81,39 +81,82 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./hello.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./twilio.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./hello.js":
-/*!******************!*\
-  !*** ./hello.js ***!
-  \******************/
+/***/ "./twilio.js":
+/*!*******************!*\
+  !*** ./twilio.js ***!
+  \*******************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-// For more info, check https://www.netlify.com/docs/functions/#javascript-lambda-functions
+__webpack_require__(/*! dotenv */ "dotenv").config();
+
+const twilio = __webpack_require__(/*! twilio */ "twilio");
+
+const AccessToken = twilio.jwt.AccessToken;
+const {
+  VideoGrant
+} = AccessToken;
+
+const generateToken = () => {
+  return new AccessToken(process.env.GATSBY_TWILIO_ACCOUNT_SID, process.env.GATSBY_TWILIO_API_KEY, process.env.GATSBY_TWILIO_API_SECRET);
+};
+
+const videoToken = (identity, room) => {
+  let videoGrant;
+
+  if (typeof room !== 'undefined') {
+    videoGrant = new VideoGrant({
+      room
+    });
+  } else {
+    videoGrant = new VideoGrant();
+  }
+
+  const token = generateToken();
+  token.addGrant(videoGrant);
+  token.identity = identity;
+  return token;
+};
+
 module.exports.handler = async function (event, context) {
-  console.log("queryStringParameters", event.queryStringParameters); //const body = JSON.parse(event.body);
-
-  console.log('received data: ' + event.body);
-  console.log(event.body);
+  const token = videoToken(event.body.identity, event.body.room);
   return {
     // return null to show no errors
     statusCode: 200,
     // http status code
     body: JSON.stringify({
-      eventAll: event,
-      event64: event.isBase64Encoded,
-      eventHeaders: event.headers,
-      eventBody: event.body,
-      eventRequest: event.queryStringParameters,
-      msg: "Hello, World! This is better " + Math.round(Math.random() * 10),
-      txt: "sample text"
+      //eventBody: event.body,
+      token: token.toJwt()
     })
   };
 };
+
+/***/ }),
+
+/***/ "dotenv":
+/*!*************************!*\
+  !*** external "dotenv" ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("dotenv");
+
+/***/ }),
+
+/***/ "twilio":
+/*!*************************!*\
+  !*** external "twilio" ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("twilio");
 
 /***/ })
 

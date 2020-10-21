@@ -2,6 +2,7 @@
 module.exports.handler = async function(event, context) {
   console.log("queryStringParameters", event.queryStringParameters)
   //const body = JSON.parse(event.body);
+  console.log('received data: ' + event.body)
   console.log(event.body)
 
   return {
