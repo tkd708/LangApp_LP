@@ -16,25 +16,6 @@ const VideoChat = () => {
     setRoomName(event.target.value);
   }, []);
 
-  const handleSubmit_local = useCallback(
-    async event => {
-      event.preventDefault();
-      const data = await fetch('/video/token', {
-        method: 'POST',
-        body: JSON.stringify({
-          identity: username,
-          room: roomName
-        }),
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      }).then(res => res.json());
-      console.log('token structure: '+data.token)
-      setToken(data.token);
-    },
-    [roomName, username]
-  );
-
   const handleSubmit_lambda = useCallback(
     async event => {
       event.preventDefault();

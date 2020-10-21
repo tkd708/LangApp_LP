@@ -27,15 +27,8 @@ module.exports.handler = async function(event, context) {
         return token;
     };
 
-    console.log('request: ' + event.body);
-    console.log('request: ' + JSON.stringify(event.body));
-
+    //console.log('request: ' + event.body);
     const token = videoToken(JSON.parse(event.body).identity, JSON.parse(event.body).room)
-
-    console.log('raw token: ' + token);
-    console.log('raw token: ' + JSON.stringify(token));
-    console.log('jwt token: ' + token.toJwt());
-    console.log('jwt token: ' + JSON.stringify(token.toJwt()));
 
     return {
     // return null to show no errors
