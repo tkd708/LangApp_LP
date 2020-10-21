@@ -25,8 +25,11 @@ const videoToken = (identity, room) => {
 };
 
 module.exports.handler = async function(event, context) {
+    console.log('request: ' + event.body);
 
     const token = videoToken(event.body.identity, event.body.room)
+
+    console.log('raw token: ' + token);
 
     return {
     // return null to show no errors
