@@ -5,7 +5,10 @@ const { VideoGrant } = AccessToken;
 
 
 module.exports.handler = async function(event, context) {
-    if (event['requestContext']['http']['method'] == "OPTIONS"){
+    console.log('headers: '+event.headers)
+    console.log('method: ' + event.httpMethod)
+
+    if (event.httpMethod == "OPTIONS"){
         console.log("OPTIONS")
         return ({
         'statusCode': 200,
@@ -45,10 +48,10 @@ module.exports.handler = async function(event, context) {
     return {
     // return null to show no errors
     statusCode: 200, // http status code
-    headers: {
-    "Access-Control-Allow-Origin": "*",
-    "Test-Header-Options": "TEST"
-    },
+    //headers: {
+    //"Access-Control-Allow-Origin": "*",
+    //"Test-Header-Options": "TEST"
+    //},
     body: JSON.stringify({
       //eventBody: event.body,
       token: token.toJwt()
