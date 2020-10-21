@@ -103,6 +103,19 @@ const {
 } = AccessToken;
 
 module.exports.handler = async function (event, context) {
+  if (event['requestContext']['http']['method'] == "OPTIONS") {
+    console.log("OPTIONS");
+    return {
+      'statusCode': 200,
+      'headers': {
+        "Test-Header": "Test",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type"
+      },
+      'body': "Done"
+    };
+  }
+
   const generateToken = () => {
     return new AccessToken(process.env.GATSBY_TWILIO_ACCOUNT_SID, process.env.GATSBY_TWILIO_API_KEY, process.env.GATSBY_TWILIO_API_SECRET);
   };
@@ -130,6 +143,10 @@ module.exports.handler = async function (event, context) {
     // return null to show no errors
     statusCode: 200,
     // http status code
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Test-Header-Options": "TEST"
+    },
     body: JSON.stringify({
       //eventBody: event.body,
       token: token.toJwt()
