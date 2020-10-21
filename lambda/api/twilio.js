@@ -5,6 +5,18 @@ const { VideoGrant } = AccessToken;
 
 
 module.exports.handler = async function(event, context) {
+    if (event['requestContext']['http']['method'] == "OPTIONS"){
+        console.log("OPTIONS")
+        return ({
+        'statusCode': 200,
+        'headers': {
+            "Test-Header": "Test",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type",
+        },
+        'body': "Done"
+        })
+    }
 
     const generateToken = () => {
         return new AccessToken(
