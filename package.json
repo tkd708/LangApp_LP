@@ -48,6 +48,7 @@
     "react-sticky": "^6.0.3",
     "styled-components": "^4.4.1",
     "twilio": "^3.50.0",
+    "twilio-video": "^2.7.2",
     "typeface-gothic-a1": "0.0.61",
     "webpack-node-externals": "^2.5.2"
   },
