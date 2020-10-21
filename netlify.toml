@@ -4,6 +4,8 @@
   functions = "./lambda"
 
 [[headers]]
-  for = "/.netlify/functions/twilio"
+  for = "/*"
     [headers.values]
     Access-Control-Allow-Origin = "*"
+    X-Frame-Options = "DENY"
+    Test-Header-Options = "TEST"
