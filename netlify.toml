@@ -2,6 +2,7 @@
   publish = "public"
   command = "npm run build:lambda"
   functions = "./lambda"
+  base = "/"
 
   
 [[headers]]
