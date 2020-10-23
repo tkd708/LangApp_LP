@@ -24,20 +24,6 @@ const AudioRecorder = () => {
     setBlobRecorded(recordedBlob)
   }
   
-  const playRecording = () => {
-    const tmp = new Audio(blobRecorded.blobURL); //passing your state (hook)
-    tmp.play() //simple play of an audio element. 
-  }
-
-  const blobToBase64 = () => {
-      const reader = new FileReader(); 
-      reader.readAsDataURL(blobRecorded.blob); 
-      reader.onloadend = function () { 
-          const recordString = reader.result.toString().replace('data:audio/webm;codecs=opus;base64,','');
-          console.log('sent audio: '+ recordString.slice(-300))  
-          setRecordString(recordString)
-        }
-    } 
 
   const sendGoogle = () => {
             const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-expo';
@@ -71,8 +57,6 @@ const AudioRecorder = () => {
           backgroundColor="#FF4081" />
         <button onClick={startRecording} type="button">Start</button>
         <button onClick={stopRecording} type="button">Stop</button>
-        <button onClick={playRecording} type="button">Play</button>
-        <button onClick={blobToBase64} type="button">Convert</button>
         <button onClick={sendGoogle} type="button">Transcribe</button>
       </div>
     );

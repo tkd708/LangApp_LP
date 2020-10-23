@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ReactMic } from 'react-mic';
 import axios from 'axios';
+const ReactMic = typeof window !== `undefined` ? require("react-mic") : null //"window" is not available during server side rendering.
 
 const AudioRecorder = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [blobRecorded, setBlobRecorded] = useState(null);
+    const [recordString, setRecordString] = useState(null);
 
   const startRecording = () => {
     setIsRecording(true);
@@ -34,10 +35,11 @@ const AudioRecorder = () => {
       reader.onloadend = function () { 
           const recordString = reader.result.toString().replace('data:audio/webm;codecs=opus;base64,','');
           console.log('sent audio: '+ recordString.slice(-300))  
+          setRecordString(recordString)
         }
     } 
 
-  const sendGoogle = (recordString) => {
+  const sendGoogle = () => {
             const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-expo';
         
             axios
