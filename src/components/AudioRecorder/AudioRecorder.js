@@ -63,7 +63,7 @@ const AudioRecorder = () => {
         return (
       <div>
       </div>
-    )}
+    )
 
 }    
 
