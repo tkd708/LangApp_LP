@@ -60,11 +60,25 @@ const AudioRecorder = () => {
                 });
   }
 
-        return (
+  //empty return works but ReactMic cause same issues
+    return (
       <div>
+          {(typeof window !== `undefined`)
+          ? <ReactMic
+                record={isRecording}
+                className="sound-wave"
+                onStop={onStop}
+                onData={onData}
+                strokeColor="#000000"
+                backgroundColor="#FF4081" />
+          : null}
+        <button onClick={startRecording} type="button">Start</button>
+        <button onClick={stopRecording} type="button">Stop</button>
+        <button onClick={playRecording} type="button">Play</button>
+        <button onClick={blobToBase64} type="button">Convert</button>
+        <button onClick={sendGoogle} type="button">Transcribe</button>
       </div>
-    )
-
+    );
 }    
 
 export default AudioRecorder;
