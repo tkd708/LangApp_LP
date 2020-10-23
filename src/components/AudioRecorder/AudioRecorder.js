@@ -62,6 +62,15 @@ const AudioRecorder = () => {
 
     return (
       <div>
+          {(typeof window !== `undefined`) && //empty return works but ReactMic cause the same issue as importing
+           <ReactMic
+                record={isRecording}
+                className="sound-wave"
+                onStop={onStop}
+                onData={onData}
+                strokeColor="#000000"
+                backgroundColor="#FF4081" />
+            }
         <button onClick={startRecording} type="button">Start</button>
         <button onClick={stopRecording} type="button">Stop</button>
         <button onClick={playRecording} type="button">Play</button>
