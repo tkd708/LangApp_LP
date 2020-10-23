@@ -60,12 +60,11 @@ const AudioRecorder = () => {
                 });
   }
 
-    if (typeof window !== `undefined`) {
         return (
       <div>
       </div>
     )}
 
-}
-    
+}    
+
 export default AudioRecorder;
