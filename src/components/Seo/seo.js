@@ -62,7 +62,7 @@ SEO.propTypes = {
 }
 
 SEO.defaultProps = {
-  title: null,
+  title: 'LangApp',
   description: null,
   image: null,
   lang: `en`,
@@ -73,9 +73,9 @@ const query = graphql`
   query SEO {
     site {
       siteMetadata {
-        defaultTitle: LangApp
+        defaultTitle: title
         titleTemplate
-        defaultDescription: LangApp is a service to enhance your speaking skills by instant conversation setup, auto-generation transcript and visualising your speaking outputs.
+        defaultDescription: description
         siteUrl: siteUrl
         defaultImage: image
         twitterUsername
