@@ -9,19 +9,19 @@ module.exports.handler = async function(event, context) {
     console.log('method: ' + event.httpMethod)
 
     // to avoid CORS issues... but not functioning atm, to be updated
-    if (event.httpMethod == "OPTIONS"){
-        console.log("OPTIONS")
-        return ({
-        'statusCode': 200,
-        'headers': {
-            "Test-Header": "Test",
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "Content-Type",
-            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE"
-        },
-        'body': "Done"
-        })
-    }
+    //if (event.httpMethod == "OPTIONS"){
+    //    console.log("OPTIONS")
+    //    return ({
+    //    'statusCode': 200,
+    //    'headers': {
+    //        "Test-Header": "Test",
+    //        "Access-Control-Allow-Origin": "*",
+    //        "Access-Control-Allow-Headers": "Content-Type",
+    //        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE"
+    //    },
+    //    'body': "Done"
+    //    })
+    //}
 
     const generateToken = () => {
         return new AccessToken(
