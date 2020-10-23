@@ -63,6 +63,7 @@ const AudioRecorder = () => {
 
     return (
       <div>
+            { typeof window !== `undefined` &&
            <ReactMic
                 record={isRecording}
                 className="sound-wave"
@@ -70,6 +71,7 @@ const AudioRecorder = () => {
                 onData={onData}
                 strokeColor="#000000"
                 backgroundColor="#FF4081" />
+                }
         <button onClick={startRecording} type="button">Start</button>
         <button onClick={stopRecording} type="button">Stop</button>
         <button onClick={playRecording} type="button">Play</button>
