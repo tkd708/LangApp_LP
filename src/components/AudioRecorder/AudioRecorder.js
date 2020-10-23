@@ -5,9 +5,9 @@ import axios from 'axios';
 const AudioRecorder = () => {
         return (
       <div>
-          
-      </div>
 
+      </div>
+        )
 }
 
 export default AudioRecorder;
