@@ -18,7 +18,7 @@ import { IconContext } from "react-icons"
 import { MdDone, MdClear } from "react-icons/md"
 
 import VideoChat from '../components/VideoChat/VideoChat.js';
-//import AudioRecorder from '../components/AudioRecorder/AudioRecorder.js';
+import AudioRecorder from '../components/AudioRecorder/AudioRecorder.js';
 
 // LP example
 // https://www.autopilothq.com/
@@ -150,6 +150,7 @@ export default () => (
         id="contact"
       />
         <VideoChat />
+        <AudioRecorder />
     </Layout>
   </>
 )

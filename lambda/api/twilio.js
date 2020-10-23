@@ -8,6 +8,7 @@ module.exports.handler = async function(event, context) {
     console.log('headers: '+ event.headers)
     console.log('method: ' + event.httpMethod)
 
+    // to avoid CORS issues... but not functioning atm, to be updated
     if (event.httpMethod == "OPTIONS"){
         console.log("OPTIONS")
         return ({
@@ -49,11 +50,6 @@ module.exports.handler = async function(event, context) {
     return {
     // return null to show no errors
     statusCode: 200, // http status code
-    headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Test-Header-Options": "TEST",
-        "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE"
-    },
     body: JSON.stringify({
       //eventBody: event.body,
       token: token.toJwt()
