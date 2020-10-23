@@ -1,50 +1,79 @@
 import React, { useState, useEffect } from 'react';
 import { ReactMic } from 'react-mic';
+import axios from 'axios';
 
-const reader = new FileReader();
+const AudioRecorder = () => {
+    const [isRecording, setIsRecording] = useState(false);
+    const [blobRecorded, setBlobRecorded] = useState(null);
 
-class AudioRecorder extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      record: false
-    }
+  const startRecording = () => {
+    setIsRecording(true);
   }
 
-  startRecording = () => {
-    this.setState({ record: true });
+  const stopRecording = () => {
+    setIsRecording(false);
   }
 
-  stopRecording = () => {
-    this.setState({ record: false });
+  const onData = (recordedBlob) => {
+    //console.log('chunk of real-time data is: ', recordedBlob);
   }
 
-  onData(recordedBlob) {
-    console.log('chunk of real-time data is: ', recordedBlob);
-  }
-
-  onStop(recordedBlob) {
+  const onStop = (recordedBlob) => {
     console.log('recordedBlob is: ', recordedBlob);
-    const blob64 = reader.readAsDataURL(recordedBlob)
-    console.log(blob64.slice(0,100))
-
+    setBlobRecorded(recordedBlob)
+  }
+  
+  const playRecording = () => {
+    const tmp = new Audio(blobRecorded.blobURL); //passing your state (hook)
+    tmp.play() //simple play of an audio element. 
   }
 
-  render() {
+  const blobToBase64 = () => {
+      const reader = new FileReader(); 
+      reader.readAsDataURL(blobRecorded.blob); 
+      reader.onloadend = function () { 
+          const recordString = reader.result.toString().replace('data:audio/webm;codecs=opus;base64,','');
+          console.log('sent audio: '+ recordString.slice(-300))  
+        }
+    } 
+
+  const sendGoogle = (recordString) => {
+            const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-expo';
+        
+            axios
+                .request({
+                    url,
+                    method: 'POST',
+                    data:  {
+                        audio: recordString,
+                     },
+                })
+                .then((res) => {
+                    console.log(res)
+                    console.log(res.data.transcript)
+                    //setTranscript(res.data.transcript);
+                })
+                .catch((err) => {
+                    console.log('transcribe err :', err);
+                });
+  }
+
     return (
       <div>
         <ReactMic
-          record={this.state.record}
+          record={isRecording}
           className="sound-wave"
-          onStop={this.onStop}
-          onData={this.onData}
+          onStop={onStop}
+          onData={onData}
           strokeColor="#000000"
           backgroundColor="#FF4081" />
-        <button onClick={this.startRecording} type="button">Start</button>
-        <button onClick={this.stopRecording} type="button">Stop</button>
+        <button onClick={startRecording} type="button">Start</button>
+        <button onClick={stopRecording} type="button">Stop</button>
+        <button onClick={playRecording} type="button">Play</button>
+        <button onClick={blobToBase64} type="button">Convert</button>
+        <button onClick={sendGoogle} type="button">Transcribe</button>
       </div>
     );
-  }
 }
 
 export default AudioRecorder;
