@@ -73,9 +73,9 @@ const query = graphql`
   query SEO {
     site {
       siteMetadata {
-        defaultTitle: title
+        defaultTitle: LangApp
         titleTemplate
-        defaultDescription: description
+        defaultDescription: LangApp is a service to enhance your speaking skills by instant conversation setup, auto-generation transcript and visualising your speaking outputs.
         siteUrl: siteUrl
         defaultImage: image
         twitterUsername
