@@ -70,7 +70,7 @@ const AudioRecorder = () => {
                 onData={onData}
                 strokeColor="#000000"
                 backgroundColor="#FF4081" />
-          : null}
+          : <p>window not available</p>}
         <button onClick={startRecording} type="button">Start</button>
         <button onClick={stopRecording} type="button">Stop</button>
         <button onClick={playRecording} type="button">Play</button>
