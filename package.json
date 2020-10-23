@@ -48,6 +48,7 @@
     "react-scroll": "^1.8.1",
     "react-sticky": "^6.0.3",
     "react-voice-recorder": "^2.0.1",
+    "recorder-js": "^1.0.7",
     "styled-components": "^4.4.1",
     "twilio": "^3.50.0",
     "twilio-video": "^2.7.2",

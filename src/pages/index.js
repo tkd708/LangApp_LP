@@ -20,16 +20,6 @@ import { MdDone, MdClear } from "react-icons/md"
 import VideoChat from '../components/VideoChat/VideoChat.js';
 import AudioRecorder from '../components/AudioRecorder/AudioRecorder.js';
 
-// LP example
-// https://www.autopilothq.com/
-// https://www.hubspot.com/crm/e010a
-
-// Starters
-// https://www.gatsbyjs.com/starters/gillkyle/gatsby-starter-landing-page
-// https://www.gatsbyjs.com/starters/codebushi/gatsby-starter-lander
-// https://www.gatsbyjs.com/starters/anubhavsrivastava/gatsby-starter-newage
-// https://www.gatsbyjs.com/starters/anubhavsrivastava/gatsby-starter-eventually
-// https://www.gatsbyjs.com/starters/app-generator/gatsbyjs-starter-tailwindplay
 
 export default () => (
   <>
