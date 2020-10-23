@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 //import {ReactMic} from 'react-mic'; // only local
-const {ReactMic} = typeof window !== `undefined` ? require("react-mic") : null //"window" is not available during server side rendering.
+const {ReactMic} = typeof window !== `undefined` ? require("react-mic") : '' //"window" is not available during server side rendering.
 
 const AudioRecorder = () => {
     const [isRecording, setIsRecording] = useState(false);
