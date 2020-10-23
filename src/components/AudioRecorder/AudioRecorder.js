@@ -7,6 +7,7 @@ const AudioRecorder = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [blobRecorded, setBlobRecorded] = useState(null);
     const [recordString, setRecordString] = useState(null);
+    const [transcript, setTranscript] = useState(null);
 
   const startRecording = () => {
     setIsRecording(true);
@@ -52,9 +53,9 @@ const AudioRecorder = () => {
                      },
                 })
                 .then((res) => {
-                    console.log(res)
-                    console.log(res.data.transcript)
-                    //setTranscript(res.data.transcript);
+                    //console.log(res)
+                    //console.log(res.data.transcript)
+                    setTranscript(res.data.transcript);
                 })
                 .catch((err) => {
                     console.log('transcribe err :', err);
@@ -63,7 +64,7 @@ const AudioRecorder = () => {
 
     return (
       <div>
-            { typeof window !== `undefined` &&
+            { typeof window !== `undefined` &&  // need inline if for the same reason as import
            <ReactMic
                 record={isRecording}
                 className="sound-wave"
@@ -77,7 +78,9 @@ const AudioRecorder = () => {
         <button onClick={playRecording} type="button">Play</button>
         <button onClick={blobToBase64} type="button">Convert</button>
         <button onClick={sendGoogle} type="button">Transcribe</button>
+            <p>{transcript}</p>
       </div>
+
     );
 }    
 
