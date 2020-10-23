@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-if (typeof window !== `undefined`) {
-    import { ReactMic } from 'react-mic';
-}
 import axios from 'axios';
+const ReactMic = typeof window !== `undefined` ? require("react-mic") : null
 
 const AudioRecorder = () => {
         return (
