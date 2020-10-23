@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-const ReactMic = typeof window !== `undefined` ? require("react-mic") : null //"window" is not available during server side rendering.
+//import {ReactMic} from 'react-mic'; // only local
+const {ReactMic} = typeof window !== `undefined` ? require("react-mic") : null //"window" is not available during server side rendering.
 
 const AudioRecorder = () => {
     const [isRecording, setIsRecording] = useState(false);
@@ -62,7 +63,6 @@ const AudioRecorder = () => {
 
     return (
       <div>
-          {(window) && //empty return works but ReactMic cause the same issue as importing
            <ReactMic
                 record={isRecording}
                 className="sound-wave"
@@ -70,7 +70,6 @@ const AudioRecorder = () => {
                 onData={onData}
                 strokeColor="#000000"
                 backgroundColor="#FF4081" />
-            }
         <button onClick={startRecording} type="button">Start</button>
         <button onClick={stopRecording} type="button">Stop</button>
         <button onClick={playRecording} type="button">Play</button>
