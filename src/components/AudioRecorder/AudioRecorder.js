@@ -62,7 +62,7 @@ const AudioRecorder = () => {
 
     return (
       <div>
-          {(typeof window !== `undefined`) && //empty return works but ReactMic cause the same issue as importing
+          {window && //empty return works but ReactMic cause the same issue as importing
            <ReactMic
                 record={isRecording}
                 className="sound-wave"
