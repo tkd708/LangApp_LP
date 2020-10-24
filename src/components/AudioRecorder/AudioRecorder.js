@@ -6,7 +6,7 @@ import Select from '@material-ui/core/Select';
 
 //import {ReactMic} from 'react-mic'; // only local
 const {ReactMic} = typeof window !== `undefined` ? require("react-mic") : '' //"window" is not available during server side rendering.
-import TranscribeLangs from './../../constants/transcribeLangs.json';
+import TranscribeLangs from './transcribeLangs.json';
 
 const AudioRecorder = () => {
     const [isRecording, setIsRecording] = useState(false);
