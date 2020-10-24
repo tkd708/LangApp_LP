@@ -74,7 +74,7 @@ module.exports.handler = async function(event, context) {
             enableAutomaticPunctuation: false,
             encoding: 'LINEAR16',
             sampleRateHertz: 41000,
-            languageCode: 'en_US', // ja-JP, en-US, es-CO, fr-FR
+            languageCode: JSON.parse(event.body).lang, // ja-JP, en-US, es-CO, fr-FR
             model: 'default', // default, phone_call
         }
 

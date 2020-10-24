@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+
 //import {ReactMic} from 'react-mic'; // only local
 const {ReactMic} = typeof window !== `undefined` ? require("react-mic") : '' //"window" is not available during server side rendering.
+import TranscribeLangs from '../../constants/transcribeLangs.json';
 
 const AudioRecorder = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [blobRecorded, setBlobRecorded] = useState(null);
     const [recordString, setRecordString] = useState(null);
     const [transcript, setTranscript] = useState(null);
+    const [transcribeLang, setTranscribeLang] = useState('en-US');
 
   const startRecording = () => {
     setIsRecording(true);
@@ -50,6 +56,7 @@ const AudioRecorder = () => {
                     method: 'POST',
                     data:  {
                         audio: recordString,
+                        lang: transcribeLang,
                      },
                 })
                 .then((res) => {
@@ -62,8 +69,24 @@ const AudioRecorder = () => {
                 });
   }
 
+
     return (
       <div>
+        <InputLabel id="demo-simple-select-label">Language</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          style={{color:'white'}}
+          value={transcribeLang}
+          onChange={(event) => setTranscribeLang(event.target.value)}
+        >
+                        {Object.keys(TranscribeLangs).map((key, index) => (
+                            <MenuItem
+                                value={key}
+                                key={index}
+                            >{TranscribeLangs[key]}</MenuItem>
+                        ))}
+        </Select>
             { typeof window !== `undefined` &&  // need inline if for the same reason as import
            <ReactMic
                 record={isRecording}
