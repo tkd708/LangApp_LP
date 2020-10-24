@@ -4,8 +4,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
-import {ReactMic} from 'react-mic'; // only local
-//const {ReactMic} = typeof window !== `undefined` ? require("react-mic") : '' //"window" is not available during server side rendering.
+//import {ReactMic} from 'react-mic'; // only local
+const {ReactMic} = typeof window !== `undefined` ? require("react-mic") : '' //"window" is not available during server side rendering.
 import TranscribeLangs from './../../constants/transcribeLangs.json';
 
 const AudioRecorder = () => {
