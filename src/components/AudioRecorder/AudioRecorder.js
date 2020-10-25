@@ -71,7 +71,7 @@ const AudioRecorder = () => {
   }
 
   const getTranscript = () => {
-        setTranscript(transcriptChunk);
+        setTranscript(transcriptChunk.join(''));
         setTranscriptChunk([])
   }
 
@@ -107,6 +107,7 @@ const AudioRecorder = () => {
         <button onClick={blobToBase64} type="button">Convert</button>
         <button onClick={sendGoogle} type="button">Transcribe</button>
         <button onClick={getTranscript} type="button">Get Transcript</button>
+        <p>{transcriptChunk}</p>
             <p>{transcript}</p>
       </div>
 
