@@ -18,9 +18,11 @@ const AudioRecorder = () => {
 
   const startRecording = () => {
     setIsRecording(true);
+    console.log('recoding started')
   }
   const stopRecording = () => {
     setIsRecording(false);
+    console.log('recoding ended')
   }
 
   const onData = (recordedBlob) => {
@@ -70,8 +72,6 @@ const AudioRecorder = () => {
   }
 
   const appendTranscript = () => {
-      const appendedTranscript = transcript.push(JSON.stringify(transcriptChunk))
-      console.log(appendedTranscript)
       const appendedTranscript2 = JSON.stringify(transcript) + JSON.stringify(transcriptChunk)
       console.log(appendedTranscript2)
         setTranscript(transcriptChunk);
