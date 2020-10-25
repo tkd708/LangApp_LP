@@ -78,7 +78,7 @@ const AudioRecorder = () => {
         setTranscriptChunk('')
   }
 
-    React.useEffect(() => {
+    useEffect(() => {
         blobToBase64
     }, [blobRecorded])
 
