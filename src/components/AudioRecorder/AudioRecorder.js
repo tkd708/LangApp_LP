@@ -98,7 +98,7 @@ const AudioRecorder = () => {
   const repeatRecoridng = async () => {
     startRecording();
     console.log('repeated recording started')  
-    setTimeout(stopRecording, 10000);
+    setTimeout(stopRecording(), 10000);
     console.log('repeated recording ended') 
   }
 
