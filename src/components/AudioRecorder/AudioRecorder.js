@@ -12,8 +12,8 @@ const AudioRecorder = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [blobRecorded, setBlobRecorded] = useState(null);
     const [recordString, setRecordString] = useState(null);
-    const [transcriptChunk, setTranscriptChunk] = useState(null);
-    const [transcript, setTranscript] = useState(null);
+    const [transcriptChunk, setTranscriptChunk] = useState('');
+    const [transcript, setTranscript] = useState('');
     const [transcribeLang, setTranscribeLang] = useState('en-US');
 
   const startRecording = () => {
@@ -72,10 +72,10 @@ const AudioRecorder = () => {
   }
 
   const appendTranscript = () => {
-      const appendedTranscript = [JSON.stringify(transcript), JSON.stringify(transcriptChunk)]
+      const appendedTranscript = [transcript, transcriptChunk]
       console.log(appendedTranscript)
         setTranscript(appendedTranscript.join(' '));
-        setTranscriptChunk([])
+        setTranscriptChunk(null)
   }
 
   const transcribeLongRecoridng = async () => {
