@@ -72,18 +72,22 @@ const AudioRecorder = () => {
   }
 
   const appendTranscript = () => {
-      const appendedTranscript2 = JSON.stringify(transcript) + JSON.stringify(transcriptChunk)
-      console.log(appendedTranscript2)
-        setTranscript(transcriptChunk);
+      const appendedTranscript = [JSON.stringify(transcript), JSON.stringify(transcriptChunk)]
+      console.log(appendedTranscript)
+        setTranscript(appendedTranscript.join(' '));
         setTranscriptChunk([])
   }
 
   const transcribeLongRecoridng = async () => {
-      startRecording()
+    startRecording()
+    console.log('started rec')  
       await setTimeout(stopRecording, 10000);
-      blobToBase64()
-      sendGoogle()
-      appendTranscript()
+    console.log('ended rec')  
+      await blobToBase64()
+    console.log('converted blob')  
+      await sendGoogle()
+    console.log('sent audio')  
+      await appendTranscript()
   }
 
     return (
