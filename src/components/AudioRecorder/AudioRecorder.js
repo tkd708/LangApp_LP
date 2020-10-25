@@ -62,10 +62,10 @@ const AudioRecorder = () => {
                 .then((res) => {
                     //console.log(res)
                     //console.log(res.data.transcript)
-                    const chunkAdded = transcriptChunk.push(JSON.stringify(res.data.transcript))
-                    console.log(chunkAdded)
-                    setTranscriptChunk(chunkAdded)
-                    //setTranscript(res.data.transcript);
+                    //const chunkAdded = transcriptChunk.push(JSON.stringify(res.data.transcript))
+                    //console.log(chunkAdded)
+                    //setTranscriptChunk(chunkAdded)
+                    setTranscript(res.data.transcript);
                 })
                 .catch((err) => {
                     console.log('transcribe err :', err);
@@ -83,7 +83,7 @@ const AudioRecorder = () => {
       stopRecording()
       blobToBase64()
       sendGoogle()
-      getTranscript()
+      //getTranscript()
   }
 
     return (
