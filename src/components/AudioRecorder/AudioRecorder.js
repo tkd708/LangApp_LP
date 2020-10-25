@@ -79,12 +79,8 @@ const AudioRecorder = () => {
   }
 
     React.useEffect(() => {
-    (async () => {
-        await blobToBase64;
-        await sendGoogle;
-        await appendTranscript
-    })()
-  }, [blobRecorded])
+        blobToBase64
+    }, [blobRecorded])
 
   const transcribeLongRecoridng = async () => {
     startRecording()
