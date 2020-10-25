@@ -70,9 +70,11 @@ const AudioRecorder = () => {
   }
 
   const appendTranscript = () => {
-      const appendedTranscript = transcript.push(transcriptChunk)
+      const appendedTranscript = transcript.push(JSON.stringify(transcriptChunk))
       console.log(appendedTranscript)
-        setTranscript(appendedTranscript);
+      const appendedTranscript2 = JSON.stringify(transcript) + JSON.stringify(transcriptChunk)
+      console.log(appendedTranscript2)
+        setTranscript(transcriptChunk);
         setTranscriptChunk([])
   }
 
