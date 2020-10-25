@@ -69,17 +69,19 @@ const AudioRecorder = () => {
                 });
   }
 
-  const apendTranscript = () => {
-        setTranscript(transcript.push(transcriptChunk));
+  const appendTranscript = () => {
+      const appendedTranscript = transcript.push(transcriptChunk)
+      console.log(appendedTranscript)
+        setTranscript(appendedTranscript);
         setTranscriptChunk([])
   }
 
   const transcribeLongRecoridng = async () => {
       startRecording()
-      await setTimeout(function(){ stopRecording;}, 10000);
+      await setTimeout(function(){ stopRecording;}, 1000);
       blobToBase64()
       sendGoogle()
-      apendTranscript()
+      appendTranscript()
   }
 
     return (
@@ -112,8 +114,11 @@ const AudioRecorder = () => {
         <button onClick={playRecording} type="button">Play</button>
         <button onClick={blobToBase64} type="button">Convert</button>
         <button onClick={sendGoogle} type="button">Transcribe</button>
+        <button onClick={appendTranscript} type="button">Append Transcript</button>
         <button onClick={transcribeLongRecoridng} type="button">Transcribe longer recording</button>
+        <p>TranscriptChunk below</p>
         <p>{transcriptChunk}</p>
+        <p>TranscriptAppended below</p>
             <p>{transcript}</p>
       </div>
 
