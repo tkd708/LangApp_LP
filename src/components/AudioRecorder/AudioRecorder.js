@@ -12,6 +12,7 @@ const AudioRecorder = () => {
     const [isRecording, setIsRecording] = useState(false);
     const [blobRecorded, setBlobRecorded] = useState(null);
     const [recordString, setRecordString] = useState(null);
+    const [transcriptChunk, setTranscriptChunk] = useState([]);
     const [transcript, setTranscript] = useState(null);
     const [transcribeLang, setTranscribeLang] = useState('en-US');
 
@@ -61,11 +62,17 @@ const AudioRecorder = () => {
                 .then((res) => {
                     //console.log(res)
                     //console.log(res.data.transcript)
-                    setTranscript(res.data.transcript);
+                    setTranscriptChunk(transcriptChunk.push(res.data.transcript))
+                    //setTranscript(res.data.transcript);
                 })
                 .catch((err) => {
                     console.log('transcribe err :', err);
                 });
+  }
+
+  const getTranscript = () => {
+        setTranscript(transcriptChunk);
+        setTranscriptChunk([])
   }
 
 
@@ -95,7 +102,6 @@ const AudioRecorder = () => {
                 strokeColor="#000000"
                 backgroundColor="#FF4081" />
                 }
-        <button onClick={isRecording ? stopRecording() : startRecording()} type="button">{isRecording ? 'Stop Recording' : 'Start Recording'}</button>
         <button onClick={playRecording} type="button">Play</button>
         <button onClick={blobToBase64} type="button">Convert</button>
         <button onClick={sendGoogle} type="button">Transcribe</button>
