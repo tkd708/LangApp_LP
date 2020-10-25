@@ -15,6 +15,7 @@ const AudioRecorder = () => {
     const [blobRecorded, setBlobRecorded] = useState(null);
     const [recordString, setRecordString] = useState(null);
     const [transcriptChunk, setTranscriptChunk] = useState('');
+    const [transcriptAppended, setTranscriptAppended] = useState('');
     const [transcript, setTranscript] = useState('');
     const [transcribeLang, setTranscribeLang] = useState('en-US');
 
@@ -74,9 +75,9 @@ const AudioRecorder = () => {
   }
 
   const appendTranscript = () => {
-      const appendedTranscript = [transcript, transcriptChunk]
+      const appendedTranscript = [transcriptAppended, transcriptChunk]
       console.log(appendedTranscript)
-      setTranscript(appendedTranscript.join(' '));
+      setTranscriptAppended(appendedTranscript.join(' '));
       //setTranscriptChunk('')
   }
 
@@ -98,9 +99,9 @@ const AudioRecorder = () => {
 
   const repeatRecoridng = () => {
     startRecording();
-    console.log('repeated recording started')  
+    console.log('repeated recording resumed')  
     setTimeout(() => {stopRecording()}, 5000);
-    //console.log('repeated recording ended') 
+    console.log('repeated recording cut') 
   }
   const startLongRecording = () => {
     setIsLongRecording(true);
@@ -110,6 +111,8 @@ const AudioRecorder = () => {
   const stopLongRecording = () => {
     setIsLongRecording(false);
     stopRecording();
+    setTranscript(transcriptAppended);
+    setTranscriptAppended('');
     console.log('long recoding ended')
   }
 
@@ -141,7 +144,6 @@ const AudioRecorder = () => {
                 strokeColor="white"
                 backgroundColor="transparent" />
                 }
-        <button onClick={isRecording ? stopRecording : startRecording} type="button">{isRecording ? 'Stop Recording' : 'Start Recording'}</button>
         <button onClick={isLongRecording ? stopLongRecording : startLongRecording} type="button">{isLongRecording ? 'End conversation' : 'Start conversation!'}</button>
         <p>Transcript below</p>
             <p>{transcript}</p>
