@@ -78,6 +78,9 @@ const AudioRecorder = () => {
       const appendedTranscript = [transcriptAppended, transcriptChunk]
       console.log(appendedTranscript)
       setTranscriptAppended(appendedTranscript.join(' '));
+
+      // Wait for the last chunk of transcription and then finalise the transcript
+    (!isLongRecording) && (console.log('last chunk of transcript appended'), setTranscript(transcriptAppended), setTranscriptAppended(''))
   }
 
     useEffect(() => {
@@ -102,9 +105,6 @@ const AudioRecorder = () => {
     useEffect(() => {
         console.log('transcript chunk updated');
         appendTranscript();
-
-        // Wait for the last chunk of transcription and then finalise the transcript
-        (!isLongRecording) && (console.log('last chunk of transcript'), setTranscript(transcriptAppended), setTranscriptAppended(''))
     }, [transcriptChunk])
 
   const repeatRecoridng = () => {
