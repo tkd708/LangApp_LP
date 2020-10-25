@@ -102,9 +102,11 @@ const AudioRecorder = () => {
                 strokeColor="#000000"
                 backgroundColor="#FF4081" />
                 }
+        <button onClick={isRecording ? stopRecording : startRecording} type="button">{isRecording ? 'Stop Recording' : 'Start Recording'}</button>
         <button onClick={playRecording} type="button">Play</button>
         <button onClick={blobToBase64} type="button">Convert</button>
         <button onClick={sendGoogle} type="button">Transcribe</button>
+        <button onClick={getTranscript} type="button">Get Transcript</button>
             <p>{transcript}</p>
       </div>
 
