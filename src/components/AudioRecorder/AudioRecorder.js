@@ -80,9 +80,9 @@ const AudioRecorder = () => {
 
     React.useEffect(() => {
     (async () => {
-        blobToBase64;
+        await blobToBase64;
         await sendGoogle;
-        appendTranscript
+        await appendTranscript
     })()
   }, [blobRecorded])
 
