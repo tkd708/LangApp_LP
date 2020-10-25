@@ -79,8 +79,19 @@ const AudioRecorder = () => {
   }
 
     useEffect(() => {
+        console.log('blob updated')
         blobToBase64
     }, [blobRecorded])
+
+    useEffect(() => {
+        console.log('audio string updated')
+        sendGoogle
+    }, [recordString])
+
+        useEffect(() => {
+        console.log('transcript chunk updated')
+        appendTranscript
+    }, [transcriptChunk])
 
   const transcribeLongRecoridng = async () => {
     startRecording()
