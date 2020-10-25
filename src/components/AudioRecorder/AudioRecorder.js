@@ -75,22 +75,22 @@ const AudioRecorder = () => {
       const appendedTranscript = [transcript, transcriptChunk]
       console.log(appendedTranscript)
         setTranscript(appendedTranscript.join(' '));
-        setTranscriptChunk('')
+        //setTranscriptChunk('')
   }
 
     useEffect(() => {
-        console.log('blob updated')
-        blobToBase64
+        console.log('blob updated');
+        blobToBase64();
     }, [blobRecorded])
 
     useEffect(() => {
-        console.log('audio string updated')
-        sendGoogle
+        console.log('audio string updated');
+        sendGoogle();
     }, [recordString])
 
-        useEffect(() => {
-        console.log('transcript chunk updated')
-        appendTranscript
+    useEffect(() => {
+        console.log('transcript chunk updated');
+        appendTranscript();
     }, [transcriptChunk])
 
   const transcribeLongRecoridng = async () => {
