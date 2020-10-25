@@ -13,7 +13,7 @@ const AudioRecorder = () => {
     const [blobRecorded, setBlobRecorded] = useState(null);
     const [recordString, setRecordString] = useState(null);
     const [transcriptChunk, setTranscriptChunk] = useState(null);
-    const [transcript, setTranscript] = useState([]);
+    const [transcript, setTranscript] = useState(null);
     const [transcribeLang, setTranscribeLang] = useState('en-US');
 
   const startRecording = () => {
