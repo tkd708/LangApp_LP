@@ -96,7 +96,7 @@ const AudioRecorder = () => {
     }, [transcriptChunk])
 
   const repeatRecoridng = async () => {
-    startRecording()
+    startRecording();
     console.log('repeated recording started')  
     await setTimeout(stopRecording, 10000);
     console.log('repeated recording ended') 
@@ -104,10 +104,12 @@ const AudioRecorder = () => {
 
   const startLongRecording = () => {
     setIsLongRecording(true);
+    startRecording();
     console.log('long recoding started')
   }
   const stopLongRecording = () => {
     setIsLongRecording(false);
+    stopRecording();
     console.log('long recoding ended')
   }
 
