@@ -112,7 +112,6 @@ const AudioRecorder = () => {
         <button onClick={playRecording} type="button">Play</button>
         <button onClick={blobToBase64} type="button">Convert</button>
         <button onClick={sendGoogle} type="button">Transcribe</button>
-        <button onClick={getTranscript} type="button">Get Transcript</button>
         <button onClick={transcribeLongRecoridng} type="button">Transcribe longer recording</button>
         <p>{transcriptChunk}</p>
             <p>{transcript}</p>
