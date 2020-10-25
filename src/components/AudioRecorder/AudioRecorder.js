@@ -83,20 +83,28 @@ const AudioRecorder = () => {
     useEffect(() => {
         console.log('blob updated');
         (blobRecorded !== null) && blobToBase64();
+        
         // Repeat recording during the long recording
         (isLongRecording) && repeatRecoridng();
+        
+        // Last chunk
+        (!isLongRecording) && (console.log('last chunk of blob'))
     }, [blobRecorded])
 
     useEffect(() => {
         console.log('audio string updated');
         (recordString !== null) && sendGoogle();
+
+        // The last chunk
+        (!isLongRecording) && (console.log('last chunk of audio string'))
     }, [recordString])
 
     useEffect(() => {
         console.log('transcript chunk updated');
         appendTranscript();
-        // Wait for ther last chunk of transcription and then finalise the transcript
-        (!isLongRecording) && (console.log('last chunk'), setTranscript(transcriptAppended), setTranscriptAppended(''))
+
+        // Wait for the last chunk of transcription and then finalise the transcript
+        (!isLongRecording) && (console.log('last chunk of transcript'), setTranscript(transcriptAppended), setTranscriptAppended(''))
     }, [transcriptChunk])
 
   const repeatRecoridng = () => {
