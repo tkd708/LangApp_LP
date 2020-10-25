@@ -78,9 +78,6 @@ const AudioRecorder = () => {
       const appendedTranscript = [transcriptAppended, transcriptChunk]
       console.log(appendedTranscript)
       setTranscriptAppended(appendedTranscript.join(' '));
-
-      // Wait for the last chunk of transcription and then finalise the transcript
-    (!isLongRecording) && (console.log('last chunk of transcript appended'), setTranscript(transcriptAppended), setTranscriptAppended(''))
   }
 
     useEffect(() => {
@@ -98,7 +95,7 @@ const AudioRecorder = () => {
         console.log('audio string updated');
         (recordString !== null) && sendGoogle();
 
-        // The last chunk
+        // Last chunk
         (!isLongRecording) && (console.log('last chunk of audio string'))
     }, [recordString])
 
@@ -106,6 +103,12 @@ const AudioRecorder = () => {
         console.log('transcript chunk updated');
         appendTranscript();
     }, [transcriptChunk])
+
+
+    useEffect(() => {
+        // Active only for the last chunk of transcription and then finalise the transcript
+        (!isLongRecording) && (console.log('last chunk of transcript appended'), setTranscript(transcriptAppended))
+    }, [transcriptAppended])
 
   const repeatRecoridng = () => {
     startRecording();
@@ -115,6 +118,7 @@ const AudioRecorder = () => {
   }
   const startLongRecording = () => {
     setIsLongRecording(true);
+    setTranscriptAppended('')
     repeatRecoridng();
     console.log('long recoding started');
   }
