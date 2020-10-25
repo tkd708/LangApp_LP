@@ -7,6 +7,22 @@ const fsp = fs.promises;
 const speech = require('@google-cloud/speech');    
 
 module.exports.handler = async function(event, context) {
+
+    // avoid CORS errors
+    if (event.httpMethod == "OPTIONS") {
+        print("OPTIONS")
+        return {
+        'statusCode': 200,
+        'headers': {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type",
+        },
+        'body': "Done"
+        }
+    }
+
+    if (event.httpMethod == "POST") {
+
     var t = new Date
     console.log('API started on: ' + t.toLocaleTimeString({ second: '2-digit' }))
 
@@ -109,6 +125,8 @@ module.exports.handler = async function(event, context) {
         request: event.body,
         transcript: transcript
     })
+  }
+
   }
 }
 
