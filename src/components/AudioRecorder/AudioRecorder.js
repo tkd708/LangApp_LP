@@ -62,7 +62,7 @@ const AudioRecorder = () => {
                 .then((res) => {
                     //console.log(res)
                     //console.log(res.data.transcript)
-                    setTranscriptChunk(transcriptChunk.push(res.data.transcript))
+                    setTranscriptChunk(transcriptChunk.push(JSON.stringify(res.data.transcript)))
                     //setTranscript(res.data.transcript);
                 })
                 .catch((err) => {
@@ -75,6 +75,13 @@ const AudioRecorder = () => {
         setTranscriptChunk([])
   }
 
+  const transcribeLongRecoridng = () => {
+      startRecording()
+      stopRecording()
+      blobToBase64()
+      sendGoogle()
+      getTranscript()
+  }
 
     return (
       <div>
