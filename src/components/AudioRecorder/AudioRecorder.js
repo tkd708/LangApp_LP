@@ -98,7 +98,7 @@ const AudioRecorder = () => {
   const repeatRecoridng = async () => {
     startRecording();
     console.log('repeated recording started')  
-    await setTimeout(stopRecording, 10000);
+    setTimeout(stopRecording, 10000);
     console.log('repeated recording ended') 
   }
 
@@ -142,7 +142,7 @@ const AudioRecorder = () => {
                 backgroundColor="transparent" />
                 }
         <button onClick={isRecording ? stopRecording : startRecording} type="button">{isRecording ? 'Stop Recording' : 'Start Recording'}</button>
-        <button onClick={isLongRecording ? stopLongRecording : startLongRecording} type="button">{isLongRecording ? 'Stop long recording' : 'Start long recording'}</button>
+        <button onClick={isLongRecording ? stopLongRecording : startLongRecording} type="button">{isLongRecording ? 'End conversation' : 'Start conversation!'}</button>
         <p>Transcript below</p>
             <p>{transcript}</p>
       </div>
