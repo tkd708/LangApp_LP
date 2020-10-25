@@ -78,7 +78,7 @@ const AudioRecorder = () => {
 
   const transcribeLongRecoridng = async () => {
       startRecording()
-      await setTimeout(function(){ stopRecording;}, 1000);
+      await setTimeout(stopRecording, 10000);
       blobToBase64()
       sendGoogle()
       appendTranscript()
