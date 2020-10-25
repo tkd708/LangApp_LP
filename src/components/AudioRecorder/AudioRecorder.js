@@ -96,7 +96,7 @@ const AudioRecorder = () => {
         console.log('transcript chunk updated');
         appendTranscript();
         // Wait for ther last chunk of transcription and then finalise the transcript
-        (!isLongRecording) && (setTranscript(transcriptAppended), setTranscriptAppended(''))
+        (!isLongRecording) && (console.log('last chunk'), setTranscript(transcriptAppended), setTranscriptAppended(''))
     }, [transcriptChunk])
 
   const repeatRecoridng = () => {
