@@ -75,7 +75,7 @@ const AudioRecorder = () => {
       const appendedTranscript = [transcript, transcriptChunk]
       console.log(appendedTranscript)
         setTranscript(appendedTranscript.join(' '));
-        setTranscriptChunk(null)
+        setTranscriptChunk('')
   }
 
   const transcribeLongRecoridng = async () => {
