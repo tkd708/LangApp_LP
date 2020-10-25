@@ -80,12 +80,12 @@ const AudioRecorder = () => {
 
     useEffect(() => {
         console.log('blob updated');
-        blobToBase64();
+        (blobRecorded !== null) && blobToBase64();
     }, [blobRecorded])
 
     useEffect(() => {
         console.log('audio string updated');
-        sendGoogle();
+        (recordString !== null) && sendGoogle();
     }, [recordString])
 
     useEffect(() => {
