@@ -78,10 +78,17 @@ const AudioRecorder = () => {
         setTranscriptChunk('')
   }
 
+    React.useEffect(async () => {
+        blobToBase64;
+        await sendGoogle;
+        appendTranscript
+    }, [blobRecorded]);
+
+    
   const transcribeLongRecoridng = async () => {
     startRecording()
     console.log('started rec')  
-      await setTimeout(stopRecording, 10000);
+    await setTimeout(stopRecording, 10000);
     console.log('ended rec')  
       await blobToBase64()
     console.log('converted blob')  
@@ -113,8 +120,8 @@ const AudioRecorder = () => {
                 className="sound-wave"
                 onStop={onStop}
                 onData={onData}
-                strokeColor="#000000"
-                backgroundColor="#FF4081" />
+                strokeColor="white"
+                backgroundColor="transparent" />
                 }
         <button onClick={isRecording ? stopRecording : startRecording} type="button">{isRecording ? 'Stop Recording' : 'Start Recording'}</button>
         <button onClick={playRecording} type="button">Play</button>
