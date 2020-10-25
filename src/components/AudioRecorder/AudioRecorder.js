@@ -78,12 +78,12 @@ const AudioRecorder = () => {
       const appendedTranscript = [transcriptAppended, transcriptChunk]
       console.log(appendedTranscript)
       setTranscriptAppended(appendedTranscript.join(' '));
-      //setTranscriptChunk('')
   }
 
     useEffect(() => {
         console.log('blob updated');
         (blobRecorded !== null) && blobToBase64();
+        // Repeat recording during the long recording
         (isLongRecording) && repeatRecoridng();
     }, [blobRecorded])
 
@@ -95,12 +95,14 @@ const AudioRecorder = () => {
     useEffect(() => {
         console.log('transcript chunk updated');
         appendTranscript();
+        // Wait for ther last chunk of transcription and then finalise the transcript
+        (!isLongRecording) && (setTranscript(transcriptAppended), setTranscriptAppended(''))
     }, [transcriptChunk])
 
   const repeatRecoridng = () => {
     startRecording();
     console.log('repeated recording resumed')  
-    setTimeout(() => {stopRecording()}, 15000);
+    setTimeout(() => {stopRecording()}, 5000);
     console.log('repeated recording cut') 
   }
   const startLongRecording = () => {
@@ -111,11 +113,8 @@ const AudioRecorder = () => {
   const stopLongRecording = () => {
     setIsLongRecording(false);
     stopRecording();
-    setTranscript(transcriptAppended);
-    setTranscriptAppended('');
     console.log('long recoding ended')
   }
-
 
 
     return (
