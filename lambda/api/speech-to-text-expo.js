@@ -10,7 +10,7 @@ module.exports.handler = async function(event, context) {
 
     // avoid CORS errors
     if (event.httpMethod == "OPTIONS") {
-        print("OPTIONS")
+        console.log("OPTIONS query received");
         return {
         'statusCode': 200,
         'headers': {
@@ -21,6 +21,7 @@ module.exports.handler = async function(event, context) {
         }
     }
 
+    // for actual POST query
     if (event.httpMethod == "POST") {
 
     var t = new Date

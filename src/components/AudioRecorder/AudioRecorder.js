@@ -107,7 +107,8 @@ const AudioRecorder = () => {
 
     useEffect(() => {
         // Active only for the last chunk of transcription and then finalise the transcript
-        (!isLongRecording) && (console.log('last chunk of transcript appended'), setTranscript(transcriptAppended))
+        (!isLongRecording) && setTranscript(transcriptAppended)
+        //console.log('last chunk of transcript appended');
     }, [transcriptAppended])
 
   const repeatRecoridng = () => {
@@ -154,7 +155,7 @@ const AudioRecorder = () => {
                 onData={onData}
                 strokeColor="white"
                 backgroundColor="transparent" />
-                }
+            }
         <button onClick={isLongRecording ? stopLongRecording : startLongRecording} type="button">{isLongRecording ? 'End conversation' : 'Start conversation!'}</button>
         <p>Transcript below</p>
             <p>{transcript}</p>
