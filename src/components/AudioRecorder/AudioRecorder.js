@@ -6,6 +6,7 @@ import Select from '@material-ui/core/Select';
 
 //import {ReactMic} from 'react-mic'; // only local
 const {ReactMic} = typeof window !== `undefined` ? require("react-mic") : '' //"window" is not available during server side rendering.
+
 import TranscribeLangs from './transcribeLangs.json';
 
 const AudioRecorder = () => {
@@ -33,7 +34,6 @@ const AudioRecorder = () => {
   const onStop = (recordedBlob) => {
     console.log('recordedBlob is: ', recordedBlob);
     setBlobRecorded(recordedBlob);
-    (isLongRecording === true) && repeatRecoridng();
   }
   
   const playRecording = () => {
@@ -46,7 +46,7 @@ const AudioRecorder = () => {
       reader.readAsDataURL(blobRecorded.blob); 
       reader.onloadend = function () { 
           const recordString = reader.result.toString().replace('data:audio/webm;codecs=opus;base64,','');
-          console.log('sent audio: '+ recordString.slice(-300))  
+          console.log('sent audio: '+ recordString.slice(-100))  
           setRecordString(recordString)
         }
     } 
@@ -83,6 +83,7 @@ const AudioRecorder = () => {
     useEffect(() => {
         console.log('blob updated');
         (blobRecorded !== null) && blobToBase64();
+        (isLongRecording) && repeatRecoridng();
     }, [blobRecorded])
 
     useEffect(() => {
@@ -95,17 +96,16 @@ const AudioRecorder = () => {
         appendTranscript();
     }, [transcriptChunk])
 
-  const repeatRecoridng = async () => {
+  const repeatRecoridng = () => {
     startRecording();
     console.log('repeated recording started')  
-    setTimeout(stopRecording(), 10000);
-    console.log('repeated recording ended') 
+    setTimeout(() => {stopRecording()}, 5000);
+    //console.log('repeated recording ended') 
   }
-
   const startLongRecording = () => {
     setIsLongRecording(true);
-    startRecording();
-    console.log('long recoding started')
+    repeatRecoridng();
+    console.log('long recoding started');
   }
   const stopLongRecording = () => {
     setIsLongRecording(false);
