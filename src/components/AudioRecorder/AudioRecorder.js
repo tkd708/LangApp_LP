@@ -62,7 +62,8 @@ const AudioRecorder = () => {
                 .then((res) => {
                     //console.log(res)
                     //console.log(res.data.transcript)
-                    setTranscript(res.data.transcript);
+                    //setTranscript(res.data.transcript);
+                    return(res.data.transcript)
                 })
                 .catch((err) => {
                     console.log('transcribe err :', err);
@@ -96,11 +97,10 @@ const AudioRecorder = () => {
                 strokeColor="#000000"
                 backgroundColor="#FF4081" />
                 }
-        <button onClick={startRecording} type="button">Start</button>
-        <button onClick={stopRecording} type="button">Stop</button>
+        <button onClick={isRecording ? stopRecording() : startRecording()} type="button">{isRecording ? 'Stop Recording' : 'Start Recording'}</button>
         <button onClick={playRecording} type="button">Play</button>
         <button onClick={blobToBase64} type="button">Convert</button>
-        <button onClick={sendGoogle} type="button">Transcribe</button>
+        <button onClick={setTranscript(sendGoogle())} type="button">Transcribe</button>
             <p>{transcript}</p>
       </div>
 
