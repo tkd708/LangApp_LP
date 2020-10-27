@@ -7,6 +7,7 @@ import Perk from "../components/Perk/perk"
 import Button from "../components/Button/button"
 import Packages from "../components/Packages/packages"
 import Package from "../components/Package/package"
+import Demo from '../components/Demo/Demo';
 import Contact from "../components/Contact/contact"
 import { Link } from "react-scroll"
 
@@ -16,10 +17,6 @@ import perk3Img from "../images/word-cloud.png"
 
 import { IconContext } from "react-icons"
 import { MdDone, MdClear } from "react-icons/md"
-
-import VideoChat from '../components/VideoChat/VideoChat.js';
-import AudioRecorder from '../components/AudioRecorder/AudioRecorder.js';
-
 
 export default () => (
   <>
@@ -51,6 +48,9 @@ export default () => (
             content="Your own words and expressions are stored in the app and analysed to visualise your output vocabrary, suggesting ways to improve"
           />
         </div>
+        <Link to="demo" smooth={true} duration={500}>
+                  <Button label="Try a demo" cta="Try a demo!" />
+        </Link>
       </TextBlockImg>
       {/* 
       <Packages
@@ -136,11 +136,15 @@ export default () => (
         </IconContext.Provider>
       </Packages>
       */}
+
+      <Demo
+        id="demo"
+      />
+
       <Contact
         id="contact"
       />
-        <VideoChat />
-        <AudioRecorder />
+
     </Layout>
   </>
 )

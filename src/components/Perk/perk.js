@@ -43,6 +43,7 @@ const PerkWrapper = styled.article`
   img {
     box-sizing: border-box;
     width: 100%;
+    height: 100%;
 
     @media (min-width: 992px) {
       padding: 0 1.75rem;

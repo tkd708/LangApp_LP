@@ -122,6 +122,10 @@ module.exports.handler = async function(event, context) {
 
   return {
     statusCode: 200, // http status code
+    headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type",
+    },
     body: JSON.stringify({
         request: event.body,
         transcript: transcript

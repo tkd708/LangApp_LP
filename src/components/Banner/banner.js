@@ -49,6 +49,8 @@ const Banner = () => {
           >
             A solution to boost your conversation skills
           </motion.p>
+          
+          <p>Demo movie is to be updated!</p>
           <iframe
             className="youtube"
             id="ytplayer"

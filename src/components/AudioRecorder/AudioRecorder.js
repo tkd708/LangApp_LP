@@ -3,6 +3,7 @@ import axios from 'axios';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import Button from '@material-ui/core/Button';
 
 //import {ReactMic} from 'react-mic'; // only local
 const {ReactMic} = typeof window !== `undefined` ? require("react-mic") : '' //"window" is not available during server side rendering.
@@ -131,10 +132,10 @@ const AudioRecorder = () => {
 
 
     return (
-      <div>
-        <InputLabel id="demo-simple-select-label">Language</InputLabel>
+      <div 
+      style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
+      >
         <Select
-          labelId="demo-simple-select-label"
           id="demo-simple-select"
           style={{color:'white'}}
           value={transcribeLang}
@@ -147,6 +148,8 @@ const AudioRecorder = () => {
                             >{TranscribeLangs[key]}</MenuItem>
                         ))}
         </Select>
+
+        <div style={{display: 'none' }}>
             { typeof window !== `undefined` &&  // need inline if for the same reason as import
            <ReactMic
                 record={isRecording}
@@ -156,9 +159,20 @@ const AudioRecorder = () => {
                 strokeColor="white"
                 backgroundColor="transparent" />
             }
-        <button onClick={isLongRecording ? stopLongRecording : startLongRecording} type="button">{isLongRecording ? 'End conversation' : 'Start conversation!'}</button>
-        <p>Transcript below</p>
+        </div>
+
+            <Button
+              style={{marginTop: '10px'}}
+              variant="contained"
+              color="primary"
+              onClick={() => {isLongRecording ? stopLongRecording() : startLongRecording()}}
+              >
+              {isLongRecording ? 'End transcribing' : 'Start transcribing!'}
+            </Button>
+
+        <p> Transcript will be shown below after conversation... </p>
             <p>{transcript}</p>
+
       </div>
 
     );
