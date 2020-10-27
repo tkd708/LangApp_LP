@@ -10,17 +10,7 @@ const VideoChat = () => {
   const [roomName, setRoomName] = useState('test_room');
   const [token, setToken] = useState(null);
 
-  const handleUsernameChange = useCallback(event => {
-    setUsername(event.target.value);
-  }, []);
-
-  const handleRoomNameChange = useCallback(event => {
-    setRoomName(event.target.value);
-  }, []);
-
-  const handleSubmit_lambda = useCallback(
-    async event => {
-      event.preventDefault();
+  const getToken = () => {
       const url = 'https://langapp.netlify.app/.netlify/functions/twilio';
       axios
             .request({
@@ -39,23 +29,17 @@ const VideoChat = () => {
             .catch((err) => {
                 console.log('token err :', err);
             });
-        },
-    [roomName, username]
-  );
+    }
 
   const handleLogout = useCallback(event => {
     setToken(null);
   }, []);
 
 
-  let render;
-  if (token) {
-    render = (
-      <Room roomName={roomName} token={token} handleLogout={handleLogout} />
-    );
-  } else {
-    render = (
-        <div
+  return(
+      (token)
+      ? <Room roomName={roomName} token={token} handleLogout={handleLogout} />
+      : <div
         style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
         >
             <TextField
@@ -74,24 +58,17 @@ const VideoChat = () => {
                 onChange={(e) => { setUsername(e.target.value) }}
             >
             </TextField>
-              <Button
+
+            <Button
               variant="contained"
               color="primary"
-              onClick={() => { handleSubmit_lambda() }}
+              onClick={() => {getToken()}}
               >
-          Enter video chat toom
-          </Button>
+              Enter video chat toom
+            </Button>
         </div>
-      //<Lobby
-      //  username={username}
-      //  roomName={roomName}
-      //  handleUsernameChange={handleUsernameChange}
-      //  handleRoomNameChange={handleRoomNameChange}
-      //  handleSubmit={handleSubmit_lambda}
-      //>
-    )
-  }
-  return render;
+  )
+        
 };
 
 export default VideoChat;
