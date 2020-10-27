@@ -4,6 +4,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
 
 //import {ReactMic} from 'react-mic'; // only local
 const {ReactMic} = typeof window !== `undefined` ? require("react-mic") : '' //"window" is not available during server side rendering.
@@ -171,8 +174,16 @@ const AudioRecorder = () => {
             </Button>
 
         <p> Transcript will be shown below after conversation... </p>
-            <p>{transcript}</p>
-
+            <Card style={{width: '100%' }} >
+                <CardContent>
+                <Typography color="textSecondary" gutterBottom>
+                Transcript
+                </Typography>
+                <Typography>
+                    {transcript}
+                </Typography>
+                </CardContent>
+            </Card>
       </div>
 
     );
