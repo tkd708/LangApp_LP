@@ -39,7 +39,7 @@ const Banner = () => {
             variants={variants}
             transition={{ ease: "easeOut", duration: 0.8, delay: 1 }}
           >
-            <span></span>
+            <span>LangApp</span>
           </motion.h1>
           <motion.p
             initial="hidden"

@@ -12,7 +12,7 @@ const Demo = () => {
         className="content-container"
         style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
         >
-        <h2>TRY A DEMO</h2>
+        <h2>DEMO</h2>
 
         <p style={{marginTop: '50px'}}> STEP 1 Enjoy talking with your language buddy! </p>
         <VideoChat />
