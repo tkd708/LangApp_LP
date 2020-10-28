@@ -20,9 +20,6 @@ const Demo = () => {
         <p style={{marginTop: '50px'}}> STEP 2 Transcribe the target language (select below) </p>
         <AudioRecorder />
 
-        <p style={{marginTop: '30px'}}> 
-        STEP 3 Your vocab and expressions will be analised to visualise your speaking skills!
-         </p>
 
         <p style={{marginTop: '30px'}}> 
         ...this feature is currently under development, please let us hear your voice!
