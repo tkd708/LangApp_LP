@@ -8,8 +8,8 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
-import {ReactMic} from 'react-mic'; // only local
-//const {ReactMic} = typeof window !== `undefined` ? require("react-mic") : '' //"window" is not available during server side rendering.
+//import {ReactMic} from 'react-mic'; // only local
+const {ReactMic} = typeof window !== `undefined` ? require("react-mic") : '' //"window" is not available during server side rendering.
 
 import TranscribeLangs from './transcribeLangs.json';
 
