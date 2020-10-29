@@ -50,7 +50,6 @@ const Banner = () => {
             A solution to boost your conversation skills
           </motion.p>
           
-          <p>Demo movie is to be updated!</p>
           <iframe
             className="youtube"
             id="ytplayer"
@@ -83,12 +82,18 @@ const BannerWrapper = styled.section`
 
     .logo {
     }
+
     .grayscale {
     }
 
     .youtube {
         align-self: center;
         margin-bottom: 50px;
+
+        @media (max-width: 768px) {
+          width: 100%;
+        }
+
     }
 
     .hero-content {
@@ -108,8 +113,17 @@ const BannerWrapper = styled.section`
       }
 
       h1 {
-        font-size: 1.75rem;
+        font-size: 2.5rem;
         line-height: 1.2;
+
+        @media (min-width: 768px) {
+          font-size: 3.5rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 4.5rem;
+        }
+
 
         span {
           background: -webkit-linear-gradient(45deg, #f441a5, #03a9f4);
@@ -122,14 +136,14 @@ const BannerWrapper = styled.section`
         margin-top: 0;
         margin-bottom: 2rem;
         line-height: 1.2;
-        font-size: 1.15rem;
+        font-size: 1.3rem;
 
         @media (min-width: 768px) {
-          font-size: 1.35rem;
+          font-size: 1.5rem;
         }
 
         @media (min-width: 1200px) {
-          font-size: 1.5rem;
+          font-size: 2rem;
         }
       }
 

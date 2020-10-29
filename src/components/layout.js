@@ -79,7 +79,7 @@ const LayoutWrapper = styled.div`
     max-width: 500px;
 
     @media (min-width: 1080px) {
-      max-width: 650px;
+      max-width: 850px;
     }
   }
 

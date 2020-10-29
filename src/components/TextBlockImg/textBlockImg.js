@@ -3,7 +3,7 @@ import { useStaticQuery, graphql } from "gatsby"
 import BackgroundImage from "gatsby-background-image"
 import styled from "styled-components"
 
-const TextBlockImg = ({ title, children, subtitle, id }) => {
+const TextBlockImg = ({ title_en, title_jp, children, subtitle, id }) => {
   const data = useStaticQuery(graphql`
     query {
       file(relativePath: { eq: "blackboard.jpg" }) {
@@ -24,7 +24,8 @@ const TextBlockImg = ({ title, children, subtitle, id }) => {
     >
       <TextBlockImgWrapper>
         <div className="content-container">
-          <h2>{title}</h2>
+          <h2>{title_en}</h2>
+          <h2>{title_jp}</h2>
           <p>{subtitle}</p>
           {children}
         </div>
@@ -57,10 +58,31 @@ const TextBlockImgWrapper = styled.section`
     background: -webkit-linear-gradient(45deg, #f441a5, #03a9f4);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+
+    font-size: 2.5rem;
+
+        @media (min-width: 768px) {
+          font-size: 3.5rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 4.5rem;
+        }
   }
 
   p {
     margin-bottom: 50px;
+
+             font-size: 1.2rem;
+
+        @media (min-width: 768px) {
+          font-size: 1.3rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 1.6rem;
+        }
+
   }
 `
 

@@ -3,12 +3,17 @@ import styled from "styled-components"
 import { useInView } from "react-intersection-observer"
 import { motion, useAnimation } from "framer-motion"
 
-const TextBlock = ({ title, paragraph, children, id }) => {
+const TextBlock = ({ title_en, title_jp, paragraph, children, id }) => {
   const controls = useAnimation()
   const [ref, inView] = useInView({
     // Percentage of item in view to trigger animation
     threshold: 0.25,
   })
+
+   const browserLang = (window.navigator.languages && window.navigator.languages[0]) ||
+            window.navigator.language ||
+            window.navigator.userLanguage ||
+            window.navigator.browserLanguage;
 
   useEffect(() => {
     if (inView) {
@@ -28,14 +33,22 @@ const TextBlock = ({ title, paragraph, children, id }) => {
           }}
           transition={{ ease: "easeOut", duration: 1.25, delay: 0.35 }}
         >
-          <h2>{title}</h2>
-          <p>Attend conversation classes but hard to tell your own progress?</p>
-          <p>Know the expressions but can't use them in conversation?</p>
-          <p>Always end up with using the same expressions?</p>
-          <h3>
-            LangApp is here to help you boost your conversation skills by
-            expanding your speaking vocabrary!
-          </h3>
+          <h2>{browserLang=='ja' 
+          ? '会話から、学びつくす' 
+          : 'Unlock the full potential of conversation'}</h2>
+
+          <p>{browserLang=='ja' 
+          ? '1回の会話クラスから、いくつ学びを得ているでしょうか？どれほど次に生かせていますか？'
+          : 'When you attend conversation classes, how much feedback do you get? Do you actually make most of them for the next?'}</p>
+          <p></p>
+
+          <p>{browserLang=='ja' 
+          ? "たった5分間の会話で約500語の言葉が交わされ、A4紙を埋め尽くします。想像以上の学びのポテンシャルがあるのでは？"
+          : "Just 5 minites of conversation has more than 500 words, which is a full A4 paper...don't you think you could learn a lot more?"}</p>
+
+          <h3>{browserLang=='ja' 
+          ? 'LangAppは一回一回の会話からの学びを最大化し、あなたのスピーキングスキルを飛躍的に向上します！' 
+          : 'LangApp is here to maximise your learning from each conversation to boost your speaking skills!'}</h3>
 
           <p>{paragraph}</p>
           {children}
@@ -61,13 +74,36 @@ const TextBlockWrapper = styled.section`
     background: -webkit-linear-gradient(45deg, #f441a5, #03a9f4);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+
+        font-size: 2.5rem;
+
+        @media (min-width: 768px) {
+          font-size: 3.5rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 4.5rem;
+        }
+
   }
 
   p {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
+    font-size: 24px;
     text-shadow: 0px 0px 5px rgba(8, 0, 8, 1);
     opacity: 0.85;
-  }
+
+          font-size: 1.2rem;
+
+        @media (min-width: 768px) {
+          font-size: 1.3rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 1.6rem;
+        }
+ }
+
 `
 
 export default TextBlock

@@ -22,29 +22,32 @@ export default () => (
   <>
     <Layout>
       <Banner />
-      <TextBlock id="about" title="Learn from your own words" paragraph="">
+      <TextBlock id="about" title_en="Make most of your conversation" paragraph="">
         <Link to="features" smooth={true} duration={500}>
           <Button label="Tell Me More" cta="How it works?" />
         </Link>
       </TextBlock>
-      <TextBlockImg id="features" title="Features of LangApp " subtitle="">
+      <TextBlockImg id="features" title_en="Features"subtitle="">
         <div className="flex-container trio-block">
           <Perk
             img={perk1Img}
             alt="Instant conversation"
-            title="Instant conversation"
+            title_en="Anywhere, anytime, with native speakers all over the world"
+            title_jp="世界中のネイティブと、いつでも、どこでも"
             content="You will be instantly connected to short and yet informative conversation with native speakers"
           />
           <Perk
             img={perk2Img}
             alt="Auto-transcription"
-            title="Auto-transcription"
+            title_en="Record all the conversations and feedback as your assets"
+            title_jp="すべての会話とフィードバックを記録し、あなたの資産に"
             content="Auto-generate transcription can support to review the conversation and corrections from the buddy"
           />
           <Perk
             img={perk3Img}
             alt="Expression dashbord"
-            title="Expression dashboard"
+            title_en="Overview your vocab, expressions to use, improvement... all at once!"
+            title_jp="あなたの語彙、使いたい表現、前回からの改善、すべてが一目瞭然"
             content="Your own words and expressions are stored in the app and analysed to visualise your output vocabrary, suggesting ways to improve"
           />
         </div>

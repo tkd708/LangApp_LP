@@ -6,6 +6,11 @@ import AudioRecorder from '../AudioRecorder/AudioRecorder.js';
 //import TextMining from '../components/TextMining/kuromoji.js';
 
 const Demo = () => {
+     const browserLang = (window.navigator.languages && window.navigator.languages[0]) ||
+            window.navigator.language ||
+            window.navigator.userLanguage ||
+            window.navigator.browserLanguage;
+
   return (
       <DemoWrapper>
         <div id="demo"
@@ -14,10 +19,16 @@ const Demo = () => {
         >
         <h2>DEMO</h2>
 
-        <p style={{marginTop: '50px'}}> STEP 1 Enjoy talking with your language buddy! </p>
+        <p style={{marginTop: '50px'}}> {browserLang=='ja'? 
+        "STEP 1 友人や先生とビデオチャットで会話してみましょう！"
+        : "STEP 1 Enjoy talking with your language buddy on the video chat!"}
+        </p>
         <VideoChat />
 
-        <p style={{marginTop: '50px'}}> STEP 2 Transcribe the target language (select below) </p>
+        <p style={{marginTop: '50px'}}> {browserLang=='ja'
+        ? "STEP 2 言語を選んで、会話内容を記録しましょう" 
+        : "STEP 2 Transcribe the conversation with the target language (select below)"}
+        </p>
         <AudioRecorder />
 
 
@@ -50,10 +61,32 @@ const DemoWrapper = styled.section`
     background: -webkit-linear-gradient(45deg, #f441a5, #03a9f4);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+
+        font-size: 2.5rem;
+
+        @media (min-width: 768px) {
+          font-size: 3.5rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 4.5rem;
+        }
+
   }
 
   p {
     margin-bottom: 50px;
+
+             font-size: 1.2rem;
+
+        @media (min-width: 768px) {
+          font-size: 1.3rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 1.6rem;
+        }
+
   }
 `
 

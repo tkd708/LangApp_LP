@@ -64,7 +64,7 @@ const VideoChat = () => {
               color="primary"
               onClick={() => {getToken()}}
               >
-              Enter video chat toom
+              Enter video chat room
             </Button>
         </div>
   )

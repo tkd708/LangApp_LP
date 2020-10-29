@@ -99,6 +99,17 @@ const ContactWrapper = styled.section`
       @media (min-width: 768px) {
         text-align: center;
       }
+
+          font-size: 2.5rem;
+
+        @media (min-width: 768px) {
+          font-size: 3.5rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 4.5rem;
+        }
+
     }
     p {
       margin-bottom: 2rem;
@@ -106,6 +117,17 @@ const ContactWrapper = styled.section`
       @media (min-width: 768px) {
         text-align: center;
       }
+
+         font-size: 1.2rem;
+
+        @media (min-width: 768px) {
+          font-size: 1.3rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 1.6rem;
+        }
+ 
     }
 
     form {

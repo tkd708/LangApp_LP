@@ -3,12 +3,17 @@ import styled from "styled-components"
 import { useInView } from "react-intersection-observer"
 import { motion, useAnimation } from "framer-motion"
 
-const Perk = ({ img, alt, title, content }) => {
+const Perk = ({ img, alt, title_en, title_jp, content }) => {
   const controls = useAnimation()
   const [ref, inView] = useInView({
     // Percentage of item in view to trigger animation
     threshold: 0.25,
   })
+
+     const browserLang = (window.navigator.languages && window.navigator.languages[0]) ||
+            window.navigator.language ||
+            window.navigator.userLanguage ||
+            window.navigator.browserLanguage;
 
   useEffect(() => {
     if (inView) {
@@ -28,8 +33,7 @@ const Perk = ({ img, alt, title, content }) => {
     >
       <PerkWrapper className="perk">
         <img src={img} alt={alt} />
-        <h3>{title}</h3>
-        <p>{content}</p>
+        <h3>{browserLang=='ja' ? title_jp : title_en}</h3>
       </PerkWrapper>
     </motion.div>
   )
