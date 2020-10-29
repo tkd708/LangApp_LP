@@ -6,10 +6,12 @@ import AudioRecorder from '../AudioRecorder/AudioRecorder.js';
 //import TextMining from '../components/TextMining/kuromoji.js';
 
 const Demo = () => {
-     const browserLang = (window.navigator.languages && window.navigator.languages[0]) ||
+        const browserLang =  (typeof window !== `undefined`)
+   ? (window.navigator.languages && window.navigator.languages[0]) ||
             window.navigator.language ||
             window.navigator.userLanguage ||
-            window.navigator.browserLanguage;
+            window.navigator.browserLanguage
+    : '';
 
   return (
       <DemoWrapper>
@@ -32,8 +34,9 @@ const Demo = () => {
         <AudioRecorder />
 
 
-        <p style={{marginTop: '30px'}}> 
-        ...this feature is currently under development, please let us hear your voice!
+        <p style={{marginTop: '50px'}}> {browserLang=='ja'
+        ? "STEP 3 （開発中）フィードバックのまとめや前回からの改善点などが以下に示されます！" 
+        : "STEP 3 (Under development) Summary of feedback and your improvement will be shown below!"}
         </p>
 
          </div>

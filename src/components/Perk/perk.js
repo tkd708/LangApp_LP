@@ -10,11 +10,13 @@ const Perk = ({ img, alt, title_en, title_jp, content }) => {
     threshold: 0.25,
   })
 
-     const browserLang = (window.navigator.languages && window.navigator.languages[0]) ||
+  const browserLang =  (typeof window !== `undefined`)
+   ? (window.navigator.languages && window.navigator.languages[0]) ||
             window.navigator.language ||
             window.navigator.userLanguage ||
-            window.navigator.browserLanguage;
-
+            window.navigator.browserLanguage
+    : '';
+    
   useEffect(() => {
     if (inView) {
       controls.start("visible")

@@ -117,10 +117,7 @@ const AudioRecorder = () => {
     useEffect(() => {
         // Active only for the last chunk of transcription and then finalise the transcript
         (!isLongRecording) && setTranscript(transcriptAppended);
-        // tentative vocab analysis results
-        (!isLongRecording && transcript!=='') && setVocab1('Your vocab is "ADVANCED" level!');
-        (!isLongRecording && transcript!=='') && setVocab2('You used "3 expressions" you wanted to use in conversation!');
-        (!isLongRecording && transcript!=='') && setVocab3('You used "10 new words" compared to your previous records! ');
+
         //console.log('last chunk of transcript appended');
     }, [transcriptAppended])
 
@@ -193,13 +190,6 @@ const AudioRecorder = () => {
                 </Typography>
                 </CardContent>
             </Card>
-
-        <p style={{marginTop: '50px'}}> 
-        STEP 3 Your vocab and expressions will be analised to visualise your speaking skills!
-         </p>
-        <h2>{vocab1}</h2>
-        <h2>{vocab2}</h2>
-        <h2>{vocab3}</h2>
 
       </div>
 

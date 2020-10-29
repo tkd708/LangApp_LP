@@ -3,12 +3,26 @@ import styled from "styled-components"
 import Button from "../Button/button"
 
 const Contact = ({ id }) => {
+       const browserLang =  (typeof window !== `undefined`)
+   ? (window.navigator.languages && window.navigator.languages[0]) ||
+            window.navigator.language ||
+            window.navigator.userLanguage ||
+            window.navigator.browserLanguage
+    : '';
+
   return (
     <ContactWrapper id="contact">
       <div className="content-container">
         <h2>CONTACT US</h2>
-        <p>{`LangApp is currently under development and needs your voice...`}</p>
-        <p>{`We'd love to in touch with you!`}</p>
+        <p> {browserLang=='ja'
+        ? "LangAppは現在開発中です" 
+        : "LangApp is currently under development and needs your voice..."}
+        </p>
+        <p> {browserLang=='ja'
+        ? "ぜひご意見をお聞かせください！" 
+        : "We'd love to in touch with you!"}
+        </p>
+
         <form
           name="contact"
           method="POST"

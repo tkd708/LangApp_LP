@@ -10,10 +10,12 @@ const TextBlock = ({ title_en, title_jp, paragraph, children, id }) => {
     threshold: 0.25,
   })
 
-   const browserLang = (window.navigator.languages && window.navigator.languages[0]) ||
+   const browserLang =  (typeof window !== `undefined`)
+   ? (window.navigator.languages && window.navigator.languages[0]) ||
             window.navigator.language ||
             window.navigator.userLanguage ||
-            window.navigator.browserLanguage;
+            window.navigator.browserLanguage
+    : '';
 
   useEffect(() => {
     if (inView) {
