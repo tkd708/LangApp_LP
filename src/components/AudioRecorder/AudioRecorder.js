@@ -18,8 +18,8 @@ const AudioRecorder = () => {
     const [isLongRecording, setIsLongRecording] = useState(false);
     const [blobRecorded, setBlobRecorded] = useState(null);
     const [recordString, setRecordString] = useState(null);
-    const [transcriptChunk, setTranscriptChunk] = useState('');
-    const [transcriptAppended, setTranscriptAppended] = useState('');
+    const [transcriptChunk, setTranscriptChunk] = useState(null);
+    const [transcriptAppended, setTranscriptAppended] = useState(null);
     const [transcript, setTranscript] = useState('');
     const [transcribeLang, setTranscribeLang] = useState('en-US');
 
@@ -115,7 +115,7 @@ const AudioRecorder = () => {
 
     useEffect(() => {
         console.log('transcript chunk updated');
-        appendTranscript();
+        (transcriptChunk!==null) && appendTranscript();
     }, [transcriptChunk])
 
 
@@ -162,7 +162,7 @@ const AudioRecorder = () => {
   }
 
     useEffect(() => {
-        (transcript !== '') && vocabAnalysis();
+        (transcript !== null) && vocabAnalysis();
     }, [transcript])
 
 
@@ -205,11 +205,11 @@ const AudioRecorder = () => {
               {isLongRecording ? 'End' : 'Start!'}
             </Button>
 
-             { transcript !== `` &&
-            <Card style={{width: '100%', marginTop: '20px'}} >
+             { (transcript!==null) &&
+            <Card style={ {width: '100%', marginTop: '20px'}} >
                 <CardContent>
                 <Typography color="textSecondary" gutterBottom>今回の会話の分析結果はこちら！</Typography>
-                <Typography>{transcript}</Typography>
+                <Typography>{'Transcript: ' + transcript}</Typography>
                 <Typography>{`今回の会話での単語数: ${vocab1} ...前回から +10!`}</Typography>
                 <Typography>{`今回の会話での流暢さ: ${vocab2} ...前回から +5!`}</Typography>
                 <Typography>{`累計の語彙数: ${vocab3} ...前回から +3!`}</Typography>
