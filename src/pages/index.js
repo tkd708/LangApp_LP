@@ -11,7 +11,7 @@ import Demo from '../components/Demo/Demo';
 import Contact from "../components/Contact/contact"
 import { Link } from "react-scroll"
 
-import perk1Img from "../images/video-chat.jpg"
+import perk1Img from "../images/chat-laptop.jpg"
 import perk2Img from "../images/records.jpg"
 import perk3Img from "../images/dashboard.jpg"
 

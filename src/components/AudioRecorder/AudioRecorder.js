@@ -162,7 +162,7 @@ const AudioRecorder = () => {
   }
 
     useEffect(() => {
-        vocabAnalysis()
+        (transcript !== '') && vocabAnalysis();
     }, [transcript])
 
 
