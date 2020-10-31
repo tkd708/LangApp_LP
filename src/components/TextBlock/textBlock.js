@@ -45,7 +45,7 @@ const TextBlock = ({ title_en, title_jp, paragraph, children, id }) => {
           <p></p>
 
           <p>{browserLang=='ja' 
-          ? "たった5分間の会話で約500語の言葉が交わされ、A4紙を埋め尽くします。一回一回の会話から、学びつくせていますか？"
+          ? "たった5分間の会話で約500語の言葉が交わされ、A4紙を埋め尽くします。それらを学びつくせていますか？"
           : "Just 5 minites of conversation has more than 500 words, which is a full A4 paper...don't you think you could learn a lot more?"}</p>
 
           <h3>{browserLang=='ja' 
