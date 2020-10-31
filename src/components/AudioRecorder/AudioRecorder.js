@@ -23,9 +23,14 @@ const AudioRecorder = () => {
     const [transcript, setTranscript] = useState('');
     const [transcribeLang, setTranscribeLang] = useState('en-US');
 
+    const [startTime, setStartTime] = useState(''); // milliseconds
+    const [endTime, setEndTime] = useState(''); // milliseconds
+
     const [vocab1, setVocab1] = useState('');
     const [vocab2, setVocab2] = useState('');
     const [vocab3, setVocab3] = useState('');
+    const [vocab4, setVocab4] = useState(["especially", "durable", "collaborate"]);
+    const [vocab5, setVocab5] = useState(["affordable", "exclusively", "estimate", "retrieve", "variation"]);
 
 
   const startRecording = () => {
@@ -128,22 +133,44 @@ const AudioRecorder = () => {
     console.log('repeated recording cut') 
   }
   const startLongRecording = () => {
+    const start = new Date();
+    setStartTime(start.getTime());
+
     setIsLongRecording(true);
     setTranscriptAppended('')
     repeatRecoridng();
     console.log('long recoding started');
   }
+
+
   const stopLongRecording = () => {
+    const end = new Date();
+    setEndTime(end.getTime());
+
     setIsLongRecording(false);
     stopRecording();
     console.log('long recoding ended')
   }
+
+  const vocabAnalysis = () => {
+    const transcriptArray = transcript.split(" ");
+    setVocab1(transcriptArray.length);
+    const conversationLength = (endTime - startTime)/1000/60;
+    setVocab2((transcriptArray.length/conversationLength).toFixed(1));
+    const uniq = [...new Set(transcriptArray)];
+    setVocab3(uniq.length*100);
+  }
+
+    useEffect(() => {
+        vocabAnalysis()
+    }, [transcript])
 
 
     return (
       <div 
       style={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}
       >
+        <div style={{display: 'none' }}>
         <Select
           id="demo-simple-select"
           style={{color:'white'}}
@@ -158,7 +185,6 @@ const AudioRecorder = () => {
                         ))}
         </Select>
 
-        <div style={{display: 'none' }}>
             { typeof window !== `undefined` &&  // need inline if for the same reason as import
            <ReactMic
                 record={isRecording}
@@ -176,20 +202,22 @@ const AudioRecorder = () => {
               color="primary"
               onClick={() => {isLongRecording ? stopLongRecording() : startLongRecording()}}
               >
-              {isLongRecording ? 'End transcribing' : 'Start transcribing!'}
+              {isLongRecording ? 'End' : 'Start!'}
             </Button>
 
-        <p> Transcript will be shown below after conversation... </p>
-            <Card style={{width: '100%' }} >
+             { transcript !== `` &&
+            <Card style={{width: '100%', marginTop: '20px'}} >
                 <CardContent>
-                <Typography color="textSecondary" gutterBottom>
-                Transcript
-                </Typography>
-                <Typography>
-                    {transcript}
-                </Typography>
+                <Typography color="textSecondary" gutterBottom>今回の会話の分析結果はこちら！</Typography>
+                <Typography>{transcript}</Typography>
+                <Typography>{`今回の会話での単語数: ${vocab1} ...前回から +10!`}</Typography>
+                <Typography>{`今回の会話での流暢さ: ${vocab2} ...前回から +5!`}</Typography>
+                <Typography>{`累計の語彙数: ${vocab3} ...前回から +3!`}</Typography>
+                <Typography>{`前回の会話での課題から話せた単語: ${vocab4.join(", ")} ...5つのうち3つ達成！`}</Typography>
+                <Typography>{`次回の会話で使ってみては？: ${vocab5.join(", ")}`}</Typography>
                 </CardContent>
             </Card>
+            }
 
       </div>
 

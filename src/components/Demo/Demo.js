@@ -1,5 +1,6 @@
 import React from "react"
 import styled from "styled-components"
+import Button from '@material-ui/core/Button';
 
 import VideoChat from '../VideoChat/VideoChat.js';
 import AudioRecorder from '../AudioRecorder/AudioRecorder.js';
@@ -21,23 +22,11 @@ const Demo = () => {
         >
         <h2>DEMO</h2>
 
-        <p style={{marginTop: '50px'}}> {browserLang=='ja'? 
-        "STEP 1 友人や先生とビデオチャットで会話してみましょう！"
-        : "STEP 1 Enjoy talking with your language buddy on the video chat!"}
-        </p>
-        <VideoChat />
-
         <p style={{marginTop: '50px'}}> {browserLang=='ja'
-        ? "STEP 2 言語を選んで、会話内容を記録しましょう" 
-        : "STEP 2 Transcribe the conversation with the target language (select below)"}
+        ? "会話を分析してみましょう! Startを押して会話を録音し、Endを押すと分析結果が表示されます。" 
+        : "Let's try analysing your conversation!"}
         </p>
         <AudioRecorder />
-
-
-        <p style={{marginTop: '50px'}}> {browserLang=='ja'
-        ? "STEP 3 （開発中）フィードバックのまとめや前回からの改善点などが以下に示されます！" 
-        : "STEP 3 (Under development) Summary of feedback and your improvement will be shown below!"}
-        </p>
 
          </div>
       </DemoWrapper>

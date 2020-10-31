@@ -11,9 +11,9 @@ import Demo from '../components/Demo/Demo';
 import Contact from "../components/Contact/contact"
 import { Link } from "react-scroll"
 
-import perk1Img from "../images/language-exchange.jpg"
-import perk2Img from "../images/speech-to-text.png"
-import perk3Img from "../images/word-cloud.png"
+import perk1Img from "../images/video-chat.jpg"
+import perk2Img from "../images/records.jpg"
+import perk3Img from "../images/dashboard.jpg"
 
 import { IconContext } from "react-icons"
 import { MdDone, MdClear } from "react-icons/md"
@@ -27,27 +27,27 @@ export default () => (
           <Button label="Tell Me More" cta="How it works?" />
         </Link>
       </TextBlock>
-      <TextBlockImg id="features" title_en="Features"subtitle="">
+      <TextBlockImg id="features" title_en="How it works？"subtitle="">
         <div className="flex-container trio-block">
           <Perk
             img={perk1Img}
             alt="Instant conversation"
-            title_en="Anywhere, anytime, with native speakers all over the world"
-            title_jp="世界中のネイティブと、いつでも、どこでも"
+            title_en="Bring LangApp anytime when you talk"
+            title_jp="LangAppを英会話のお供に"
             content="You will be instantly connected to short and yet informative conversation with native speakers"
           />
           <Perk
             img={perk2Img}
             alt="Auto-transcription"
-            title_en="Record all the conversations and feedback as your assets"
-            title_jp="すべての会話とフィードバックを記録し、あなたの資産に"
+            title_en="Record all the conversations and feedback, making into your assets"
+            title_jp="すべての会話とフィードバックを記録し"
             content="Auto-generate transcription can support to review the conversation and corrections from the buddy"
           />
           <Perk
             img={perk3Img}
             alt="Expression dashbord"
-            title_en="Overview your vocab, expressions to use, improvement... all at once!"
-            title_jp="あなたの語彙、使いたい表現、前回からの改善、すべてが一目瞭然"
+            title_en="Overview your improvement"
+            title_jp="あなたの成長が一目瞭然"
             content="Your own words and expressions are stored in the app and analysed to visualise your output vocabrary, suggesting ways to improve"
           />
         </div>

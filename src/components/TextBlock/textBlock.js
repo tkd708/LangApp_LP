@@ -45,12 +45,12 @@ const TextBlock = ({ title_en, title_jp, paragraph, children, id }) => {
           <p></p>
 
           <p>{browserLang=='ja' 
-          ? "たった5分間の会話で約500語の言葉が交わされ、A4紙を埋め尽くします。想像以上の学びのポテンシャルがあるのでは？"
+          ? "たった5分間の会話で約500語の言葉が交わされ、A4紙を埋め尽くします。一回一回の会話から、学びつくせていますか？"
           : "Just 5 minites of conversation has more than 500 words, which is a full A4 paper...don't you think you could learn a lot more?"}</p>
 
           <h3>{browserLang=='ja' 
-          ? 'LangAppは一回一回の会話からの学びを最大化し、あなたのスピーキングスキルを飛躍的に向上します！' 
-          : 'LangApp is here to maximise your learning from each conversation to boost your speaking skills!'}</h3>
+          ? 'LangAppは会話からの学びを最大化し、あなたの英会話力を飛躍的に向上します！' 
+          : 'LangApp is here to maximise your learning fromconversation to boost your speaking skills!'}</h3>
 
           <p>{paragraph}</p>
           {children}
