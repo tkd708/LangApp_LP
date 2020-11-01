@@ -23,9 +23,14 @@ const Demo = () => {
         <h2>DEMO</h2>
 
         <p style={{marginTop: '50px'}}> {browserLang=='ja'
-        ? "会話を分析してみましょう! Startを押して会話を録音し、Endを押すと分析結果が表示されます。" 
+        ? `会話を分析してみましょう!` 
         : "Let's try analysing your conversation!"}
         </p>
+        <p style={{marginTop: '5px'}}> {browserLang=='ja'
+        ? `Startを押すと会話の録音が開始され、Endを押すと分析結果が表示されます。` 
+        : "Record conversation with 'Start' and show the results with 'End'"}
+        </p>
+
         <AudioRecorder />
 
          </div>

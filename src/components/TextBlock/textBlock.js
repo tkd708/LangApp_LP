@@ -40,13 +40,18 @@ const TextBlock = ({ title_en, title_jp, paragraph, children, id }) => {
           : 'Unlock the full potential of conversation'}</h2>
 
           <p>{browserLang=='ja' 
-          ? '1回の会話クラスから、いくつ学びを得ているでしょうか？どれほど次に生かせていますか？'
-          : 'When you attend conversation classes, how much feedback do you get? Do you actually make most of them for the next?'}</p>
+          ? "たった5分間の会話で約500語の言葉が交わされ、A4紙を埋め尽くします。"
+          : "Just 5 minites of conversation has more than 500 words, which is a full A4 paper."}</p>
+
+          <p>{browserLang=='ja' 
+          ? '1回の会話クラスから、いくつ学びを得ているでしょうか？'
+          : 'When you attend conversation classes, how much feedback do you get? '}</p>
           <p></p>
 
           <p>{browserLang=='ja' 
-          ? "たった5分間の会話で約500語の言葉が交わされ、A4紙を埋め尽くします。それらを学びつくせていますか？"
-          : "Just 5 minites of conversation has more than 500 words, which is a full A4 paper...don't you think you could learn a lot more?"}</p>
+          ? 'フィードバックをどれほど次に生かせていますか？'
+          : 'Do you actually make most of them for the next?'}</p>
+          <p></p>
 
           <h3>{browserLang=='ja' 
           ? 'LangAppは会話からの学びを最大化し、あなたの英会話力を飛躍的に向上します！' 

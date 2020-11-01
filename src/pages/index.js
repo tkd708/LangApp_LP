@@ -40,14 +40,14 @@ export default () => (
             img={perk2Img}
             alt="Auto-transcription"
             title_en="Record all the conversations and feedback, making into your assets"
-            title_jp="すべての会話とフィードバックを記録し"
+            title_jp="すべての会話とフィードバックを記録"
             content="Auto-generate transcription can support to review the conversation and corrections from the buddy"
           />
           <Perk
             img={perk3Img}
             alt="Expression dashbord"
             title_en="Overview your improvement"
-            title_jp="あなたの成長が一目瞭然"
+            title_jp="あなたの成長や次回への課題が一目瞭然に"
             content="Your own words and expressions are stored in the app and analysed to visualise your output vocabrary, suggesting ways to improve"
           />
         </div>
