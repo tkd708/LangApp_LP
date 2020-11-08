@@ -1,6 +1,7 @@
 import React from "react"
 import styled from "styled-components"
-import Button from '@material-ui/core/Button';
+//import Button from '@material-ui/core/Button';
+import Button from "../Button/button"
 
 import VideoChat from '../VideoChat/VideoChat.js';
 import AudioRecorder from '../AudioRecorder/AudioRecorder.js';
@@ -22,8 +23,16 @@ const Demo = () => {
         >
         <h2>DEMO</h2>
 
-        <p style={{marginTop: '50px'}}> {browserLang=='ja'
-        ? `会話を分析してみましょう!` 
+        <Button
+              cta={browserLang=='ja' ? `アプリ原案はこちら（別タブ）` : "Open the mock app (new tab)"}
+              label="Open mockapp"
+              anchor={true}
+              target="_blank"
+              href="https://www.figma.com/proto/s6v3AqYbMTOCvx7FJuL6ch/LangApp?node-id=0%3A2&viewport=-1418%2C-522%2C0.5&scaling=scale-down"
+            />
+
+        <p style={{marginTop: '50px', marginBottom: '10px'}}> {browserLang=='ja'
+        ? `実際に会話を記録・分析してみましょう!（分析結果は開発中）` 
         : "Let's try analysing your conversation!"}
         </p>
         <p style={{marginTop: '5px'}}> {browserLang=='ja'

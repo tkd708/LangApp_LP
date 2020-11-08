@@ -10,6 +10,7 @@ const Button = props => {
           aria-label={props.label}
           className="anchor"
           as="a"
+          target={props.target}
           href={props.href}
         >
           {props.cta}
