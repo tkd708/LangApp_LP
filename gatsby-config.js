@@ -26,6 +26,12 @@ module.exports = {
         path: path.join(__dirname, `src`, `images`),
       },
     },
+    {
+        resolve: `gatsby-plugin-google-analytics`,
+        options: {
+            trackingId: process.env.GATSBY_GOOGLE_ANALYTICS_ID,
+        },
+    },
     `gatsby-plugin-styled-components`,
     `gatsby-plugin-sharp`,
     `gatsby-transformer-sharp`,
