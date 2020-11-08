@@ -15,7 +15,7 @@ const TextBlock = ({ title_en, title_jp, paragraph, children, id }) => {
             window.navigator.language ||
             window.navigator.userLanguage ||
             window.navigator.browserLanguage
-    : '';
+    : 'ja'; // tentatively all in Japanese
 
   useEffect(() => {
     if (inView) {
@@ -44,7 +44,7 @@ const TextBlock = ({ title_en, title_jp, paragraph, children, id }) => {
           : "Just 5 minites of conversation has more than 500 words, which is a full A4 paper."}</p>
 
           <p>{browserLang=='ja' 
-          ? '1回の会話クラスから、いくつ学びを得ているでしょうか？'
+          ? '1回の会話クラスから、十分な学びを得ているでしょうか？'
           : 'When you attend conversation classes, how much feedback do you get? '}</p>
           <p></p>
 
@@ -54,7 +54,7 @@ const TextBlock = ({ title_en, title_jp, paragraph, children, id }) => {
           <p></p>
 
           <h3>{browserLang=='ja' 
-          ? 'LangAppは会話からの学びを最大化し、あなたの英会話力を飛躍的に向上します！' 
+          ? 'LangAppは英会話を記録・分析し、上達を飛躍的に加速します！' 
           : 'LangApp is here to maximise your learning fromconversation to boost your speaking skills!'}</h3>
 
           <p>{paragraph}</p>

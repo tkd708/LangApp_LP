@@ -12,7 +12,7 @@ const Demo = () => {
             window.navigator.language ||
             window.navigator.userLanguage ||
             window.navigator.browserLanguage
-    : '';
+    : 'ja'; // tentatively all in Japanese
 
   return (
       <DemoWrapper>

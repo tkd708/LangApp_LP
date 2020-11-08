@@ -15,7 +15,7 @@ const Perk = ({ img, alt, title_en, title_jp, content }) => {
             window.navigator.language ||
             window.navigator.userLanguage ||
             window.navigator.browserLanguage
-    : '';
+    : 'ja'; // tentatively all in Japanese
     
   useEffect(() => {
     if (inView) {

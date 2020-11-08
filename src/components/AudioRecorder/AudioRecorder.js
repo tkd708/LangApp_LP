@@ -3,7 +3,9 @@ import axios from 'axios';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import Button from '@material-ui/core/Button';
+//import Button from '@material-ui/core/Button';
+import Button from "../Button/button"
+
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
@@ -197,12 +199,12 @@ const AudioRecorder = () => {
         </div>
 
             <Button
-              style={{marginTop: '10px'}}
-              variant="contained"
-              color="primary"
+              //style={{marginTop: '10px'}}
+              //variant="contained"
+              //color="primary"
+              cta={isLongRecording ? 'End' : 'Start!'} // from the template
               onClick={() => {isLongRecording ? stopLongRecording() : startLongRecording()}}
               >
-              {isLongRecording ? 'End' : 'Start!'}
             </Button>
 
              { (transcript!==null) &&

@@ -6,6 +6,7 @@ const Button = props => {
     <>
       {props.anchor ? (
         <ButtonWrapper
+          onClick={props.onClick}
           aria-label={props.label}
           className="anchor"
           as="a"
@@ -14,7 +15,10 @@ const Button = props => {
           {props.cta}
         </ButtonWrapper>
       ) : (
-        <ButtonWrapper aria-label={props.label} type={props.type}>
+        <ButtonWrapper
+        onClick={props.onClick}
+        aria-label={props.label}
+        type={props.type}>
           {props.cta}
         </ButtonWrapper>
       )}

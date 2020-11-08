@@ -10,9 +10,9 @@ require("dotenv").config()
 module.exports = {
   siteMetadata: {
     title: "LangApp",
-    titleTemplate: "%s | Helping startups get started",
+    titleTemplate: "%s | Boost your conversation skills!",
     description:
-      "A web/mobile application to boost your language speaking vocabrary",
+      "A web/mobile application to boost your conversation skills of the target language",
     author: "Naoya Takeda",
     image: "/yellow-metal-design-decoration.jpg",
     siteUrl: "https://www.langapp.netlify.app",

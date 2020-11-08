@@ -24,6 +24,13 @@ const Banner = () => {
     hidden: { opacity: 0, y: 20 },
   }
 
+    const browserLang =  (typeof window !== `undefined`)
+   ? (window.navigator.languages && window.navigator.languages[0]) ||
+            window.navigator.language ||
+            window.navigator.userLanguage ||
+            window.navigator.browserLanguage
+    : 'ja'; // tentatively all in Japanese
+
   return (
     <BannerWrapper>
       <BackgroundImage
@@ -47,7 +54,9 @@ const Banner = () => {
             variants={variants}
             transition={{ ease: "easeOut", duration: 0.8, delay: 1.5 }}
           >
-            A solution to boost your conversation skills
+           {browserLang=='ja'
+        ? `英会話を記録・分析し上達を加速するアプリ` 
+        : "A solution to boost your conversation skills"}
           </motion.p>
           
           <iframe
@@ -56,7 +65,7 @@ const Banner = () => {
             type="text/html"
             width="640"
             height="360"
-            src="https://www.youtube.com/embed/k8BDUsJZa0I?autoplay=1&origin=http://langapp.netlify.app"
+            src="https://www.youtube.com/embed/35OEaPsgZGA?autoplay=1&origin=http://langapp.netlify.app"
             frameborder="0"
           />
           <Link to="about" smooth={true} duration={500}>
