@@ -8,12 +8,13 @@ import AudioRecorder from '../AudioRecorder/AudioRecorder.js';
 //import TextMining from '../components/TextMining/kuromoji.js';
 
 const Demo = () => {
-        const browserLang =  (typeof window !== `undefined`)
-   ? (window.navigator.languages && window.navigator.languages[0]) ||
-            window.navigator.language ||
-            window.navigator.userLanguage ||
-            window.navigator.browserLanguage
-    : 'ja'; // tentatively all in Japanese
+        const browserLang =  'ja' // tentatively all in Japanese
+   //(typeof window !== `undefined`)
+   //? (window.navigator.languages && window.navigator.languages[0]) ||
+   //         window.navigator.language ||
+   //         window.navigator.userLanguage ||
+   //         window.navigator.browserLanguage
+   // : ''; 
 
   return (
       <DemoWrapper>
@@ -24,7 +25,7 @@ const Demo = () => {
         <h2>DEMO</h2>
 
         <Button
-              cta={browserLang=='ja' ? `アプリ原案はこちら（別タブ）` : "Open the mock app (new tab)"}
+              cta={browserLang=='ja' ? `アプリ原案はこちら` : "Open the mock app"}
               label="Open mockapp"
               anchor={true}
               target="_blank"
@@ -32,7 +33,7 @@ const Demo = () => {
             />
 
         <p style={{marginTop: '50px', marginBottom: '10px'}}> {browserLang=='ja'
-        ? `実際に会話を記録・分析してみましょう!（分析結果は開発中）` 
+        ? `実際に英会話を記録・分析してみましょう!（開発中）` 
         : "Let's try analysing your conversation!"}
         </p>
         <p style={{marginTop: '5px'}}> {browserLang=='ja'

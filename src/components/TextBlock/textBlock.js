@@ -10,12 +10,13 @@ const TextBlock = ({ title_en, title_jp, paragraph, children, id }) => {
     threshold: 0.25,
   })
 
-   const browserLang =  (typeof window !== `undefined`)
-   ? (window.navigator.languages && window.navigator.languages[0]) ||
-            window.navigator.language ||
-            window.navigator.userLanguage ||
-            window.navigator.browserLanguage
-    : 'ja'; // tentatively all in Japanese
+   const browserLang = 'ja' 
+   //(typeof window !== `undefined`)
+   //? (window.navigator.languages && window.navigator.languages[0]) ||
+   //         window.navigator.language ||
+   //         window.navigator.userLanguage ||
+   //         window.navigator.browserLanguage
+   // : ''; // tentatively all in Japanese
 
   useEffect(() => {
     if (inView) {

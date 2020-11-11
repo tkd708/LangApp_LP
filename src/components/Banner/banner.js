@@ -24,12 +24,13 @@ const Banner = () => {
     hidden: { opacity: 0, y: 20 },
   }
 
-    const browserLang =  (typeof window !== `undefined`)
-   ? (window.navigator.languages && window.navigator.languages[0]) ||
-            window.navigator.language ||
-            window.navigator.userLanguage ||
-            window.navigator.browserLanguage
-    : 'ja'; // tentatively all in Japanese
+    const browserLang =  'ja' // tentatively all in Japanese
+   // (typeof window !== `undefined`)
+   //? (window.navigator.languages && window.navigator.languages[0]) ||
+   //         window.navigator.language ||
+   //         window.navigator.userLanguage ||
+   //        window.navigator.browserLanguage
+   // : ''; 
 
   return (
     <BannerWrapper>
