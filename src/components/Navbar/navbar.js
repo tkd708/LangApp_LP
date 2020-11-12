@@ -31,13 +31,14 @@ const Navbar = () => {
       </div>
       <ul
         className={isOpen ? `${"nav-links"} ${"show-nav"}` : `${"nav-links"}`}
+        style={{marginRight: '30px'}}
       >
         {links.map((item, index) => {
           return (
-            <li key={index}>
+            <li style={{width: '120px'}} key={index}>
               <Link
                 activeClass="active"
-                to={item.text}
+                to={item.id}
                 spy={true}
                 smooth={true}
                 duration={500}

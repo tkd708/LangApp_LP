@@ -3,17 +3,12 @@ import Layout from "../components/layout"
 import Banner from "../components/Banner/banner"
 import TextBlock from "../components/TextBlock/textBlock"
 import TextBlockImg from "../components/TextBlockImg/textBlockImg"
-import Perk from "../components/Perk/perk"
 import Button from "../components/Button/button"
 import Packages from "../components/Packages/packages"
 import Package from "../components/Package/package"
 import Demo from '../components/Demo/Demo';
 import Contact from "../components/Contact/contact"
 import { Link } from "react-scroll"
-
-import perk1Img from "../images/chat-laptop.jpg"
-import perk2Img from "../images/records.jpg"
-import perk3Img from "../images/dashboard.jpg"
 
 import { IconContext } from "react-icons"
 import { MdDone, MdClear } from "react-icons/md"
@@ -22,38 +17,18 @@ export default () => (
   <>
     <Layout>
       <Banner />
+      {/*
       <TextBlock id="about" title_en="Make most of your conversation" paragraph="">
         <Link to="features" smooth={true} duration={500}>
           <Button label="Tell Me More" cta="How it works?" />
         </Link>
-      </TextBlock>
-      <TextBlockImg id="features" title_en="How it works？"subtitle="">
-        <div className="flex-container trio-block">
-          <Perk
-            img={perk1Img}
-            alt="Instant conversation"
-            title_en="Bring LangApp anytime when you talk"
-            title_jp="LangAppを英会話のお供に"
-            content="You will be instantly connected to short and yet informative conversation with native speakers"
-          />
-          <Perk
-            img={perk2Img}
-            alt="Auto-transcription"
-            title_en="Record all the conversations and feedback, making into your assets"
-            title_jp="すべての会話とフィードバックを記録"
-            content="Auto-generate transcription can support to review the conversation and corrections from the buddy"
-          />
-          <Perk
-            img={perk3Img}
-            alt="Expression dashbord"
-            title_en="Overview your improvement"
-            title_jp="あなたの成長や次回への課題が一目瞭然に"
-            content="Your own words and expressions are stored in the app and analysed to visualise your output vocabrary, suggesting ways to improve"
-          />
-        </div>
+      </TextBlock>*/}
+      <TextBlockImg id="features" title_jp="サービス概要"subtitle="">
+        {/*
         <Link to="demo" smooth={true} duration={500}>
-                  <Button label="Try a demo" cta="Try a demo!" />
+            <Button label="Try a demo" cta="Try a demo!" />
         </Link>
+        */}
       </TextBlockImg>
       {/* 
       <Packages
@@ -139,11 +114,11 @@ export default () => (
         </IconContext.Provider>
       </Packages>
       */}
-
+      {/* 
       <Demo
         id="demo"
       />
-
+      */}
       <Contact
         id="contact"
       />

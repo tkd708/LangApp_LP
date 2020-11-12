@@ -1,8 +1,22 @@
 import React from "react"
 import styled from "styled-components"
 import Button from "../Button/button"
+import { useStaticQuery, graphql } from "gatsby"
+import BackgroundImage from "gatsby-background-image"
 
 const Contact = ({ id }) => {
+      const data = useStaticQuery(graphql`
+    query {
+      file(relativePath: { eq: "blackboard.jpg" }) {
+        childImageSharp {
+          fluid(maxWidth: 2000, quality: 90) {
+            ...GatsbyImageSharpFluid_withWebp
+          }
+        }
+      }
+    }
+  `)
+
        const browserLang =  (typeof window !== `undefined`)
    ? (window.navigator.languages && window.navigator.languages[0]) ||
             window.navigator.language ||
@@ -11,9 +25,18 @@ const Contact = ({ id }) => {
     : '';
 
   return (
+    <BackgroundImage
+      //className="background-img"
+      id={id}
+      Tag="section"
+      fluid={data.file.childImageSharp.fluid}
+    >
     <ContactWrapper id="contact">
       <div className="content-container">
-        <h2>CONTACT US</h2>
+        <h2>{browserLang=='ja'
+        ? "お問い合わせ" 
+        : "CONTACT US"}
+        </h2>
         <p> {browserLang=='ja'
         ? "LangAppは現在開発中です" 
         : "LangApp is currently under development and needs your voice..."}
@@ -69,7 +92,7 @@ const Contact = ({ id }) => {
             </label>
           </div>
 */}
-{/* 
+
           <div className="input-area">
             <textarea
               type="text"
@@ -83,17 +106,18 @@ const Contact = ({ id }) => {
               <span className="content-name">Message</span>
             </label>
           </div>
-*/}
+
           <div className="input-area button-area">
             <Button
               label="Send Contact Form"
-              cta="Show us your interests!"
+              cta={browserLang=='ja' ? "送信！" : "SEND！"}
               type="submit"
             />
           </div>
         </form>
       </div>
     </ContactWrapper>
+        </BackgroundImage>
   )
 }
 

@@ -56,7 +56,18 @@ const Banner = () => {
             transition={{ ease: "easeOut", duration: 0.8, delay: 1.5 }}
           >
            {browserLang=='ja'
-        ? `英会話を記録・分析し上達を加速するアプリ` 
+        ? `あなたの英会話をAIが記録・分析するアプリ` 
+        : "A solution to boost your conversation skills"}
+          </motion.p>
+          <motion.p
+　　         //style={{fontSize: '1.3rem'}}
+            initial="hidden"
+            animate="visible"
+            variants={variants}
+            transition={{ ease: "easeOut", duration: 0.8, delay: 1.5 }}
+          >
+           {browserLang=='ja'
+        ? `会話やレッスン、復習できていますか？` 
         : "A solution to boost your conversation skills"}
           </motion.p>
           
@@ -69,6 +80,7 @@ const Banner = () => {
             src="https://www.youtube.com/embed/AVVGrQ4uCHw?autoplay=1&origin=http://langapp.netlify.app"
             frameborder="0"
           />
+          {/* 
           <Link to="about" smooth={true} duration={500}>
             <span className="sr-only">Jump to about</span>
             <Button
@@ -77,7 +89,7 @@ const Banner = () => {
               anchor={true}
               href="linking"
             />
-          </Link>
+          </Link> */}
         </div>
       </BackgroundImage>
     </BannerWrapper>

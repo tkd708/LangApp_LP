@@ -1,22 +1,27 @@
 export default [
-  {
-    path: "/",
-    text: "about",
-  },
-  {
-    path: "/",
-    text: "features",
-  },
-    {
-    path: "/",
-    text: "demo",
-  },
 //  {
 //    path: "/",
+//    id: "about",
+//    text: "about",
+//  },
+  {
+    path: "/",
+    id: "features",
+    text: "サービス概要",
+  },
+//    {
+//    path: "/",
+//    id: "demo",
+//    text: "demo",
+//  },
+//  {
+//    path: "/",
+//    id: "prices",
 //    text: "prices",
 //  },
   {
     path: "/",
-    text: "contact",
+    id: "contact",
+    text: "問い合わせ",
   },
 ]
