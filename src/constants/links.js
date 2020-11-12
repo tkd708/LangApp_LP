@@ -7,7 +7,7 @@ export default [
   {
     path: "/",
     id: "features",
-    text: "サービス概要",
+    text: "概要",
   },
 //    {
 //    path: "/",

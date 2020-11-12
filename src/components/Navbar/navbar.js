@@ -35,7 +35,7 @@ const Navbar = () => {
       >
         {links.map((item, index) => {
           return (
-            <li style={{width: '120px'}} key={index}>
+            <li key={index}>
               <Link
                 activeClass="active"
                 to={item.id}
