@@ -102,6 +102,7 @@ const NavWrapper = styled.nav`
     padding-left: 0;
 
     li {
+      width: 120px;
       list-style: none;
       font-size: 1.25rem;
       font-weight: 400;

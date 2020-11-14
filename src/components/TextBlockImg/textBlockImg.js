@@ -108,11 +108,11 @@ const TextBlockImgWrapper = styled.section`
     font-size: 2.5rem;
 
         @media (min-width: 768px) {
-          font-size: 3.5rem;
+          font-size: 3.0rem;
         }
 
         @media (min-width: 1200px) {
-          font-size: 4.5rem;
+          font-size: 3.5rem;
         }
   }
 
