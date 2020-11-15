@@ -5,9 +5,9 @@ import Perk from "../Perk/perk"
 import styled from "styled-components"
 import Button from "../Button/button"
 
-import perk1Img from "../../images/chat-laptop.jpg"
-import perk2Img from "../../images/records.jpg"
-import perk3Img from "../../images/dashboard.jpg"
+import perk1Img from "../../images/mockapp-talk-log.png"
+import perk2Img from "../../images/mockapp-talk-report.png"
+import perk3Img from "../../images/mockapp-progress.png"
 
 import serviceConceptImg from "../../images/service-concept.jpg"
 
@@ -15,7 +15,7 @@ import serviceConceptImg from "../../images/service-concept.jpg"
 const TextBlockImg = ({ title_en, title_jp, children, subtitle, id }) => {
   const data = useStaticQuery(graphql`
     query {
-      file(relativePath: { eq: "blackboard.jpg" }) {
+      file(relativePath: { eq: "book-bindings.jpg" }) {
         childImageSharp {
           fluid(maxWidth: 2000, quality: 90) {
             ...GatsbyImageSharpFluid_withWebp
@@ -30,6 +30,9 @@ const TextBlockImg = ({ title_en, title_jp, children, subtitle, id }) => {
       id={id}
       Tag="section"
       fluid={data.file.childImageSharp.fluid}
+      style={{
+            backgroundAttachment: 'fixed' ,
+           }}
     >
       <TextBlockImgWrapper>
         <div className="content-container">
@@ -37,33 +40,26 @@ const TextBlockImg = ({ title_en, title_jp, children, subtitle, id }) => {
           <h2>{title_jp}</h2>
           <p>{subtitle}</p>
           {children}
-          {/*
-          <img
-          src={serviceConceptImg}
-          alt="service concept"
-          style={{display:'flex', flexDirection:'column', justifySelf: 'centre'}}
-          />
-              */}
         <div className="flex-container trio-block">
           <Perk
             img={perk1Img}
             alt="Instant conversation"
             title_en="Bring LangApp anytime when you talk"
-            title_jp="普段の会話やレッスンの際にアプリを起動してそばに置くだけ"
+            title_jp="アプリがあなたの英会話を全て記録・文字起こし"
             content="You will be instantly connected to short and yet informative conversation with native speakers"
           />
           <Perk
             img={perk2Img}
             alt="Auto-transcription"
             title_en="Record all the conversations and feedback, making into your assets"
-            title_jp="AIを用いた音声認識技術ですべての会話を記録"
+            title_jp="語彙や表現、文法、発音などを分析し復習をサポート"
             content="Auto-generate transcription can support to review the conversation and corrections from the buddy"
           />
           <Perk
             img={perk3Img}
             alt="Expression dashbord"
             title_en="Overview your improvement"
-            title_jp="会話を分析しあなたの成長や次回への課題が一目瞭然に"
+            title_jp="会話を重ねるごとのあなたの英会話の上達を可視化"
             content="Your own words and expressions are stored in the app and analysed to visualise your output vocabrary, suggesting ways to improve"
           />
           </div>
@@ -86,6 +82,10 @@ const TextBlockImgWrapper = styled.section`
 
   .background-img {
     filter: grayscale(80%);
+  }
+
+  .loading::after {
+  filter: blur(15px);
   }
 
   .content-container {

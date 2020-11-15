@@ -38,7 +38,10 @@ const Banner = () => {
         Tag="section"
         className="hero-image grayscale"
         fluid={data.file.childImageSharp.fluid}
-      >
+        style={{
+            backgroundAttachment: 'fixed' 
+           }}
+        >
         <div className="hero-content">
           <motion.h1
             initial="hidden"
@@ -49,7 +52,7 @@ const Banner = () => {
           >
             <span>LangApp</span>
           </motion.h1>
-          <motion.p
+          <motion.h2
             initial="hidden"
             animate="visible"
             variants={variants}
@@ -58,7 +61,7 @@ const Banner = () => {
            {browserLang=='ja'
         ? `あなたの英会話をAIが記録・分析するアプリ` 
         : "A solution to boost your conversation skills"}
-          </motion.p>
+          </motion.h2>
           <motion.p
 　　         //style={{fontSize: '1.3rem'}}
             initial="hidden"
@@ -159,6 +162,23 @@ const BannerWrapper = styled.section`
         margin-bottom: 2rem;
         line-height: 1.2;
         font-size: 1.3rem;
+        color: black;
+
+        @media (min-width: 768px) {
+          font-size: 1.3rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size:1.6rem;
+        }
+      }
+
+        h2 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+        font-size: 1.3rem;
+        color: black;
 
         @media (min-width: 768px) {
           font-size: 1.5rem;

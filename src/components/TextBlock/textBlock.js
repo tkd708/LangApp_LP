@@ -3,6 +3,8 @@ import styled from "styled-components"
 import { useInView } from "react-intersection-observer"
 import { motion, useAnimation } from "framer-motion"
 
+import serviceConceptImg from "../../images/service-concept2.png"
+
 const TextBlock = ({ title_en, title_jp, paragraph, children, id }) => {
   const controls = useAnimation()
   const [ref, inView] = useInView({
@@ -37,28 +39,18 @@ const TextBlock = ({ title_en, title_jp, paragraph, children, id }) => {
           transition={{ ease: "easeOut", duration: 1.25, delay: 0.35 }}
         >
           <h2>{browserLang=='ja' 
-          ? '会話から、学びつくす' 
-          : 'Unlock the full potential of conversation'}</h2>
+          ? 'サービス概要' 
+          : 'How it works?'}</h2>
 
           <p>{browserLang=='ja' 
-          ? "たった5分間の会話で約500語の言葉が交わされ、A4紙を埋め尽くします。"
-          : "Just 5 minites of conversation has more than 500 words, which is a full A4 paper."}</p>
+          ? 'LangAppが英会話の効率的な復習をサポート！' 
+          : 'How it works?'}</p>
 
-          <p>{browserLang=='ja' 
-          ? '1回の会話クラスから、十分な学びを得ているでしょうか？'
-          : 'When you attend conversation classes, how much feedback do you get? '}</p>
-          <p></p>
-
-          <p>{browserLang=='ja' 
-          ? 'フィードバックをどれほど次に生かせていますか？'
-          : 'Do you actually make most of them for the next?'}</p>
-          <p></p>
-
-          <h3>{browserLang=='ja' 
-          ? 'LangAppは英会話を記録・分析し、上達を飛躍的に加速します！' 
-          : 'LangApp is here to maximise your learning fromconversation to boost your speaking skills!'}</h3>
-
-          <p>{paragraph}</p>
+          <img
+          src={serviceConceptImg}
+          alt="service concept"
+          style={{display:'flex', flexDirection:'column', justifySelf: 'centre', width: '100%'}}
+          />
           {children}
         </motion.div>
       </div>
@@ -67,7 +59,7 @@ const TextBlock = ({ title_en, title_jp, paragraph, children, id }) => {
 }
 
 const TextBlockWrapper = styled.section`
-  background: linear-gradient(45deg, #060c21, #0d0139);
+  background-color: #fff;
   color: #fff;
   text-align: left;
   padding: 60px 20px;
@@ -86,19 +78,20 @@ const TextBlockWrapper = styled.section`
         font-size: 2.5rem;
 
         @media (min-width: 768px) {
-          font-size: 3.5rem;
+          font-size: 3.0rem;
         }
 
         @media (min-width: 1200px) {
-          font-size: 4.5rem;
+          font-size: 3.5rem;
         }
 
   }
 
   p {
+      color: black;
     margin-bottom: 20px;
     font-size: 24px;
-    text-shadow: 0px 0px 5px rgba(8, 0, 8, 1);
+    /* text-shadow: 0px 0px 5px rgba(8, 0, 8, 1); */
     opacity: 0.85;
 
           font-size: 1.2rem;

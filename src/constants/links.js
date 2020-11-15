@@ -1,13 +1,13 @@
 export default [
-//  {
-//    path: "/",
-//    id: "about",
-//    text: "about",
-//  },
+  {
+    path: "/",
+    id: "about",
+    text: "サービス概要",
+  },
   {
     path: "/",
     id: "features",
-    text: "サービス概要",
+    text: "機能・特徴",
   },
 //    {
 //    path: "/",
@@ -22,6 +22,6 @@ export default [
   {
     path: "/",
     id: "contact",
-    text: "問い合わせ",
+    text: "お問い合わせ",
   },
 ]

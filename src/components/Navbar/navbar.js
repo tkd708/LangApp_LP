@@ -31,7 +31,6 @@ const Navbar = () => {
       </div>
       <ul
         className={isOpen ? `${"nav-links"} ${"show-nav"}` : `${"nav-links"}`}
-        style={{marginRight: '30px'}}
       >
         {links.map((item, index) => {
           return (
@@ -101,6 +100,10 @@ const NavWrapper = styled.nav`
     list-style: none;
     padding-left: 0;
 
+    @media (min-width: 992px) {
+        margin-right: 50px;
+    }
+
     li {
       width: 120px;
       list-style: none;
@@ -111,8 +114,12 @@ const NavWrapper = styled.nav`
       a {
         text-decoration: none;
         text-transform: capitalize;
-        color: #fff;
+        color: white;
         transition: 0.3s;
+            @media (min-width: 992px) {
+                color: black;
+            }
+
 
         &.active {
           color: #e609b5;

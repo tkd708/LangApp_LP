@@ -3,6 +3,11 @@ import styled from "styled-components"
 import { useInView } from "react-intersection-observer"
 import { motion, useAnimation } from "framer-motion"
 
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
+
+
 const Perk = ({ img, alt, title_en, title_jp, content }) => {
   const controls = useAnimation()
   const [ref, inView] = useInView({
@@ -62,6 +67,7 @@ const PerkWrapper = styled.article`
   }
 
   h3 {
+      color: black;
     font-weight: 400;
   }
 `

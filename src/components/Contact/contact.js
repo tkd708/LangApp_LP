@@ -25,12 +25,6 @@ const Contact = ({ id }) => {
     : '';
 
   return (
-    <BackgroundImage
-      //className="background-img"
-      id={id}
-      Tag="section"
-      fluid={data.file.childImageSharp.fluid}
-    >
     <ContactWrapper id="contact">
       <div className="content-container">
         <h2>{browserLang=='ja'
@@ -117,12 +111,12 @@ const Contact = ({ id }) => {
         </form>
       </div>
     </ContactWrapper>
-        </BackgroundImage>
   )
 }
 
 const ContactWrapper = styled.section`
   padding: 100px 30px;
+  background-color: #fff;
 
   .content-container {
     width: 100%;
@@ -151,6 +145,7 @@ const ContactWrapper = styled.section`
     }
     p {
       margin-bottom: 2rem;
+      color: black;
 
       @media (min-width: 768px) {
         text-align: center;
