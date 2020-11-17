@@ -177,7 +177,7 @@ const NavWrapper = styled.nav`
 
 
   @media (min-width: 768px) {
-    background-color: rgba(255,255,255,0.3);
+    /* background-color: rgba(255,255,255,0.3); */
 
     .masthead {
       flex-direction: column;
