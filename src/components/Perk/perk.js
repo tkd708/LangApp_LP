@@ -40,8 +40,8 @@ const Perk = ({ img, alt, title_en, title_jp, content }) => {
       transition={{ ease: "easeOut", duration: 1.25, delay: 0.35 }}
     >
       <PerkWrapper className="perk">
+        <p>{browserLang=='ja' ? title_jp : title_en}</p>
         <img src={img} alt={alt} />
-        <h3>{browserLang=='ja' ? title_jp : title_en}</h3>
       </PerkWrapper>
     </motion.div>
   )
@@ -52,7 +52,7 @@ const PerkWrapper = styled.article`
   max-width: 260px;
   margin: 0 auto;
 
-  @media (min-width: 992px) {
+  @media (min-width: 768px) {
       max-width: 450px;
   }
 
@@ -67,8 +67,23 @@ const PerkWrapper = styled.article`
   }
 
   h3 {
-      color: black;
+    color: black;
     font-weight: 400;
+  }
+
+  p {
+    margin-bottom: 5px;
+    font-size: 1.0rem;
+    font-weight: 700;
+
+        @media (min-width: 768px) {
+          font-size: 1.2rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 1.5rem;
+        }
+
   }
 `
 

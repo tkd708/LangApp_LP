@@ -38,28 +38,27 @@ const TextBlockImg = ({ title_en, title_jp, children, subtitle, id }) => {
         <div className="content-container">
           <h2>{title_en}</h2>
           <h2>{title_jp}</h2>
-          <p>{subtitle}</p>
           {children}
         <div className="flex-container trio-block">
           <Perk
             img={perk1Img}
             alt="Instant conversation"
             title_en="Bring LangApp anytime when you talk"
-            title_jp="アプリがあなたの英会話を全て記録・文字起こし"
+            title_jp="英会話を音声とスクリプトで記録"
             content="You will be instantly connected to short and yet informative conversation with native speakers"
           />
           <Perk
             img={perk2Img}
             alt="Auto-transcription"
             title_en="Record all the conversations and feedback, making into your assets"
-            title_jp="語彙や表現、文法、発音などを分析し復習をサポート"
+            title_jp="語彙や表現、文法、発音などの分析"
             content="Auto-generate transcription can support to review the conversation and corrections from the buddy"
           />
           <Perk
             img={perk3Img}
             alt="Expression dashbord"
             title_en="Overview your improvement"
-            title_jp="会話を重ねるごとのあなたの英会話の上達を可視化"
+            title_jp="あなたの英会話の上達を可視化"
             content="Your own words and expressions are stored in the app and analysed to visualise your output vocabrary, suggesting ways to improve"
           />
           </div>
@@ -103,7 +102,8 @@ const TextBlockImgWrapper = styled.section`
   h2 {
     background: -webkit-linear-gradient(45deg, #f441a5, #03a9f4);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-text-fill-color: white; /* need to be 'transparent' to apply the color gradient*/
+    font-weight: 700;
 
     font-size: 2.5rem;
 
@@ -116,20 +116,7 @@ const TextBlockImgWrapper = styled.section`
         }
   }
 
-  p {
-    margin-bottom: 50px;
 
-             font-size: 1.2rem;
-
-        @media (min-width: 768px) {
-          font-size: 1.3rem;
-        }
-
-        @media (min-width: 1200px) {
-          font-size: 1.6rem;
-        }
-
-  }
 `
 
 export default TextBlockImg

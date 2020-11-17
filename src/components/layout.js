@@ -12,7 +12,7 @@ const Layout = ({ children }) => {
       <SEO />
       <Navbar />
       <div className="layout">{children}</div>
-      {/* <Footer /> */}
+      <Footer />
     </LayoutWrapper>
   )
 }
@@ -22,7 +22,7 @@ const LayoutWrapper = styled.div`
     box-sizing: border-box;
   }
 
-  font-family: "Gothic A1", sans-serif;
+  font-family: 'Noto Sans JP', sans-serif;
   color: #fff;
   /* background-color: #060c21; */
   background: linear-gradient(45deg, #060c21, #0d0139);
@@ -78,8 +78,12 @@ const LayoutWrapper = styled.div`
     width: 100%;
     max-width: 500px;
 
+    @media (min-width: 768px) {
+      max-width: 750px;
+    }
+
     @media (min-width: 1080px) {
-      max-width: 850px;
+      max-width: 950px;
     }
   }
 
@@ -90,7 +94,7 @@ const LayoutWrapper = styled.div`
       flex-direction: column;
       justify-content: center;
 
-      @media (min-width: 992px) {
+      @media (min-width: 768px) {
         flex-direction: row;
       }
     }

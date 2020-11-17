@@ -3,6 +3,7 @@ import Layout from "../components/layout"
 import Banner from "../components/Banner/banner"
 import TextBlock from "../components/TextBlock/textBlock"
 import TextBlockImg from "../components/TextBlockImg/textBlockImg"
+import TextBlockImg2 from "../components/TextBlockImg/textBlockImg2"
 import Button from "../components/Button/button"
 import Packages from "../components/Packages/packages"
 import Demo from '../components/Demo/Demo';
@@ -14,10 +15,18 @@ export default () => (
   <>
     <Layout>
       <Banner />
-      
+        {/*      
       <TextBlock id="about">
       </TextBlock>
-      <TextBlockImg id="features" title_jp="機能・特徴"　subtitle="">
+        */}
+      <TextBlockImg2 id="about" title_jp="英会話の効率的な復習をサポート"　subtitle="">
+        {/*
+        <Link to="demo" smooth={true} duration={500}>
+            <Button label="Try a demo" cta="Try a demo!" />
+        </Link>
+        */}
+      </TextBlockImg2>
+      <TextBlockImg id="features" title_jp="アプリの特徴"　subtitle="">
         {/*
         <Link to="demo" smooth={true} duration={500}>
             <Button label="Try a demo" cta="Try a demo!" />

@@ -28,15 +28,15 @@ const Contact = ({ id }) => {
     <ContactWrapper id="contact">
       <div className="content-container">
         <h2>{browserLang=='ja'
-        ? "お問い合わせ" 
+        ? "先行登録" 
         : "CONTACT US"}
         </h2>
         <p> {browserLang=='ja'
-        ? "LangAppは現在開発中です" 
+        ? "LangAppは期間限定で無料テストユーザーを募集中です。" 
         : "LangApp is currently under development and needs your voice..."}
         </p>
         <p> {browserLang=='ja'
-        ? "ぜひご意見をお聞かせください！" 
+        ? "下記フォームよりEmailアドレスをご登録ください。" 
         : "We'd love to in touch with you!"}
         </p>
 
@@ -86,6 +86,7 @@ const Contact = ({ id }) => {
             </label>
           </div>
 */}
+{/*
 
           <div className="input-area">
             <textarea
@@ -100,11 +101,14 @@ const Contact = ({ id }) => {
               <span className="content-name">Message</span>
             </label>
           </div>
-
-          <div className="input-area button-area">
+*/}
+          <div
+          className="input-area button-area"
+          style={ {marginBottom: '50px'}}
+          >
             <Button
               label="Send Contact Form"
-              cta={browserLang=='ja' ? "送信！" : "SEND！"}
+              cta={browserLang=='ja' ? "登録" : "SEND！"}
               type="submit"
             />
           </div>
@@ -115,7 +119,7 @@ const Contact = ({ id }) => {
 }
 
 const ContactWrapper = styled.section`
-  padding: 100px 30px;
+  padding: 50px 30px;
   background-color: #fff;
 
   .content-container {

@@ -6,15 +6,15 @@ const Footer = () => {
   return (
     <FooterWrapper>
       <div className="credit">
-        Designed & developed by{" "}
         <a
-          href="http://www.morganbaker.dev"
+          href="./privacy"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Morgan
+          Privacy
         </a>
       </div>
+      {/* 
       {socialIcons.map((item, index) => {
         return (
           <a
@@ -28,6 +28,7 @@ const Footer = () => {
           </a>
         )
       })}
+      */}
     </FooterWrapper>
   )
 }

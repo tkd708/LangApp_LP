@@ -42,6 +42,7 @@ const Navbar = () => {
                 smooth={true}
                 duration={500}
                 offset={-50}
+                onClick={toggleNav}
               >
                 {item.text}
               </Link>
@@ -100,12 +101,7 @@ const NavWrapper = styled.nav`
     list-style: none;
     padding-left: 0;
 
-    @media (min-width: 992px) {
-        margin-right: 50px;
-    }
-
     li {
-      width: 120px;
       list-style: none;
       font-size: 1.25rem;
       font-weight: 400;
@@ -116,7 +112,7 @@ const NavWrapper = styled.nav`
         text-transform: capitalize;
         color: white;
         transition: 0.3s;
-            @media (min-width: 992px) {
+            @media (min-width: 768px) {
                 color: black;
             }
 
@@ -179,7 +175,10 @@ const NavWrapper = styled.nav`
     }
   }
 
-  @media (min-width: 992px) {
+
+  @media (min-width: 768px) {
+    background-color: rgba(255,255,255,0.3);
+
     .masthead {
       flex-direction: column;
       justify-content: center;
@@ -190,6 +189,7 @@ const NavWrapper = styled.nav`
     }
 
     .nav-links {
+      margin-right: 50px;
       background: transparent;
       flex-direction: row;
       margin-left: auto;
@@ -199,6 +199,7 @@ const NavWrapper = styled.nav`
 
       li {
         margin-left: 1rem;
+        width: 120px;
       }
     }
   }
