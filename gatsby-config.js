@@ -12,7 +12,7 @@ module.exports = {
     title: "LangApp",
     titleTemplate: "%s | あなたの英会話をAIが記録・分析するアプリ",
     description:
-      "あなたの英会話をAIが記録・分析することで会話からの学びを最大化し英会話の上達を加速する。",
+      "あなたの英会話をAIが記録・分析することで効率的な復習をサポートします。",
     author: "Naoya Takeda",
     image: "/yellow-metal-design-decoration.jpg",
     siteUrl: "https://www.langapp.netlify.app",
