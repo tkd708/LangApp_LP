@@ -37,7 +37,7 @@ const Contact = ({ id }) => {
         : "LangApp is currently under development and needs your voice..."}
         </p>
         <p> {browserLang=='ja'
-        ? "下記フォームよりEmailアドレスをご登録ください。" 
+        ? "下記フォームよりメールアドレスをご登録ください。" 
         : "We'd love to in touch with you!"}
         </p>
 

@@ -86,7 +86,7 @@ const Banner = () => {
           <Link to="contact" smooth={true} duration={500}>
             <span className="sr-only">Jump to about</span>
             <Button
-              cta="使ってみたい！"
+              cta="メールアドレスで先行登録"
               label="Banner Learn More"
               anchor={true}
               href="linking"

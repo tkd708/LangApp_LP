@@ -35,7 +35,7 @@ const ButtonWrapper = styled.button`
   text-align: center;
   line-height: 50px;
   color: #fff;
-  font-size: 0.85rem;
+  font-size: 1.35rem;
   letter-spacing: 0.25rem;
   text-transform: uppercase;
   text-decoration: none;
