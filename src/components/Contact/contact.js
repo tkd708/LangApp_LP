@@ -17,12 +17,13 @@ const Contact = ({ id }) => {
     }
   `)
 
-       const browserLang =  (typeof window !== `undefined`)
-   ? (window.navigator.languages && window.navigator.languages[0]) ||
-            window.navigator.language ||
-            window.navigator.userLanguage ||
-            window.navigator.browserLanguage
-    : '';
+    const browserLang =  'ja' // tentatively all in Japanese
+   // (typeof window !== `undefined`)
+   //? (window.navigator.languages && window.navigator.languages[0]) ||
+   //         window.navigator.language ||
+   //         window.navigator.userLanguage ||
+   //        window.navigator.browserLanguage
+   // : ''; 
 
   return (
     <ContactWrapper id="contact">
