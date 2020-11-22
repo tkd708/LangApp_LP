@@ -3,6 +3,9 @@ import styled from "styled-components"
 import Button from "../Button/button"
 import { useStaticQuery, graphql } from "gatsby"
 import BackgroundImage from "gatsby-background-image"
+import { ConversationContext } from "twilio/lib/rest/conversations/v1/conversation"
+//require("dotenv").config()
+
 
 const Contact = ({ id }) => {
       const data = useStaticQuery(graphql`
@@ -111,6 +114,7 @@ const Contact = ({ id }) => {
               label="Send Contact Form"
               cta={browserLang=='ja' ? "登録" : "SEND！"}
               type="submit"
+              //onClick={conversion()}
             />
           </div>
         </form>

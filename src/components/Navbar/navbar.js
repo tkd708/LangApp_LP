@@ -1,24 +1,24 @@
 import React, { useState } from "react"
-import links from "../../constants/links"
+import { links } from "../../constants/links"
 import styled from "styled-components"
 import Logo from "../../images/LangApp.svg"
 import { Link, animateScroll as scroll } from "react-scroll"
 
 const Navbar = () => {
+
   const [isOpen, setNav] = useState(false)
 
-  const toggleNav = () => {
-    setNav(isOpen => !isOpen)
-  }
+  const toggleNav = () => setNav(isOpen => !isOpen)
+
   return (
     <NavWrapper>
       <div className="masthead flex-container">
         {/* <img src={Logo} alt="LangApp Logo" /> */}
         <button
           className={
-            isOpen
-              ? `${"toggle-btn"} ${"toggle-btn-active"}`
-              : `${"toggle-btn"}`
+            isOpen ? 
+              `${"toggle-btn"} ${"toggle-btn-active"}`: 
+              `${"toggle-btn"}`
           }
           type="button"
           onClick={toggleNav}
@@ -30,7 +30,11 @@ const Navbar = () => {
         </button>
       </div>
       <ul
-        className={isOpen ? `${"nav-links"} ${"show-nav"}` : `${"nav-links"}`}
+        className={ 
+          isOpen ?
+            `${"nav-links"} ${"show-nav"}` :
+            `${"nav-links"}`
+          }
       >
         {links.map((item, index) => {
           return (
