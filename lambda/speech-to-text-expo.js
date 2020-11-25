@@ -158,7 +158,8 @@ module.exports.handler = async function (event, context) {
 
       const ffmpeg_encode_audio = () => {
         return new Promise((resolve, reject) => {
-          ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 41k', '-map_metadata -1']).save(encodedPath).on('end', async () => {
+          ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 16k', //41k or 16k
+          '-map_metadata -1']).save(encodedPath).on('end', async () => {
             console.log('encoding done');
             resolve();
           });
@@ -176,13 +177,14 @@ module.exports.handler = async function (event, context) {
         content: audio_encoded.toString('base64')
       };
       const sttConfig = {
-        enableAutomaticPunctuation: false,
         encoding: 'LINEAR16',
-        sampleRateHertz: 41000,
+        sampleRateHertz: 16000,
+        //41000 or 16000?
         languageCode: JSON.parse(event.body).lang,
         // ja-JP, en-US, es-CO, fr-FR
-        model: 'default' // default, phone_call
-
+        model: 'default',
+        // default, phone_call
+        enableAutomaticPunctuation: true
       };
       const request = {
         audio: audio,

@@ -81,15 +81,15 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./speech-to-text-dialisation.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./speech-to-text-multi.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./speech-to-text-dialisation.js":
-/*!***************************************!*\
-  !*** ./speech-to-text-dialisation.js ***!
-  \***************************************/
+/***/ "./speech-to-text-multi.js":
+/*!*********************************!*\
+  !*** ./speech-to-text-multi.js ***!
+  \*********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -104,7 +104,7 @@ const ffmpeg = __webpack_require__(/*! fluent-ffmpeg */ "fluent-ffmpeg");
 ffmpeg.setFfmpegPath(ffmpegPath);
 const fsp = fs.promises;
 
-const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech").v1p1beta1;
+const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech");
 
 module.exports.handler = async function (event, context) {
   // avoid CORS errors
@@ -182,58 +182,33 @@ module.exports.handler = async function (event, context) {
         //41000 or 16000?
         languageCode: JSON.parse(event.body).lang,
         // ja-JP, en-US, es-CO, fr-FR
-        enableSpeakerDiarization: true,
-        diarizationSpeakerCount: 2,
-        // no. of speakers
-        model: 'phone_call',
+        model: 'default',
         // default, phone_call
-        enableAutomaticPunctuation: true
+        enableAutomaticPunctuation: true,
+        audioChannelCount: 2,
+        enableSeparateRecognitionPerChannel: true
       };
       const request = {
         audio: audio,
         config: sttConfig
       };
-      console.log('---------------------------------------------------------');
       var t = new Date();
       console.log('Transcription started on: ' + t.toLocaleTimeString({
         second: '2-digit'
       }));
       const [response] = await client.recognize(request);
-      console.log('---------------------------------------------------------');
-      const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
-      console.log(`Transcription: ${transcription}`);
-      console.log('---------------------------------------------------------');
-      console.log('Speaker Diarization:');
-      const result = response.results[response.results.length - 1];
-      const wordsInfo = result.alternatives[0].words;
-      const transcript1 = [];
-      const transcript2 = [];
-      wordsInfo.forEach(a => //console.log(a)
-      //console.log(` word: ${a.word}, speakerTag: ${a.speakerTag}, start: ${a.startTime.seconds}.${a.startTime.nanos}, end: ${a.endTime.seconds}.${a.endTime.nanos}`)
-      a.speakerTag == 1 ? transcript1.push(a.word) : transcript2.push(a.word));
-      console.log('Speaker 1: ' + transcript1.join(' '));
-      console.log('Speaker 2: ' + transcript2.join(' '));
-      console.log('---------------------------------------------------------');
-      console.log('Word analysis:');
-      console.log(transcript1.length);
-      const uniq1 = [...new Set(transcript1)];
-      const uniq2 = [...new Set(transcript2)];
-      console.log(uniq1.length);
-      console.log(uniq2.length); //console.log(`Transcription: ${transcription}`);
+      console.log(response);
+      const transcription = response.results.map(result => ` Channel Tag: ${result.channelTag} ${result.alternatives[0].transcript}`).join('\n');
+      console.log(`Transcription: \n${transcription}`); //console.log(`Transcription: ${transcription}`);
 
-      console.log('---------------------------------------------------------');
       var t = new Date();
       console.log('Transcription done: ' + t.toLocaleTimeString({
         second: '2-digit'
       }));
-      const transcription_both = {
-        speaker1: transcript1.join(' '),
-        speaker2: transcript2.join(' ')
-      };
-      return wordsInfo;
+      return transcription;
     };
 
-    const wordsInfo = await getTranscript(); //console.log(`Transcription out of the scope: ${transcript}`);
+    const transcript = await getTranscript(); //console.log(`Transcription out of the scope: ${transcript}`);
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)    
 
@@ -246,7 +221,7 @@ module.exports.handler = async function (event, context) {
       },
       body: JSON.stringify({
         request: event.body,
-        transcript: wordsInfo
+        transcript: transcript
       })
     };
   }
