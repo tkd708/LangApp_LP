@@ -64,7 +64,7 @@ module.exports.handler = async function ( event, context ) {
                             '-acodec pcm_s16le',
                             '-vn',
                             '-ac 1',
-                            '-ar 41k',
+                            '-ar 16k', //41k or 16k
                             '-map_metadata -1',
                         ] )
                         .save( encodedPath )
@@ -88,11 +88,11 @@ module.exports.handler = async function ( event, context ) {
             };
 
             const sttConfig = {
-                enableAutomaticPunctuation: false,
                 encoding: 'LINEAR16',
-                sampleRateHertz: 41000,
+                sampleRateHertz: 16000, //41000 or 16000?
                 languageCode: JSON.parse( event.body ).lang, // ja-JP, en-US, es-CO, fr-FR
                 model: 'default', // default, phone_call
+                enableAutomaticPunctuation: true,
             }
 
             const request = {

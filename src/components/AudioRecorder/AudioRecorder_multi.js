@@ -11,8 +11,8 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
 //import { ReactMic } from 'react-mic'; // only local
-//const { ReactMic } = typeof window !== `undefined` ? require( "react-mic" ) : '' //"window" is not available during server side rendering.
-const { ReactMic } = ''
+const { ReactMic } = typeof window !== `undefined` ? require( "react-mic" ) : '' //"window" is not available during server side rendering.
+//const { ReactMic } = ''
 
 import TranscribeLangs from './transcribeLangs.json';
 
@@ -21,10 +21,8 @@ const AudioRecorder = () => {
     const [ isLongRecording, setIsLongRecording ] = useState( false );
     const [ blobRecorded, setBlobRecorded ] = useState( null );
     const [ recordString, setRecordString ] = useState( null );
-
     const [ transcriptChunk, setTranscriptChunk ] = useState( null );
-    const [ transcriptAppended1, setTranscriptAppended1 ] = useState( null );
-    const [ transcriptAppended2, setTranscriptAppended2 ] = useState( null );
+    const [ transcriptAppended, setTranscriptAppended ] = useState( null );
     const [ transcript, setTranscript ] = useState( '' );
     const [ transcribeLang, setTranscribeLang ] = useState( 'en-US' );
     const [ startTime, setStartTime ] = useState( '' ); // milliseconds
@@ -71,7 +69,7 @@ const AudioRecorder = () => {
     }
 
     const sendGoogle = () => {
-        const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-dialisation';
+        const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-multi';
 
         axios
             .request( {
@@ -93,22 +91,9 @@ const AudioRecorder = () => {
     }
 
     const appendTranscript = () => {
-        const transcript1 = [];
-        const transcript2 = [];
-
-        //( transcriptChunk !== null ) && 
-        transcriptChunk.forEach( ( a ) =>
-            //console.log( a ),
-            //console.log( ` word: ${ a.word }, speakerTag: ${ a.speakerTag }, start: ${ a.startTime.seconds }.${ a.startTime.nanos }, end: ${ a.endTime.seconds }.${ a.endTime.nanos }` ),
-            ( a.speakerTag == 1 )
-                ? transcript1.push( a.word )
-                : transcript2.push( a.word )
-        );
-
-        const appendedTranscript1 = [ transcriptAppended1, transcript1.join( ' ' ) ]
-        const appendedTranscript2 = [ transcriptAppended2, transcript2.join( ' ' ) ]
-        setTranscriptAppended1( appendedTranscript1.join( ' ' ) );
-        setTranscriptAppended2( appendedTranscript2.join( ' ' ) );
+        const appendedTranscript = [ transcriptAppended, transcriptChunk ]
+        console.log( appendedTranscript )
+        setTranscriptAppended( appendedTranscript.join( ' ' ) );
     }
 
     useEffect( () => {
@@ -136,13 +121,12 @@ const AudioRecorder = () => {
     }, [ transcriptChunk ] )
 
 
-    // tentatively focusing on Speaker1
     useEffect( () => {
         // Active only for the last chunk of transcription and then finalise the transcript
-        ( !isLongRecording ) && setTranscript( transcriptAppended1 );
+        ( !isLongRecording ) && setTranscript( transcriptAppended );
 
         //console.log('last chunk of transcript appended');
-    }, [ transcriptAppended1 ] )
+    }, [ transcriptAppended ] )
 
     const repeatRecoridng = () => {
         startRecording();
@@ -155,8 +139,7 @@ const AudioRecorder = () => {
         setStartTime( start.getTime() );
 
         setIsLongRecording( true );
-        setTranscriptAppended1( '' )
-        setTranscriptAppended2( '' )
+        setTranscriptAppended( '' )
         repeatRecoridng();
         console.log( 'long recoding started' );
     }
@@ -223,23 +206,6 @@ const AudioRecorder = () => {
                 onClick={ () => { isLongRecording ? stopLongRecording() : startLongRecording() } }
             >
             </Button>
-
-            <div
-                style={ { display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' } }
-            >
-                <Card style={ { width: '40vw', margin: '20px' } } >
-                    <CardContent>
-                        <Typography color="textSecondary" gutterBottom>Speaker1</Typography>
-                        <Typography>{ transcriptAppended1 }</Typography>
-                    </CardContent>
-                </Card>
-                <Card style={ { width: '40vw', margin: '20px' } } >
-                    <CardContent>
-                        <Typography color="textSecondary" gutterBottom>Speaker2</Typography>
-                        <Typography>{ transcriptAppended2 }</Typography>
-                    </CardContent>
-                </Card>
-            </div>
 
             { ( transcript !== null ) &&
                 <Card style={ { width: '100%', marginTop: '20px' } } >
