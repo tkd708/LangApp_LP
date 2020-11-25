@@ -150,11 +150,11 @@ module.exports.handler = async function ( event, context ) {
                 speaker2: transcript2.join( ' ' )
             }
 
-            return transcription_both
+            return wordsInfo
         }
 
 
-        const transcript_both = await getTranscript()
+        const wordsInfo = await getTranscript()
         //console.log(`Transcription out of the scope: ${transcript}`);
         //await fsp.unlink(decodedPath)
         //await fsp.unlink(encodedPath)    
@@ -167,7 +167,7 @@ module.exports.handler = async function ( event, context ) {
             },
             body: JSON.stringify( {
                 request: event.body,
-                transcript: transcript_both
+                transcript: wordsInfo
             } )
         }
 

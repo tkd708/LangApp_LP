@@ -24,7 +24,7 @@ const Demo = () => {
                 style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }
             >
                 <h2>DEMO</h2>
-
+                {/* 
                 <Button
                     cta={ browserLang == 'ja' ? `アプリ原案` : "Open the mock app" }
                     label="Open mockapp"
@@ -32,8 +32,7 @@ const Demo = () => {
                     target="_blank"
                     href="https://www.figma.com/proto/s6v3AqYbMTOCvx7FJuL6ch/LangApp?node-id=0%3A2&viewport=-1418%2C-522%2C0.5&scaling=scale-down"
                 />
-
-
+                */}
                 <p style={ { marginTop: '50px', marginBottom: '10px' } }> { browserLang == 'ja'
                     ? `実際に英会話を記録・分析してみましょう!（開発中）`
                     : "Let's try analysing your conversation!" }

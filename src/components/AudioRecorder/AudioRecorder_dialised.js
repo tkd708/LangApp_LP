@@ -70,7 +70,6 @@ const AudioRecorder = () => {
     }
 
     const sendGoogle = () => {
-        //const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-expo';
         const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-dialisation';
 
         axios
@@ -93,8 +92,21 @@ const AudioRecorder = () => {
     }
 
     const appendTranscript = () => {
-        const appendedTranscript1 = [ transcriptAppended1, transcriptChunk.speaker1 ]
-        const appendedTranscript2 = [ transcriptAppended2, transcriptChunk.speaker2 ]
+        const transcript1 = [];
+        const transcript2 = [];
+
+        transcriptChunk.forEach( ( a ) =>
+            console.log( a ),
+            console.log( ` word: ${ a.word }, speakerTag: ${ a.speakerTag }, start: ${ a.startTime.seconds }.${ a.startTime.nanos }, end: ${ a.endTime.seconds }.${ a.endTime.nanos }` ),
+            ( a.speakerTag == 1 )
+                ? transcript1.push( a.word )
+                : transcript2.push( a.word )
+        );
+        console.log( 'Speaker 1: ' + transcript1.join( ' ' ) )
+        console.log( 'Speaker 2: ' + transcript2.join( ' ' ) )
+
+        const appendedTranscript1 = [ transcriptAppended1, transcript1 ]
+        const appendedTranscript2 = [ transcriptAppended2, transcript2 ]
         console.log( appendedTranscript1 )
         console.log( appendedTranscript2 )
         setTranscriptAppended1( appendedTranscript1.join( ' ' ) );
