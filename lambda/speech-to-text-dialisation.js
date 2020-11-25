@@ -81,15 +81,15 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./speech-to-text-expo.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./speech-to-text-dialisation.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./speech-to-text-expo.js":
-/*!********************************!*\
-  !*** ./speech-to-text-expo.js ***!
-  \********************************/
+/***/ "./speech-to-text-dialisation.js":
+/*!***************************************!*\
+  !*** ./speech-to-text-dialisation.js ***!
+  \***************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -104,7 +104,7 @@ const ffmpeg = __webpack_require__(/*! fluent-ffmpeg */ "fluent-ffmpeg");
 ffmpeg.setFfmpegPath(ffmpegPath);
 const fsp = fs.promises;
 
-const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech");
+const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech").v1p1beta1;
 
 module.exports.handler = async function (event, context) {
   // avoid CORS errors
@@ -181,29 +181,52 @@ module.exports.handler = async function (event, context) {
         sampleRateHertz: 41000,
         languageCode: JSON.parse(event.body).lang,
         // ja-JP, en-US, es-CO, fr-FR
-        model: 'default' // default, phone_call
+        enableSpeakerDiarization: true,
+        diarizationSpeakerCount: 2,
+        // no. of speakers
+        model: 'phone_call' // default, phone_call
 
       };
       const request = {
         audio: audio,
         config: sttConfig
       };
+      console.log('---------------------------------------------------------');
       var t = new Date();
       console.log('Transcription started on: ' + t.toLocaleTimeString({
         second: '2-digit'
       }));
       const [response] = await client.recognize(request);
-      console.log(response);
-      const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n'); //console.log(`Transcription: ${transcription}`);
+      console.log('---------------------------------------------------------');
+      const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n');
+      console.log(`Transcription: ${transcription}`);
+      console.log('---------------------------------------------------------');
+      console.log('Speaker Diarization:');
+      const result = response.results[response.results.length - 1];
+      const wordsInfo = result.alternatives[0].words;
+      const transcript1 = [];
+      const transcript2 = [];
+      wordsInfo.forEach(a => //console.log(a)
+      //console.log(` word: ${a.word}, speakerTag: ${a.speakerTag}, start: ${a.startTime.seconds}.${a.startTime.nanos}, end: ${a.endTime.seconds}.${a.endTime.nanos}`)
+      a.speakerTag == 1 ? transcript1.push(a.word) : transcript2.push(a.word));
+      console.log('Speaker 1: ' + transcript1.join(' '));
+      console.log('Speaker 2: ' + transcript2.join(' '));
+      console.log('---------------------------------------------------------');
+      console.log('Word analysis:');
+      console.log(transcript1.length);
+      const uniq = [...new Set(transcript1)];
+      console.log(uniq.length); //console.log(`Transcription: ${transcription}`);
 
+      console.log('---------------------------------------------------------');
       var t = new Date();
       console.log('Transcription done: ' + t.toLocaleTimeString({
         second: '2-digit'
       }));
-      return transcription;
+      const transcription_both = 'Speaker 1: ' + transcript1.join(' ') + 'Speaker 2: ' + transcript2.join(' ');
+      return transcription_both;
     };
 
-    const transcript = await getTranscript(); //console.log(`Transcription out of the scope: ${transcript}`);
+    const transcript_both = await getTranscript(); //console.log(`Transcription out of the scope: ${transcript}`);
     //await fsp.unlink(decodedPath)
     //await fsp.unlink(encodedPath)    
 
@@ -216,7 +239,7 @@ module.exports.handler = async function (event, context) {
       },
       body: JSON.stringify({
         request: event.body,
-        transcript: transcript
+        transcript: transcript_both
       })
     };
   }

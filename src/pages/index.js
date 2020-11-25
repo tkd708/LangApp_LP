@@ -42,11 +42,12 @@ export default () => (
       >
       </Packages>
       */}
-            {/* 
-      <Demo
-        id="demo"
-      />
-      */}
+
+            {/*         <Demo
+                id="demo"
+            />
+            */}
+
             <Contact
                 id="contact"
             />
