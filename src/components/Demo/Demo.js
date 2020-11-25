@@ -4,7 +4,8 @@ import styled from "styled-components"
 import Button from "../Button/button"
 
 import VideoChat from '../VideoChat/VideoChat.js';
-import AudioRecorder from '../AudioRecorder/AudioRecorder.js';
+//import AudioRecorder from '../AudioRecorder/AudioRecorder.js';
+import AudioRecorder from '../AudioRecorder/AudioRecorder_dialised.js';
 //import TextMining from '../components/TextMining/kuromoji.js';
 
 const Demo = () => {

@@ -135,15 +135,21 @@ module.exports.handler = async function ( event, context ) {
             console.log( '---------------------------------------------------------' );
             console.log( 'Word analysis:' );
             console.log( transcript1.length );
-            const uniq = [ ...new Set( transcript1 ) ];
-            console.log( uniq.length );
+            const uniq1 = [ ...new Set( transcript1 ) ];
+            const uniq2 = [ ...new Set( transcript2 ) ];
+            console.log( uniq1.length );
+            console.log( uniq2.length );
 
             //console.log(`Transcription: ${transcription}`);
             console.log( '---------------------------------------------------------' );
             var t = new Date
             console.log( 'Transcription done: ' + t.toLocaleTimeString( { second: '2-digit' } ) )
 
-            const transcription_both = 'Speaker 1: ' + transcript1.join( ' ' ) + 'Speaker 2: ' + transcript2.join( ' ' )
+            const transcription_both = {
+                speaker1: transcript1.join( ' ' ),
+                speaker2: transcript2.join( ' ' )
+            }
+
             return transcription_both
         }
 
