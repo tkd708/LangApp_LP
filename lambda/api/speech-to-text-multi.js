@@ -4,7 +4,7 @@ const ffmpegPath = require( '@ffmpeg-installer/ffmpeg' ).path;
 const ffmpeg = require( 'fluent-ffmpeg' );
 ffmpeg.setFfmpegPath( ffmpegPath );
 const fsp = fs.promises;
-const speech = require( '@google-cloud/speech' );
+const speech = require( '@google-cloud/speech' ).v1p1beta1;
 
 module.exports.handler = async function ( event, context ) {
 

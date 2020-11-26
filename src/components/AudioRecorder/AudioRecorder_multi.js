@@ -212,10 +212,8 @@ const AudioRecorder = () => {
                     <CardContent>
                         <Typography color="textSecondary" gutterBottom>今回の会話の分析結果はこちら！</Typography>
                         <Typography>{ 'Transcript: ' + transcript }</Typography>
-                        <Typography>{ `今回の会話での単語数: ${ vocab1 } ...前回から +10!` }</Typography>
-                        <Typography>{ `今回の会話での流暢さ(word per minute): ${ vocab2 } ...前回から +5!` }</Typography>
-                        <Typography>{ `累計の語彙数(仮): ${ vocab3 } ...前回から+3!` }</Typography>
-                        <Typography>{ `前回の課題から話せた単語(仮): ${ vocab4.join( ", " ) } ...3/5達成！` }</Typography>
+                        <Typography>{ `今回の会話での単語数: ${ vocab1 }` }</Typography>
+                        <Typography>{ `今回の会話での流暢さ(word per minute): ${ vocab2 }` }</Typography>
                         <Typography>{ `次回使ってみては？: ${ vocab5.join( ", " ) }` }</Typography>
                     </CardContent>
                 </Card>
