@@ -11,8 +11,8 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
 //import { ReactMic } from 'react-mic'; // only local
-//const { ReactMic } = typeof window !== `undefined` ? require( "react-mic" ) : '' //"window" is not available during server side rendering.
-const { ReactMic } = ''
+const { ReactMic } = typeof window !== `undefined` ? require( "react-mic" ) : '' //"window" is not available during server side rendering.
+//const { ReactMic } = ''
 
 import TranscribeLangs from './transcribeLangs.json';
 
@@ -160,7 +160,7 @@ const AudioRecorder = () => {
         const conversationLength = ( endTime - startTime ) / 1000 / 60;
         setVocab2( ( transcriptArray.length / conversationLength ).toFixed( 1 ) );
         const uniq = [ ...new Set( transcriptArray ) ];
-        setVocab3( uniq.length * 100 );
+        setVocab3( uniq.length );
     }
 
     useEffect( () => {
@@ -207,16 +207,21 @@ const AudioRecorder = () => {
             >
             </Button>
 
+            <Card style={ { width: '60vw', margin: '20px' } } >
+                <CardContent>
+                    <Typography color="textSecondary" gutterBottom>会話内容の書き起こし</Typography>
+                    <Typography>{ transcriptAppended }</Typography>
+                </CardContent>
+            </Card>
+
             { ( transcript !== null ) &&
                 <Card style={ { width: '100%', marginTop: '20px' } } >
                     <CardContent>
                         <Typography color="textSecondary" gutterBottom>今回の会話の分析結果はこちら！</Typography>
-                        <Typography>{ 'Transcript: ' + transcript }</Typography>
-                        <Typography>{ `今回の会話での単語数: ${ vocab1 } ...前回から +10!` }</Typography>
-                        <Typography>{ `今回の会話での流暢さ(word per minute): ${ vocab2 } ...前回から +5!` }</Typography>
-                        <Typography>{ `累計の語彙数(仮): ${ vocab3 } ...前回から+3!` }</Typography>
-                        <Typography>{ `前回の課題から話せた単語(仮): ${ vocab4.join( ", " ) } ...3/5達成！` }</Typography>
-                        <Typography>{ `次回使ってみては？: ${ vocab5.join( ", " ) }` }</Typography>
+                        {/*<Typography>{ 'Transcript: ' + transcript }</Typography> 
+                        <Typography>{ `今回の会話での単語数: ${ vocab1 }` }</Typography> */ }
+                        <Typography>{ `今回の会話での流暢さ(word per minute): ${ vocab2 } ` }</Typography>
+                        <Typography>{ `使用した単語数: ${ vocab3 } ` }</Typography>
                     </CardContent>
                 </Card>
             }

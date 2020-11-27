@@ -105,6 +105,7 @@ module.exports.handler = async function ( event, context ) {
             console.log( '---------------------------------------------------------' );
             var t = new Date
             console.log( 'Transcription started on: ' + t.toLocaleTimeString( { second: '2-digit' } ) )
+
             const [ response ] = await client.recognize( request );
             console.log( response );
 

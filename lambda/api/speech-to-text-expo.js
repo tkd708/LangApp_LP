@@ -93,6 +93,7 @@ module.exports.handler = async function ( event, context ) {
                 languageCode: JSON.parse( event.body ).lang, // ja-JP, en-US, es-CO, fr-FR
                 model: 'default', // default, phone_call
                 enableAutomaticPunctuation: true,
+
             }
 
             const request = {
