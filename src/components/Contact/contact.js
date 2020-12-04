@@ -7,7 +7,7 @@ import { ConversationContext } from "twilio/lib/rest/conversations/v1/conversati
 //require("dotenv").config()
 
 
-const Contact = ( { id, audio_base64 } ) => {
+const Contact = ( { id } ) => {
     const data = useStaticQuery( graphql`
     query {
       file(relativePath: { eq: "blackboard.jpg" }) {
@@ -74,22 +74,6 @@ const Contact = ( { id, audio_base64 } ) => {
                         />
                         <label className="label-name" for="email">
                             <span className="content-name">Email</span>
-                        </label>
-                    </div>
-
-                    <div className="input-area"
-                        style={ {
-                            //display: 'none'
-                        } }>
-                        <input
-                            type="text"
-                            name="audio_base64"
-                            aria-label="audio_base64"
-                            value={ audio_base64 }
-                            autoComplete="off"
-                        />
-                        <label className="label-name" for="audio">
-                            <span className="content-name">Audio_base64</span>
                         </label>
                     </div>
 
