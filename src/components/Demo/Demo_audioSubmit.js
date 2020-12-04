@@ -21,24 +21,7 @@ const Demo = () => {
                 className="content-container"
                 style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }
             >
-                <h2>DEMO</h2>
-                {/* 
-                <Button
-                    cta={ browserLang == 'ja' ? `アプリ原案` : "Open the mock app" }
-                    label="Open mockapp"
-                    anchor={ true }
-                    target="_blank"
-                    href="https://www.figma.com/proto/s6v3AqYbMTOCvx7FJuL6ch/LangApp?node-id=0%3A2&viewport=-1418%2C-522%2C0.5&scaling=scale-down"
-                />
-                */}
-                <p style={ { marginTop: '50px', marginBottom: '10px' } }> { browserLang == 'ja'
-                    ? `実際に英会話を記録・分析してみましょう!（開発中）`
-                    : "Let's try analysing your conversation!" }
-                </p>
-                <p style={ { marginTop: '5px' } }> { browserLang == 'ja'
-                    ? `Startを押すと会話の録音が開始され、Endを押すと分析結果が表示されます。`
-                    : "Record conversation with 'Start' and show the results with 'End'" }
-                </p>
+                <h2>デモ</h2>
 
                 <AudioRecorder />
 

@@ -28,7 +28,6 @@ const AudioRecorder = () => {
     const [ isRecording, setIsRecording ] = useState( false );
     const [ blobRecorded, setBlobRecorded ] = useState( null );
     const [ recordString, setRecordString ] = useState( null );
-    const [ downloadUrl, setDownloadUrl ] = useState( '' );
 
     const startRecording = () => {
         setIsRecording( true );
@@ -45,14 +44,13 @@ const AudioRecorder = () => {
 
     const onStop = ( recordedBlob ) => {
         setBlobRecorded( recordedBlob );
-        console.log( 'recordedBlob is: ', recordedBlob );
+        //console.log( 'recordedBlob is: ', recordedBlob );
     }
 
     const playRecording = () => {
         const tmp = new Audio( blobRecorded.blobURL ); //passing your state (hook)
         tmp.play() //simple play of an audio element. 
     }
-
 
     const blobToBase64 = () => {
         const reader = new FileReader();
@@ -61,64 +59,63 @@ const AudioRecorder = () => {
             const recordString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
             setRecordString( recordString )
         }
-        console.log( recordString )
+        //console.log( recordString )
     }
 
+    useEffect( () => {
+        ( blobRecorded !== null ) && blobToBase64();
+
+    }, [ blobRecorded ] )
 
 
     return (
         <div
             style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }
         >
-            <div style={ { display: 'none' } }>
-                { typeof window !== `undefined` &&  // need inline if for the same reason as import
+            <p style={ { marginTop: '50px', marginBottom: '10px' } }> { browserLang == 'ja'
+                ? `実際にあなたのオンラインレッスンでの英会話を記録・分析してみませんか？`
+                : "Let's try analysing your conversation!" }
+            </p>
+            <p style={ { marginTop: '10px', marginBottom: '10px' } }> { browserLang == 'ja'
+                ? '下記よりマイクからの音声を録音し、フォームを埋めて音声を送信していただくだけで'
+                : "Let's try analysing your conversation!" }
+            </p>
+            <p style={ { marginTop: '10px', marginBottom: '10px' } }> { browserLang == 'ja'
+                ? '当方で開発中の分析システムによってレポートを生成し、指定のメールアドレスにご送付いたします。'
+                : "Let's try analysing your conversation!" }
+            </p>
+
+            { typeof window !== `undefined` &&  // need inline if for the same reason as import
+                <div style={ {
+                    //display: 'none',
+                    display: 'flex', flexDirection: 'column', marginBottom: '50px'
+                } }>
+
                     <ReactMic
                         record={ isRecording }
                         className="sound-wave"
                         onStop={ onStop }
                         onData={ onData }
+                        mimeType="audio/webm"
                         strokeColor="white"
+                        visualSetting="sinewave"
+                        sampleRate={ 96000 }
                         backgroundColor="transparent" />
-                }
-            </div>
-
-            <Button
-                style={ { marginTop: '10px' } }
-                //variant="contained"
-                //color="primary"
-                cta={ isRecording ? 'End' : 'Start!' } // from the template
-                onClick={ () => { isRecording ? stopRecording() : startRecording() } }
-            >
-            </Button>
-
-            <Button
-                style={ { marginTop: '10px' } }
-                cta={ 'Play!' } // from the template
-                onClick={ () => { playRecording() } }
-            >
-            </Button>
-
-            <Button
-                style={ { marginTop: '10px' } }
-                cta={ 'Convert recording' } // from the template
-                onClick={ () => { blobToBase64() } }
-            >
-            </Button>
+                    <div style={ {
+                        display: 'flex', flexDirection: 'row', justifyContent: 'center'
+                    } } >
+                        <button onClick={ () => { isRecording ? stopRecording() : startRecording() } } type="button">{ isRecording ? '録音を終了する' : '録音を開始する' }</button>
+                        <button onClick={ () => { playRecording() } } type="button">{ '録音を再生する' }</button>
+                    </div>
+                </div>
+            }
 
             <ContactWrapper id="contact">
                 <div className="content-container">
                     <h2>{ browserLang == 'ja'
-                        ? "先行登録"
+                        ? "英会話分析登録フォーム"
                         : "CONTACT US" }
                     </h2>
-                    <p> { browserLang == 'ja'
-                        ? "LangAppは期間限定で無料テストユーザーを募集中です。"
-                        : "LangApp is currently under development and needs your voice..." }
-                    </p>
-                    <p> { browserLang == 'ja'
-                        ? "下記フォームよりメールアドレスをご登録ください。"
-                        : "We'd love to in touch with you!" }
-                    </p>
 
                     <form
                         name="contact"
@@ -136,7 +133,7 @@ const AudioRecorder = () => {
                                 autoComplete="off"
                             />
                             <label className="label-name" for="name">
-                                <span className="content-name">Name</span>
+                                <span className="content-name">名前</span>
                             </label>
                         </div>
 
@@ -149,13 +146,13 @@ const AudioRecorder = () => {
                                 autoComplete="off"
                             />
                             <label className="label-name" for="email">
-                                <span className="content-name">Email</span>
+                                <span className="content-name">メールアドレス</span>
                             </label>
                         </div>
 
                         <div className="input-area"
                             style={ {
-                                //display: 'none'
+                                display: 'none'
                             } }>
                             <input
                                 type="text"
@@ -175,7 +172,7 @@ const AudioRecorder = () => {
                         >
                             <Button
                                 label="Send Contact Form"
-                                cta={ browserLang == 'ja' ? "登録" : "SEND！" }
+                                cta={ browserLang == 'ja' ? "送信" : "SEND！" }
                                 type="submit"
                             />
                         </div>
