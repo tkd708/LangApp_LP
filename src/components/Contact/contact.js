@@ -7,8 +7,8 @@ import { ConversationContext } from "twilio/lib/rest/conversations/v1/conversati
 //require("dotenv").config()
 
 
-const Contact = ({ id }) => {
-      const data = useStaticQuery(graphql`
+const Contact = ( { id, audio_base64 } ) => {
+    const data = useStaticQuery( graphql`
     query {
       file(relativePath: { eq: "blackboard.jpg" }) {
         childImageSharp {
@@ -20,63 +20,95 @@ const Contact = ({ id }) => {
     }
   `)
 
-    const browserLang =  'ja' // tentatively all in Japanese
-   // (typeof window !== `undefined`)
-   //? (window.navigator.languages && window.navigator.languages[0]) ||
-   //         window.navigator.language ||
-   //         window.navigator.userLanguage ||
-   //        window.navigator.browserLanguage
-   // : ''; 
+    const browserLang = 'ja' // tentatively all in Japanese
+    // (typeof window !== `undefined`)
+    //? (window.navigator.languages && window.navigator.languages[0]) ||
+    //         window.navigator.language ||
+    //         window.navigator.userLanguage ||
+    //        window.navigator.browserLanguage
+    // : ''; 
 
-  return (
-    <ContactWrapper id="contact">
-      <div className="content-container">
-        <h2>{browserLang=='ja'
-        ? "先行登録" 
-        : "CONTACT US"}
-        </h2>
-        <p> {browserLang=='ja'
-        ? "LangAppは期間限定で無料テストユーザーを募集中です。" 
-        : "LangApp is currently under development and needs your voice..."}
-        </p>
-        <p> {browserLang=='ja'
-        ? "下記フォームよりメールアドレスをご登録ください。" 
-        : "We'd love to in touch with you!"}
-        </p>
+    return (
+        <ContactWrapper id="contact">
+            <div className="content-container">
+                <h2>{ browserLang == 'ja'
+                    ? "先行登録"
+                    : "CONTACT US" }
+                </h2>
+                <p> { browserLang == 'ja'
+                    ? "LangAppは期間限定で無料テストユーザーを募集中です。"
+                    : "LangApp is currently under development and needs your voice..." }
+                </p>
+                <p> { browserLang == 'ja'
+                    ? "下記フォームよりメールアドレスをご登録ください。"
+                    : "We'd love to in touch with you!" }
+                </p>
 
-        <form
-          name="contact"
-          method="POST"
-          data-netlify="true"
-          data-netlify-honeypot="bot-field"
-        >
-          <input type="hidden" name="form-name" value="contact" />
-          <div className="input-area">
-            <input
-              type="text"
-              name="name"
-              aria-label="Name"
-              required
-              autoComplete="off"
-            />
-            <label className="label-name" for="name">
-              <span className="content-name">Name</span>
-            </label>
-          </div>
+                <form
+                    name="contact"
+                    method="POST"
+                    data-netlify="true"
+                    data-netlify-honeypot="bot-field"
+                >
+                    <input type="hidden" name="form-name" value="contact" />
+                    <div className="input-area">
+                        <input
+                            type="text"
+                            name="name"
+                            aria-label="Name"
+                            required
+                            autoComplete="off"
+                        />
+                        <label className="label-name" for="name">
+                            <span className="content-name">Name</span>
+                        </label>
+                    </div>
 
-          <div className="input-area">
-            <input
-              type="email"
-              name="email"
-              aria-label="Email"
-              required
-              autoComplete="off"
-            />
-            <label className="label-name" for="email">
-              <span className="content-name">Email</span>
-            </label>
-          </div>
-{/*
+                    <div className="input-area">
+                        <input
+                            type="email"
+                            name="email"
+                            aria-label="Email"
+                            required
+                            autoComplete="off"
+                        />
+                        <label className="label-name" for="email">
+                            <span className="content-name">Email</span>
+                        </label>
+                    </div>
+
+                    <div className="input-area"
+                        style={ {
+                            display: 'none'
+                        } }>
+                        <input
+                            type="test"
+                            name="test"
+                            aria-label="test"
+                            value={ audio_base64 }
+                            autoComplete="off"
+                        />
+                        <label className="label-name" for="email">
+                            <span className="content-name">Test</span>
+                        </label>
+                    </div>
+
+                    {/*
+                    <div className="input-area">
+                        <input
+                            type="file"
+                            name="file"
+                            aria-label="File"
+                            value={ audio_base64 }
+                            required
+                            autoComplete="off"
+                        />
+                        <label className="label-name" for="file">
+                            <span className="content-name">File upload</span>
+                        </label>
+                    </div>*/}
+
+                    {/*
           <div className="input-area">
             <input
               type="select"
@@ -88,10 +120,9 @@ const Contact = ({ id }) => {
             <label className="label-name" for="plan">
               <span className="content-name">Plan interested</span>
             </label>
-          </div>
-*/}
-{/*
+          </div>*/}
 
+                    {/*
           <div className="input-area">
             <textarea
               type="text"
@@ -106,21 +137,21 @@ const Contact = ({ id }) => {
             </label>
           </div>
 */}
-          <div
-          className="input-area button-area"
-          style={ {marginBottom: '50px'}}
-          >
-            <Button
-              label="Send Contact Form"
-              cta={browserLang=='ja' ? "登録" : "SEND！"}
-              type="submit"
-              //onClick={conversion()}
-            />
-          </div>
-        </form>
-      </div>
-    </ContactWrapper>
-  )
+                    <div
+                        className="input-area button-area"
+                        style={ { marginBottom: '50px' } }
+                    >
+                        <Button
+                            label="Send Contact Form"
+                            cta={ browserLang == 'ja' ? "登録" : "SEND！" }
+                            type="submit"
+                        //onClick={conversion()}
+                        />
+                    </div>
+                </form>
+            </div>
+        </ContactWrapper>
+    )
 }
 
 const ContactWrapper = styled.section`

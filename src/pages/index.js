@@ -43,13 +43,15 @@ export default () => (
       </Packages>
       */}
 
+
             <Demo
                 id="demo"
             />
 
+            {/*       
             <Contact
                 id="contact"
-            />
+            />*/}
 
         </Layout>
     </>

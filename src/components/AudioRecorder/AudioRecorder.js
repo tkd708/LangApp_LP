@@ -11,8 +11,8 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
 //import { ReactMic } from 'react-mic'; // only local
-const { ReactMic } = typeof window !== `undefined` ? require( "react-mic" ) : '' //"window" is not available during server side rendering.
-//const { ReactMic } = ''
+//const { ReactMic } = typeof window !== `undefined` ? require( "react-mic" ) : '' //"window" is not available during server side rendering.
+const { ReactMic } = ''
 
 import TranscribeLangs from './transcribeLangs.json';
 
@@ -49,8 +49,8 @@ const AudioRecorder = () => {
     }
 
     const onStop = ( recordedBlob ) => {
-        console.log( 'recordedBlob is: ', recordedBlob );
         setBlobRecorded( recordedBlob );
+        console.log( 'recordedBlob is: ', recordedBlob );
     }
 
     const playRecording = () => {
@@ -97,11 +97,12 @@ const AudioRecorder = () => {
     }
 
     useEffect( () => {
-        console.log( 'blob updated' );
-        ( blobRecorded !== null ) && blobToBase64();
+        //console.log( 'blob updated' );
 
         // Repeat recording during the long recording
         ( isLongRecording ) && repeatRecoridng();
+
+        ( blobRecorded !== null ) && blobToBase64();
 
         // Last chunk
         ( !isLongRecording ) && ( console.log( 'last chunk of blob' ) )
