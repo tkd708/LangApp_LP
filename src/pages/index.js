@@ -6,7 +6,7 @@ import TextBlockImg from "../components/TextBlockImg/textBlockImg"
 import TextBlockImg2 from "../components/TextBlockImg/textBlockImg2"
 import Button from "../components/Button/button"
 import Packages from "../components/Packages/packages"
-import Demo from '../components/Demo/Demo';
+import Demo from '../components/Demo/Demo_audioSubmit';
 import Contact from "../components/Contact/contact"
 import { Link } from "react-scroll"
 

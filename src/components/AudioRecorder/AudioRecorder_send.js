@@ -15,9 +15,13 @@ import Typography from '@material-ui/core/Typography';
 const { ReactMic } = typeof window !== `undefined` ? require( "react-mic" ) : '' //"window" is not available during server side rendering.
 //const { ReactMic } = ''
 
-import TranscribeLangs from './transcribeLangs.json';
-
-import Contact from "../Contact/contact"
+const browserLang = 'ja' // tentatively all in Japanese
+//(typeof window !== `undefined`)
+//? (window.navigator.languages && window.navigator.languages[0]) ||
+//         window.navigator.language ||
+//         window.navigator.userLanguage ||
+//         window.navigator.browserLanguage
+// : ''; 
 
 
 const AudioRecorder = () => {
@@ -173,7 +177,6 @@ const AudioRecorder = () => {
                                 label="Send Contact Form"
                                 cta={ browserLang == 'ja' ? "登録" : "SEND！" }
                                 type="submit"
-                            //onClick={conversion()}
                             />
                         </div>
                     </form>

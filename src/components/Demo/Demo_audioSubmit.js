@@ -3,22 +3,17 @@ import styled from "styled-components"
 //import Button from '@material-ui/core/Button';
 import Button from "../Button/button"
 
-import VideoChat from '../VideoChat/VideoChat.js';
-//import AudioRecorder from '../AudioRecorder/AudioRecorder.js';
-//import AudioRecorder from '../AudioRecorder/AudioRecorder_dialised.js';
-//import AudioRecorder from '../AudioRecorder/AudioRecorder_multi.js';
-//import TextMining from '../components/TextMining/kuromoji.js';
+import AudioRecorder from '../AudioRecorder/AudioRecorder_send.js';
 
-import AudioRecorder from '../AudioRecorder/AudioRecorder.js';
+const browserLang = 'ja' // tentatively all in Japanese
+//(typeof window !== `undefined`)
+//? (window.navigator.languages && window.navigator.languages[0]) ||
+//         window.navigator.language ||
+//         window.navigator.userLanguage ||
+//         window.navigator.browserLanguage
+// : ''; 
 
 const Demo = () => {
-    const browserLang = 'ja' // tentatively all in Japanese
-    //(typeof window !== `undefined`)
-    //? (window.navigator.languages && window.navigator.languages[0]) ||
-    //         window.navigator.language ||
-    //         window.navigator.userLanguage ||
-    //         window.navigator.browserLanguage
-    // : ''; 
 
     return (
         <DemoWrapper>
