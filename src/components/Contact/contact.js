@@ -79,17 +79,17 @@ const Contact = ( { id, audio_base64 } ) => {
 
                     <div className="input-area"
                         style={ {
-                            display: 'none'
+                            //display: 'none'
                         } }>
                         <input
-                            type="test"
-                            name="test"
-                            aria-label="test"
+                            type="text"
+                            name="audio_base64"
+                            aria-label="audio_base64"
                             value={ audio_base64 }
                             autoComplete="off"
                         />
-                        <label className="label-name" for="email">
-                            <span className="content-name">Test</span>
+                        <label className="label-name" for="audio">
+                            <span className="content-name">Audio_base64</span>
                         </label>
                     </div>
 
