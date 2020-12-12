@@ -10,23 +10,41 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
-import { ReactMic } from 'react-mic'; // only local
-//const { ReactMic } = typeof window !== `undefined` ? require( "react-mic" ) : '' //"window" is not available during server side rendering.
-//const { ReactMic } = ''
 
 import TranscribeLangs from './transcribeLangs.json';
 
 const AudioRecorder = () => {
+    const [ streamMic, setStreamMic ] = useState( null ); //
+    const [ streamScreen, setStreamScreen ] = useState( null ); //
+    const [ streamCombined, setStreamCombined ] = useState( null ); //
+
+    const [ mediaRecorderMic, setMediaRecorderMic ] = useState( null ); //
+    const [ mediaRecorderScreen, setMediaRecorderScreen ] = useState( null ); //
+    const [ mediaRecorderCombined, setMediaRecorderCombined ] = useState( null ); //
+
     const [ isRecording, setIsRecording ] = useState( false );
-    const [ isLongRecording, setIsLongRecording ] = useState( false );
-    const [ blobRecorded, setBlobRecorded ] = useState( null );
-    const [ recordString, setRecordString ] = useState( null );
-    const [ transcriptChunk, setTranscriptChunk ] = useState( null );
-    const [ transcriptAppended, setTranscriptAppended ] = useState( null );
-    const [ transcript, setTranscript ] = useState( '' );
-    const [ transcribeLang, setTranscribeLang ] = useState( 'en-US' );
     const [ startTime, setStartTime ] = useState( '' ); // milliseconds
     const [ endTime, setEndTime ] = useState( '' ); // milliseconds
+
+
+    const [ blobRecordedMic, setBlobRecordedMic ] = useState( null );
+    const [ blobAppendedMic, setBlobAppendedMic ] = useState( null );
+    const [ blobRecordedScreen, setBlobRecordedScreen ] = useState( null );
+    const [ blobAppendedScreen, setBlobAppendedScreen ] = useState( null );
+    const [ blobRecordedCombined, setBlobRecordedCombined ] = useState( null );
+    const [ blobAppendedCombined, setBlobAppendedCombined ] = useState( null );
+    const [ downloadUrl, setDownloadUrl ] = useState( null );
+
+    const [ recordString, setRecordString ] = useState( null );
+    const [ transcriptChunk, setTranscriptChunk ] = useState( null );
+    const [ transcriptChunkYou, setTranscriptChunkYou ] = useState( null );
+    const [ transcriptChunkPartner, setTranscriptChunkPartner ] = useState( null );
+    const [ transcriptAppended, setTranscriptAppended ] = useState( null );
+    const [ transcriptAppendedYou, setTranscriptAppendedYou ] = useState( null );
+    const [ transcriptAppendedPartner, setTranscriptAppendedPartner ] = useState( null );
+    const [ transcript, setTranscript ] = useState( '' );
+
+    const [ transcribeLang, setTranscribeLang ] = useState( 'en-US' );
 
     const [ vocab1, setVocab1 ] = useState( '' );
     const [ vocab2, setVocab2 ] = useState( '' );
@@ -35,40 +53,242 @@ const AudioRecorder = () => {
     const [ vocab5, setVocab5 ] = useState( [ "affordable", "exclusively", "estimate", "retrieve", "variation" ] );
 
 
-    const startRecording = () => {
+    const initialiseMediaStreams = () => {
+        navigator.mediaDevices.getUserMedia( {
+            audio: true,
+            video: false
+        } ).then( stream => {
+            console.log( 'mic stream', stream );
+            setStreamMic( stream )
+        } ).catch( error => {
+            console.log( error );
+        } )
+
+        navigator.mediaDevices.getDisplayMedia( {
+            audio: true,
+            video: true
+        } ).then( stream => {
+            console.log( 'screen stream', stream );
+            setStreamScreen( stream )
+        } ).catch( error => {
+            console.log( error );
+        } )
+    }
+
+    useEffect( () => {
+        initialiseMediaStreams();
+    }, [] )
+
+
+    //////////////// Construct a media recorder for mic
+    useEffect( () => {
+        if( !streamMic ) return
+        const blobChunkArray = []
+
+        const recorder = new MediaRecorder( streamMic, {
+            mimeType: 'audio/webm;codecs=opus',
+            audioBitsPerSecond: 41 * 1000
+        } );
+        recorder.addEventListener( 'dataavailable', ( e ) => {
+            if( e.data.size > 0 ) {
+                console.log( 'got a chunk from mic', e.data )
+                setBlobRecordedMic( e.data )
+                blobChunkArray.push( e.data );
+            }
+        } );
+        recorder.addEventListener( 'stop', () => {
+            //console.log( 'blob chunk array from mic', blobChunkArray )
+            //const blob = new Blob( blobChunkArray, { 'type': 'audio/wav; codecs=opus' } );
+            //setBlobAppendedMic( blob )
+        } );
+
+        setMediaRecorderMic( recorder );
+        console.log( 'recorder mic constructed', recorder );
+
+    }, [ streamMic ] )
+
+    ///////////////// Construct a media recorder for screen
+    useEffect( () => {
+        if( !streamScreen ) return
+        const blobChunkArray = []
+
+        const recorder = new MediaRecorder( streamScreen, {
+            mimeType: 'video/webm;codecs=vp8',
+            audioBitsPerSecond: 41 * 1000
+        } );
+        recorder.addEventListener( 'dataavailable', ( e ) => {
+            if( e.data.size > 0 ) {
+                console.log( 'got a chunk from screen', e.data )
+                setBlobRecordedScreen( e.data )
+                blobChunkArray.push( e.data );
+            }
+        } );
+        recorder.addEventListener( 'stop', () => {
+            //console.log( 'blob chunk array from screen', blobChunkArray )
+            //const blob = new Blob( blobChunkArray, { 'type': 'audio/wav; codecs=opus' } );
+            //setBlobAppendedScreen( blob )
+        } );
+
+        setMediaRecorderScreen( recorder );
+        console.log( 'recorder screen constructed', recorder );
+
+    }, [ streamScreen ] )
+
+
+    ///////////////// Construct a media recorder combined ///////////////////////
+    useEffect( () => {
+        if( !streamMic || !streamScreen ) return
+        const audioContext = new AudioContext();
+        const source1 = audioContext.createMediaStreamSource( streamMic );
+        const source2 = audioContext.createMediaStreamSource( streamScreen );
+        const destination = audioContext.createMediaStreamDestination();
+        //connect sources to destination... you can add gain nodes if you want 
+        source1.connect( destination );
+        source2.connect( destination );
+
+        console.log( 'combined stream', destination.stream );
+        setStreamCombined( destination.stream )
+
+    }, [ streamMic, streamScreen ] )
+
+    useEffect( () => {
+        if( !streamCombined ) return
+        const recorderCombined = new MediaRecorder( streamCombined, { mimeType: 'video/webm; codecs=vp9' } )
+        console.log( recorderCombined );
+
+        const blobChunkArray = []
+
+        recorderCombined.addEventListener( 'dataavailable', ( e ) => {
+            if( e.data && e.data.size > 0 ) {
+                //console.log( 'got a chunk from both', e.data )
+                //setBlobRecordedCombined( e.data )
+                blobChunkArray.push( e.data );
+            }
+        } );
+
+        recorderCombined.addEventListener( 'stop', () => {
+            console.log( 'blob chunk array from both', blobChunkArray )
+            const blob = new Blob( blobChunkArray, { 'type': 'audio/wav; codecs=opus' } );
+            setBlobAppendedCombined( blob )
+        } );
+
+        setMediaRecorderCombined( recorderCombined );
+        console.log( 'recorder combined constructed', recorderCombined );
+
+    }, [ streamCombined ] )
+
+
+    /////////////// Audio recorder operation ////////////////
+    const startMediaRecorder = () => {
+        setBlobRecordedMic( null )
+        setBlobRecordedScreen( null )
+        setTranscriptAppendedYou( null )
+        setTranscriptAppendedPartner( null )
+
         setIsRecording( true );
-        console.log( 'recoding started' )
+        const startTime = new Date();
+        setStartTime( startTime.getTime() );
+        setTranscriptAppended( null );
+        setDownloadUrl( null )
+
+        mediaRecorderMic.start( 15000 )
+        mediaRecorderScreen.start( 15000 )
+        mediaRecorderCombined.start()
+        console.log( 'recoding started' );
     }
-    const stopRecording = () => {
+
+    const stopMediaRecorder = () => {
         setIsRecording( false );
-        console.log( 'recoding ended' )
+        const endTime = new Date();
+        setEndTime( endTime.getTime() );
+
+        mediaRecorderMic.stop()
+        mediaRecorderScreen.stop()
+        mediaRecorderCombined.stop()
+        console.log( 'recoding ended' );
     }
 
-    const onData = ( recordedBlob ) => {
-        //console.log('chunk of real-time data is: ', recordedBlob);
+    const playMediaRecorderCombined = () => {
+        if( !blobAppendedCombined ) return
+        const myURL = window.URL || window.webkitURL;
+        const blobURL = myURL.createObjectURL( blobAppendedCombined );
+        const tmp = new Audio( blobURL );
+        tmp.play()
     }
 
-    const onStop = ( recordedBlob ) => {
-        setBlobRecorded( recordedBlob );
-        console.log( 'recordedBlob is: ', recordedBlob );
-    }
+    useEffect( () => {
+        if( !blobAppendedCombined ) return
+        const myURL = window.URL || window.webkitURL;
+        const blobURL = myURL.createObjectURL( blobAppendedCombined );
+        setDownloadUrl( blobURL );
+    }, [ blobAppendedCombined ] )
 
-    const playRecording = () => {
-        const tmp = new Audio( blobRecorded.blobURL ); //passing your state (hook)
-        tmp.play() //simple play of an audio element. 
-    }
 
-    const blobToBase64 = () => {
+
+
+    ///////////////// Functions to convert and send blobs to transcribe //////////////////
+    const blobToBase64Mic = () => {
         const reader = new FileReader();
-        reader.readAsDataURL( blobRecorded.blob );
+        reader.readAsDataURL( blobRecordedMic );
         reader.onloadend = function () {
+            //console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
             const recordString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
-            console.log( 'sent audio: ' + recordString.slice( -100 ) )
+            console.log( 'sent mic audio: ' + recordString.slice( -100 ) )
+            sendGoogle( recordString, { destination: 'you' } )
+        }
+    }
+
+    const blobToBase64Screen = () => {
+        const reader = new FileReader();
+        reader.readAsDataURL( blobRecordedScreen );
+        reader.onloadend = function () {
+            //console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
+            const recordString = reader.result.toString().replace( 'data:video/webm;codecs=vp8,opus;base64,', '' );
+            console.log( 'sent screen audio: ' + recordString.slice( -100 ) )
+            sendGoogle( recordString, { destination: 'partner' } )
+        }
+    }
+
+    // not in use
+    const blobToBase64Combined = () => {
+        const reader = new FileReader();
+        reader.readAsDataURL( blobRecordedCombined );
+        reader.onloadend = function () {
+            console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
+            const recordString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
+            console.log( 'sent combined audio: ' + recordString.slice( -100 ) )
             setRecordString( recordString )
         }
     }
 
-    const sendGoogle = () => {
+    ///// Activate the cunstions
+    useEffect( () => {
+        console.log( 'mic blob updated', blobRecordedMic );
+        ( blobRecordedMic !== null ) && blobToBase64Mic();
+    }, [ blobRecordedMic ] )
+
+    useEffect( () => {
+        console.log( 'screen blob updated', blobRecordedScreen );
+        ( blobRecordedScreen !== null ) && blobToBase64Screen();
+    }, [ blobRecordedScreen ] )
+
+    // not in use
+    useEffect( () => {
+        //console.log( 'screen blob updated', blobRecordedCombined );
+        //( blobRecordedCombined !== null ) && blobToBase64Combined();
+    }, [ blobRecordedCombined ] )
+
+    // not in use
+    useEffect( () => {
+        //console.log( 'audio string updated' );
+        //( recordString !== null ) && sendGoogle();
+    }, [ recordString ] )
+
+
+
+
+    ////////////////////////// Send audio strings to Google for transcription //////////////////////
+    const sendGoogle = ( recordString, destination ) => {
         const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-expo';
 
         axios
@@ -83,78 +303,49 @@ const AudioRecorder = () => {
             .then( ( res ) => {
                 //console.log(res)
                 //console.log(res.data.transcript)
-                setTranscriptChunk( res.data.transcript );
+                ( destination.destination === 'you' ) ? setTranscriptChunkYou( res.data.transcript ) : setTranscriptChunkPartner( res.data.transcript );
             } )
             .catch( ( err ) => {
                 console.log( 'transcribe err :', err );
             } );
     }
 
-    const appendTranscript = () => {
-        const appendedTranscript = [ transcriptAppended, transcriptChunk ]
-        console.log( appendedTranscript )
-        setTranscriptAppended( appendedTranscript.join( ' ' ) );
+    const appendTranscriptYou = () => {
+        const transcriptUpdated = [ transcriptAppendedYou, transcriptChunkYou ]
+        //console.log( transcriptUpdated )
+        setTranscriptAppendedYou( transcriptUpdated.join( ' ' ) );
+    }
+
+    const appendTranscriptPartner = () => {
+        const transcriptUpdated = [ transcriptAppendedPartner, transcriptChunkPartner ]
+        //console.log( transcriptUpdated )
+        setTranscriptAppendedPartner( transcriptUpdated.join( ' ' ) );
     }
 
     useEffect( () => {
-        //console.log( 'blob updated' );
-
-        // Repeat recording during the long recording
-        ( isLongRecording ) && repeatRecoridng();
-
-        ( blobRecorded !== null ) && blobToBase64();
-
-        // Last chunk
-        ( !isLongRecording ) && ( console.log( 'last chunk of blob' ) )
-    }, [ blobRecorded ] )
+        ( transcriptChunkYou !== null ) && appendTranscriptYou();
+    }, [ transcriptChunkYou ] )
 
     useEffect( () => {
-        console.log( 'audio string updated' );
-        ( recordString !== null ) && sendGoogle();
+        ( transcriptChunkPartner !== null ) && appendTranscriptPartner();
+    }, [ transcriptChunkPartner ] )
 
-        // Last chunk
-        ( !isLongRecording ) && ( console.log( 'last chunk of audio string' ) )
-    }, [ recordString ] )
-
+    // not in use
     useEffect( () => {
-        console.log( 'transcript chunk updated' );
-        ( transcriptChunk !== null ) && appendTranscript();
+        //console.log( 'transcript chunk updated' );
+        //( transcriptChunk !== null ) && appendTranscript();
     }, [ transcriptChunk ] )
 
 
     useEffect( () => {
         // Active only for the last chunk of transcription and then finalise the transcript
-        ( !isLongRecording ) && setTranscript( transcriptAppended );
-
+        ( !isRecording && transcriptAppendedYou !== null ) && setTranscript( transcriptAppendedYou );
         //console.log('last chunk of transcript appended');
-    }, [ transcriptAppended ] )
-
-    const repeatRecoridng = () => {
-        startRecording();
-        console.log( 'repeated recording resumed' )
-        setTimeout( () => { stopRecording() }, 30000 );
-        console.log( 'repeated recording cut' )
-    }
-    const startLongRecording = () => {
-        const start = new Date();
-        setStartTime( start.getTime() );
-
-        setIsLongRecording( true );
-        setTranscriptAppended( '' )
-        repeatRecoridng();
-        console.log( 'long recoding started' );
-    }
+    }, [ transcriptAppendedYou ] )
 
 
-    const stopLongRecording = () => {
-        const end = new Date();
-        setEndTime( end.getTime() );
 
-        setIsLongRecording( false );
-        stopRecording();
-        console.log( 'long recoding ended' )
-    }
-
+    //////// After transcribing... vocab analysis
     const vocabAnalysis = () => {
         const transcriptArray = transcript.split( " " );
         setVocab1( transcriptArray.length );
@@ -170,6 +361,8 @@ const AudioRecorder = () => {
     }, [ transcript ] )
 
 
+
+    /////////////// UI //////////////////////
     return (
         <div
             style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }
@@ -188,33 +381,35 @@ const AudioRecorder = () => {
                         >{ TranscribeLangs[ key ] }</MenuItem>
                     ) ) }
                 </Select>
-
-                { typeof window !== `undefined` &&  // need inline if for the same reason as import
-                    <ReactMic
-                        record={ isRecording }
-                        className="sound-wave"
-                        onStop={ onStop }
-                        onData={ onData }
-                        strokeColor="white"
-                        backgroundColor="transparent" />
-                }
             </div>
-
             <Button
                 //style={{marginTop: '10px'}}
                 //variant="contained"
                 //color="primary"
-                cta={ isLongRecording ? 'End' : 'Start!' } // from the template
-                onClick={ () => { isLongRecording ? stopLongRecording() : startLongRecording() } }
+                cta={ isRecording ? 'End' : 'Start!' } // from the template
+                onClick={ () => { isRecording ? stopMediaRecorder() : startMediaRecorder() } }
             >
             </Button>
 
-            <Card style={ { width: '60vw', margin: '20px' } } >
-                <CardContent>
-                    <Typography color="textSecondary" gutterBottom>会話内容の書き起こし</Typography>
-                    <Typography>{ transcriptAppended }</Typography>
-                </CardContent>
-            </Card>
+            { ( !isRecording && blobAppendedCombined !== null ) &&
+                <button style={ { margin: '20px' } } onClick={ playMediaRecorderCombined }> PLAY </button>
+            }
+            <a href={ downloadUrl } download id="download">{ ( downloadUrl !== null ) ? 'Download' : '' }</a>
+
+            <div style={ { display: 'flex', flexDirection: 'row' } }>
+                <Card style={ { width: '60vw', margin: '20px' } } >
+                    <CardContent>
+                        <Typography color="textSecondary" gutterBottom>相手</Typography>
+                        <Typography>{ transcriptAppendedPartner }</Typography>
+                    </CardContent>
+                </Card>
+                <Card style={ { width: '60vw', margin: '20px' } } >
+                    <CardContent>
+                        <Typography color="textSecondary" gutterBottom>あなた</Typography>
+                        <Typography>{ transcriptAppendedYou }</Typography>
+                    </CardContent>
+                </Card>
+            </div>
 
             { ( transcript !== null ) &&
                 <Card style={ { width: '100%', marginTop: '20px' } } >

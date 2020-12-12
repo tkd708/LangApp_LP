@@ -21,10 +21,8 @@ const AudioRecorder = () => {
     const [ isLongRecording, setIsLongRecording ] = useState( false );
     const [ blobRecorded, setBlobRecorded ] = useState( null );
     const [ recordString, setRecordString ] = useState( null );
-
     const [ transcriptChunk, setTranscriptChunk ] = useState( null );
-    const [ transcriptAppended1, setTranscriptAppended1 ] = useState( null );
-    const [ transcriptAppended2, setTranscriptAppended2 ] = useState( null );
+    const [ transcriptAppended, setTranscriptAppended ] = useState( null );
     const [ transcript, setTranscript ] = useState( '' );
     const [ transcribeLang, setTranscribeLang ] = useState( 'en-US' );
     const [ startTime, setStartTime ] = useState( '' ); // milliseconds
@@ -51,8 +49,8 @@ const AudioRecorder = () => {
     }
 
     const onStop = ( recordedBlob ) => {
-        console.log( 'recordedBlob is: ', recordedBlob );
         setBlobRecorded( recordedBlob );
+        console.log( 'recordedBlob is: ', recordedBlob );
     }
 
     const playRecording = () => {
@@ -71,7 +69,7 @@ const AudioRecorder = () => {
     }
 
     const sendGoogle = () => {
-        const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-dialisation';
+        const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-expo';
 
         axios
             .request( {
@@ -93,30 +91,18 @@ const AudioRecorder = () => {
     }
 
     const appendTranscript = () => {
-        const transcript1 = [];
-        const transcript2 = [];
-
-        //( transcriptChunk !== null ) && 
-        transcriptChunk.forEach( ( a ) =>
-            //console.log( a ),
-            //console.log( ` word: ${ a.word }, speakerTag: ${ a.speakerTag }, start: ${ a.startTime.seconds }.${ a.startTime.nanos }, end: ${ a.endTime.seconds }.${ a.endTime.nanos }` ),
-            ( a.speakerTag == 1 )
-                ? transcript1.push( a.word )
-                : transcript2.push( a.word )
-        );
-
-        const appendedTranscript1 = [ transcriptAppended1, transcript1.join( ' ' ) ]
-        const appendedTranscript2 = [ transcriptAppended2, transcript2.join( ' ' ) ]
-        setTranscriptAppended1( appendedTranscript1.join( ' ' ) );
-        setTranscriptAppended2( appendedTranscript2.join( ' ' ) );
+        const appendedTranscript = [ transcriptAppended, transcriptChunk ]
+        console.log( appendedTranscript )
+        setTranscriptAppended( appendedTranscript.join( ' ' ) );
     }
 
     useEffect( () => {
-        console.log( 'blob updated' );
-        ( blobRecorded !== null ) && blobToBase64();
+        //console.log( 'blob updated' );
 
         // Repeat recording during the long recording
         ( isLongRecording ) && repeatRecoridng();
+
+        ( blobRecorded !== null ) && blobToBase64();
 
         // Last chunk
         ( !isLongRecording ) && ( console.log( 'last chunk of blob' ) )
@@ -136,13 +122,12 @@ const AudioRecorder = () => {
     }, [ transcriptChunk ] )
 
 
-    // tentatively focusing on Speaker1
     useEffect( () => {
         // Active only for the last chunk of transcription and then finalise the transcript
-        ( !isLongRecording ) && setTranscript( transcriptAppended1 );
+        ( !isLongRecording ) && setTranscript( transcriptAppended );
 
         //console.log('last chunk of transcript appended');
-    }, [ transcriptAppended1 ] )
+    }, [ transcriptAppended ] )
 
     const repeatRecoridng = () => {
         startRecording();
@@ -155,8 +140,7 @@ const AudioRecorder = () => {
         setStartTime( start.getTime() );
 
         setIsLongRecording( true );
-        setTranscriptAppended1( '' )
-        setTranscriptAppended2( '' )
+        setTranscriptAppended( '' )
         repeatRecoridng();
         console.log( 'long recoding started' );
     }
@@ -177,7 +161,8 @@ const AudioRecorder = () => {
         const conversationLength = ( endTime - startTime ) / 1000 / 60;
         setVocab2( ( transcriptArray.length / conversationLength ).toFixed( 1 ) );
         const uniq = [ ...new Set( transcriptArray ) ];
-        setVocab3( uniq.length * 100 );
+        setVocab3( uniq.length );
+        //console.log( uniq )
     }
 
     useEffect( () => {
@@ -224,33 +209,21 @@ const AudioRecorder = () => {
             >
             </Button>
 
-            <div
-                style={ { display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' } }
-            >
-                <Card style={ { width: '40vw', margin: '20px' } } >
-                    <CardContent>
-                        <Typography color="textSecondary" gutterBottom>Speaker1</Typography>
-                        <Typography>{ transcriptAppended1 }</Typography>
-                    </CardContent>
-                </Card>
-                <Card style={ { width: '40vw', margin: '20px' } } >
-                    <CardContent>
-                        <Typography color="textSecondary" gutterBottom>Speaker2</Typography>
-                        <Typography>{ transcriptAppended2 }</Typography>
-                    </CardContent>
-                </Card>
-            </div>
+            <Card style={ { width: '60vw', margin: '20px' } } >
+                <CardContent>
+                    <Typography color="textSecondary" gutterBottom>会話内容の書き起こし</Typography>
+                    <Typography>{ transcriptAppended }</Typography>
+                </CardContent>
+            </Card>
 
             { ( transcript !== null ) &&
                 <Card style={ { width: '100%', marginTop: '20px' } } >
                     <CardContent>
                         <Typography color="textSecondary" gutterBottom>今回の会話の分析結果はこちら！</Typography>
-                        <Typography>{ 'Transcript: ' + transcript }</Typography>
-                        <Typography>{ `今回の会話での単語数: ${ vocab1 } ...前回から +10!` }</Typography>
-                        <Typography>{ `今回の会話での流暢さ(word per minute): ${ vocab2 } ...前回から +5!` }</Typography>
-                        <Typography>{ `累計の語彙数(仮): ${ vocab3 } ...前回から+3!` }</Typography>
-                        <Typography>{ `前回の課題から話せた単語(仮): ${ vocab4.join( ", " ) } ...3/5達成！` }</Typography>
-                        <Typography>{ `次回使ってみては？: ${ vocab5.join( ", " ) }` }</Typography>
+                        {/*<Typography>{ 'Transcript: ' + transcript }</Typography> 
+                        <Typography>{ `今回の会話での単語数: ${ vocab1 }` }</Typography> */ }
+                        <Typography>{ `今回の会話での流暢さ(word per minute): ${ vocab2 } ` }</Typography>
+                        <Typography>{ `使用した単語数: ${ vocab3 } ` }</Typography>
                     </CardContent>
                 </Card>
             }

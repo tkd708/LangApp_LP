@@ -3,7 +3,7 @@ import styled from "styled-components"
 //import Button from '@material-ui/core/Button';
 import Button from "../Button/button"
 
-import AudioRecorder from '../AudioRecorder/AudioRecorder_transcript_send.js';
+import AudioRecorder from '../AudioRecorder/AudioRecorder.js';
 
 const browserLang = 'ja' // tentatively all in Japanese
 //(typeof window !== `undefined`)
@@ -22,7 +22,9 @@ const Demo = () => {
                 style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }
             >
                 <h2>デモ</h2>
-
+                <p>実際に英会話レッスンを録音してみましょう！</p>
+                <p>マイク付きイヤフォンの使用を推奨しております。なお、スピーカーからの音声記録のため、画面と音声の共有を許可してください。</p>
+                <p>マイクからの音声は「あなた」に、スピーカーからの音声は「相手」に記録されます！</p>
                 <AudioRecorder />
 
             </div>
@@ -64,7 +66,7 @@ const DemoWrapper = styled.section`
   }
 
   p {
-    margin-bottom: 50px;
+    margin-bottom: 30px;
 
              font-size: 1.2rem;
 

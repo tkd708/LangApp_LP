@@ -272,7 +272,7 @@ const AudioRecorder = () => {
         reader.onloadend = function () {
             console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
             const recordString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
-            console.log( 'sent screen audio: ' + recordString.slice( -100 ) )
+            console.log( 'sent combined audio: ' + recordString.slice( -100 ) )
             setRecordString( recordString )
         }
     }
