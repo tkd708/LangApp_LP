@@ -3,7 +3,7 @@ import styled from "styled-components"
 //import Button from '@material-ui/core/Button';
 import Button from "../Button/button"
 
-import AudioRecorder from '../AudioRecorder/AudioRecorder_send.js';
+import AudioRecorder from '../AudioRecorder/AudioRecorder_transcript_send.js';
 
 const browserLang = 'ja' // tentatively all in Japanese
 //(typeof window !== `undefined`)

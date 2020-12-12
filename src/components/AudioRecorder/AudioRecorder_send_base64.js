@@ -12,8 +12,8 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
 //import { ReactMic } from 'react-mic'; // only local
-const { ReactMic } = typeof window !== `undefined` ? require( "react-mic" ) : '' //"window" is not available during server side rendering.
-//const { ReactMic } = ''
+//const { ReactMic } = typeof window !== `undefined` ? require( "react-mic" ) : '' //"window" is not available during server side rendering.
+const { ReactMic } = ''
 
 const browserLang = 'ja' // tentatively all in Japanese
 //(typeof window !== `undefined`)
@@ -39,7 +39,7 @@ const AudioRecorder = () => {
     }
 
     const onData = ( recordedBlob ) => {
-        //console.log('chunk of real-time data is: ', recordedBlob);
+        console.log( 'chunk of real-time data is: ', recordedBlob );
     }
 
     const onStop = ( recordedBlob ) => {
