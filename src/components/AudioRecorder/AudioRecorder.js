@@ -68,7 +68,7 @@ const AudioRecorder = () => {
     const [ vocab4, setVocab4 ] = useState( [ "especially", "durable", "collaborate" ] );
     const [ vocab5, setVocab5 ] = useState( [ "affordable", "exclusively", "estimate", "retrieve", "variation" ] );
 
-    const myURL = window.URL || window.webkitURL;
+    const myURL = typeof window !== `undefined` ? window.URL || window.webkitURL : ''
 
     const initialiseMediaStreams = () => {
         navigator.mediaDevices.getUserMedia( {
