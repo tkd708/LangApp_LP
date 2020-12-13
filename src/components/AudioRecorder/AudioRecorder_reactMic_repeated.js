@@ -135,6 +135,7 @@ const AudioRecorder = () => {
         setTimeout( () => { stopRecording() }, 30000 );
         console.log( 'repeated recording cut' )
     }
+
     const startLongRecording = () => {
         const start = new Date();
         setStartTime( start.getTime() );
@@ -144,7 +145,6 @@ const AudioRecorder = () => {
         repeatRecoridng();
         console.log( 'long recoding started' );
     }
-
 
     const stopLongRecording = () => {
         const end = new Date();

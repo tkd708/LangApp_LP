@@ -18,33 +18,20 @@ const AudioRecorder = () => {
     const [ streamScreen, setStreamScreen ] = useState( null ); //
     const [ streamCombined, setStreamCombined ] = useState( null ); //
 
+    const [ blobMetadataMic, setBlobMetadataMic ] = useState( null ); //
+    const blobMetadataMicRef = useRef( blobMetadataMic )
+    useEffect( () => {
+        blobMetadataMicRef.current = blobMetadataMic
+    }, [ blobMetadataMic ] )
+    const [ blobTemp, setBlobTemp ] = useState( null ); //
+
+    const [ blobMetadataScreen, setBlobMetadataScreen ] = useState( null ); //
+
     const [ mediaRecorderMic, setMediaRecorderMic ] = useState( null ); //
-    const [ blobArrayMic, setBlobArrayMic ] = useState( [] );
-    const blobArrayMicRef = useRef( blobArrayMic )
-    useEffect( () => {
-        blobArrayMicRef.current = blobArrayMic
-    }, [ blobArrayMic ] )
-
     const [ mediaRecorderScreen, setMediaRecorderScreen ] = useState( null ); //
-    const [ blobArrayScreen, setBlobArrayScreen ] = useState( [] );
-    const blobArrayScreenRef = useRef( blobArrayScreen )
-    useEffect( () => {
-        blobArrayScreenRef.current = blobArrayScreen
-    }, [ blobArrayScreen ] )
-
     const [ mediaRecorderCombined, setMediaRecorderCombined ] = useState( null ); //
-    const [ blobArrayCombined, setBlobArrayCombined ] = useState( [] );
-    const blobArrayCombinedRef = useRef( blobArrayCombined )
-    useEffect( () => {
-        blobArrayCombinedRef.current = blobArrayCombined
-    }, [ blobArrayCombined ] )
 
     const [ isRecording, setIsRecording ] = useState( false );
-    const isRecordingRef = useRef( isRecording )
-    useEffect( () => {
-        isRecordingRef.current = isRecording
-    }, [ isRecording ] )
-
     const [ startTime, setStartTime ] = useState( '' ); // milliseconds
     const [ endTime, setEndTime ] = useState( '' ); // milliseconds
 
@@ -68,7 +55,6 @@ const AudioRecorder = () => {
     const [ vocab4, setVocab4 ] = useState( [ "especially", "durable", "collaborate" ] );
     const [ vocab5, setVocab5 ] = useState( [ "affordable", "exclusively", "estimate", "retrieve", "variation" ] );
 
-    const myURL = window.URL || window.webkitURL;
 
     const initialiseMediaStreams = () => {
         navigator.mediaDevices.getUserMedia( {
@@ -117,72 +103,87 @@ const AudioRecorder = () => {
 
     //////////////// Construct a media recorder for mic
     const constructMediaRecorderMic = ( streamMic ) => {
+        const blobChunkArray = []
 
         const recorder = new MediaRecorder( streamMic, {
             mimeType: 'audio/webm;codecs=opus',
             audioBitsPerSecond: 41 * 1000
         } );
-        recorder.addEventListener( 'start', () => {
-            setBlobArrayMic( [] );
-        } );
         recorder.addEventListener( 'dataavailable', ( e ) => {
+            console.log( 'mic ondataavailable fired at array length =', blobChunkArray.length );
             if( e.data.size > 0 ) {
-                setBlobArrayMic( [ ...blobArrayMicRef.current, e.data ] )
-
+                ( blobChunkArray.length === 0 ) && setBlobMetadataMic( e.data );
+                const blob = new Blob( [ blobMetadataMicRef.current, e.data ], { 'type': 'audio/webm;codecs=opus' } );
+                //console.log( 'appended blob', blob )
+                setBlobTemp( blob )
+                //console.log( 'got a chunk from mic', e.data )
+                blobChunkArray.push( e.data );
             }
         } );
         recorder.addEventListener( 'stop', () => {
-            const blob = new Blob( blobArrayMicRef.current, { 'type': 'audio/webm;codecs=opus' } );
+            //console.log( 'blob chunk array from mic', blobChunkArray )
+            const blob = new Blob( blobChunkArray, { 'type': 'audio/webm;codecs=opus' } );
             const destination = 'you'
             blobToBase64( blob, destination )
         } );
         setMediaRecorderMic( recorder );
+        // console.log( 'recorder mic constructed', recorder );
     }
 
+    useEffect( () => {
+        if( !blobTemp ) return
+        const myURL = window.URL || window.webkitURL;
+        const blobURL = myURL.createObjectURL( blobTemp );
+        const tmp = new Audio( blobURL );
+        tmp.play()
+    }, [ blobTemp ] )
 
 
     ///////////////// Construct a media recorder for screen
     const constructMediaRecorderScreen = ( streamScreen ) => {
+        const blobChunkArray = []
 
         const recorder = new MediaRecorder( streamScreen, {
             mimeType: 'video/webm;codecs=vp8',
             audioBitsPerSecond: 41 * 1000
         } );
-        recorder.addEventListener( 'start', () => {
-            setBlobArrayScreen( [] )
-        } );
         recorder.addEventListener( 'dataavailable', ( e ) => {
+            //console.log( 'screen ondataavailable fired at array length =', blobChunkArray.length );
             if( e.data.size > 0 ) {
-                setBlobArrayScreen( [ ...blobArrayScreenRef.current, e.data ] )
+                //console.log( 'got a chunk from screen', e.data )
+                blobChunkArray.push( e.data );
             }
         } );
         recorder.addEventListener( 'stop', () => {
-            const blob = new Blob( blobArrayScreenRef.current, { 'type': 'audio/webm;codecs=opus' } );
+            //console.log( 'blob chunk array from screen', blobChunkArray )
+            const blob = new Blob( blobChunkArray, { 'type': 'audio/webm;codecs=opus' } );
             const destination = 'partner'
             blobToBase64( blob, destination )
-
         } );
         setMediaRecorderScreen( recorder );
+        //console.log( 'recorder screen constructed', recorder );
+
     }
 
     ///////////////// Construct a media recorder combined ///////////////////////
     const constructMediaRecorderCombined = ( streamCombined ) => {
 
         const recorderCombined = new MediaRecorder( streamCombined, { mimeType: 'video/webm; codecs=vp9' } )
+        // console.log( recorderCombined );
 
-        recorderCombined.addEventListener( 'start', () => {
-            setBlobArrayCombined( [] )
-        } );
+        const blobChunkArray = []
 
         recorderCombined.addEventListener( 'dataavailable', ( e ) => {
             if( e.data && e.data.size > 0 ) {
-                setBlobArrayCombined( [ ...blobArrayCombinedRef.current, e.data ] )
+                //console.log( 'got a chunk from both', e.data )
+                //setBlobRecordedCombined( e.data )
+                blobChunkArray.push( e.data );
             }
         } );
 
         recorderCombined.addEventListener( 'stop', () => {
             // console.log( 'blob chunk array from both', blobChunkArray )
-            const blob = new Blob( blobArrayCombinedRef.current, { 'type': 'audio/wav; codecs=opus' } );
+            const blob = new Blob( blobChunkArray, { 'type': 'audio/wav; codecs=opus' } );
             setBlobAppendedCombined( blob )
         } );
 
@@ -191,41 +192,54 @@ const AudioRecorder = () => {
     }
 
     /////////////// Audio recorder operation ////////////////
-    const startRecording = () => {
-        /// delete previous records if exist
+    const startMediaRecorder = () => {
         setTranscriptAppendedYou( null )
         setTranscriptAppendedPartner( null )
         setDownloadUrl( null )
 
         setIsRecording( true );
-        startMediaRecorders();
-        mediaRecorderCombined.start( 1000 )
+        mediaRecorderCombined.start()
+
+        mediaRecorderMic.start( 5000 )
+        mediaRecorderScreen.start( 10000 )
 
         const startTime = new Date();
         setStartTime( startTime.getTime() );
+        //setTranscriptAppended( null );
+
         // console.log( 'recoding started' );
     }
 
-    const startMediaRecorders = () => {
-        console.log( 'recorders on' )
-        mediaRecorderMic.start( 1000 );
-        mediaRecorderScreen.start( 1000 );
-        setTimeout( () => { repeatMediaRecorders(); }, 10000 );
-    }
+    useEffect( () => {
+        if( !isRecording ) return
+        console.log( 'recording started' )
+        setTimeout( () => { mediaRecorderMic.requestData() }, 100 );
+        setTimeout( () => { mediaRecorderScreen.requestData() }, 100 );
+        //mediaRecorderMic.requestData(); // fire dataavailable
+    }, [ isRecording ] )
 
-    const repeatMediaRecorders = () => {
-        if( !isRecordingRef.current ) return
-        console.log( 'recorders off' )
+    const repeatRecoridng = () => {
         mediaRecorderMic.stop();
         mediaRecorderScreen.stop();
-        startMediaRecorders()
+        if( !isRecording ) return
+        console.log( 'repeated recording cut' )
+        mediaRecorderMic.start()
+        mediaRecorderScreen.start()
+        setTimeout( () => { repeatRecoridng() }, 10000 );
+        console.log( 'repeated recording resumed' )
     }
 
-    const stopRecording = () => {
+    const stopMediaRecorder = () => {
+        console.log( 'metadata blob', blobMetadataMic )
+        const myURL = window.URL || window.webkitURL;
+        const blobURL = myURL.createObjectURL( blobMetadataMic );
+        const tmp = new Audio( blobURL );
+        tmp.play()
+
         setIsRecording( false );
         mediaRecorderCombined.stop()
-        mediaRecorderMic.stop()
-        mediaRecorderScreen.stop()
+        mediaRecorderMic.stop();
+        mediaRecorderScreen.stop();
 
         const endTime = new Date();
         setEndTime( endTime.getTime() );
@@ -235,6 +249,7 @@ const AudioRecorder = () => {
 
     const playMediaRecorderCombined = () => {
         if( !blobAppendedCombined ) return
+        const myURL = window.URL || window.webkitURL;
         const blobURL = myURL.createObjectURL( blobAppendedCombined );
         const tmp = new Audio( blobURL );
         tmp.play()
@@ -242,6 +257,7 @@ const AudioRecorder = () => {
 
     useEffect( () => {
         if( !blobAppendedCombined ) return
+        const myURL = window.URL || window.webkitURL;
         const blobURL = myURL.createObjectURL( blobAppendedCombined );
         setDownloadUrl( blobURL );
     }, [ blobAppendedCombined ] )
@@ -361,7 +377,7 @@ const AudioRecorder = () => {
                 //variant="contained"
                 //color="primary"
                 cta={ isRecording ? 'End' : 'Start!' } // from the template
-                onClick={ () => { isRecording ? stopRecording() : startRecording() } }
+                onClick={ () => { isRecording ? stopMediaRecorder() : startMediaRecorder() } }
             >
             </Button>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -25,6 +25,10 @@ const AudioRecorder = () => {
 
     const [ arrayBufferAppended, setArrayBufferAppended ] = useState( [] );
     const [ count, setCount ] = useState( 0 );
+    const countRef = useRef( count )
+    useEffect( () => {
+        countRef.current = count
+    }, [ count ] )
 
     const [ blobChunkArray, setBlobChunkArray ] = useState( [] );
     const [ blobAppended, setBlobAppended ] = useState( '' );
@@ -100,18 +104,19 @@ const AudioRecorder = () => {
         //console.log( 'arrayBuffer of the blob: ', recordedBlob.arrayBuffer );
         //console.log( 'blob chunk array: ', blobChunkArray );
         setBlobChunkArray( blobChunkArray.push( recordedBlob ) );
+        setBlobChunkArray( [ ...blobChunkArray, recordedBlob ] );
 
         const prevArray = [ ...blobChunkArray ];
         const tempArray = prevArray.push( recordedBlob );
         //console.log( prevArray );
-        //setBlobChunkArray( tempArray );
+        // setBlobChunkArray( tempArray );
         //console.log( blobChunkArray.length );
         ( blobChunkArray.length === 20 ) && setBlobChunkArray( 'blobChunkArray' );
         ( blobChunkArray.length === 20 ) && setBlobAppended( blobChunkArray );
 
-        console.log( count );
-        setCount( count + 1 );
-        ( count === 20 ) && setCount( 0 );
+        console.log( countRef.current );
+        setCount( countRef.current + 1 );
+        ( countRef.current === 20 ) && setCount( 0 );
 
     }
 
