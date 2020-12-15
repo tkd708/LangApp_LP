@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import styled from "styled-components"
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -51,14 +52,11 @@ const AudioRecorder = () => {
     const [ blobAppendedCombined, setBlobAppendedCombined ] = useState( null );
     const [ downloadUrl, setDownloadUrl ] = useState( null );
 
-    const [ recordString, setRecordString ] = useState( null );
-    const [ transcriptChunk, setTranscriptChunk ] = useState( null );
     const [ transcriptChunkYou, setTranscriptChunkYou ] = useState( null );
     const [ transcriptChunkPartner, setTranscriptChunkPartner ] = useState( null );
-    const [ transcriptAppended, setTranscriptAppended ] = useState( null );
     const [ transcriptAppendedYou, setTranscriptAppendedYou ] = useState( null );
     const [ transcriptAppendedPartner, setTranscriptAppendedPartner ] = useState( null );
-    const [ transcript, setTranscript ] = useState( '' );
+    const [ transcript, setTranscript ] = useState( null );
 
     const [ transcribeLang, setTranscribeLang ] = useState( 'en-US' );
 
@@ -93,10 +91,6 @@ const AudioRecorder = () => {
             console.log( error );
         } )
     }
-
-    useEffect( () => {
-        initialiseMediaStreams();
-    }, [] )
 
     ///// Make a combined stream //////
     useEffect( () => {
@@ -138,8 +132,6 @@ const AudioRecorder = () => {
         } );
         setMediaRecorderMic( recorder );
     }
-
-
 
     ///////////////// Construct a media recorder for screen
     const constructMediaRecorderScreen = ( streamScreen ) => {
@@ -189,6 +181,7 @@ const AudioRecorder = () => {
         setMediaRecorderCombined( recorderCombined );
         // console.log( 'recorder combined constructed', recorderCombined );
     }
+
 
     /////////////// Audio recorder operation ////////////////
     const startRecording = () => {
@@ -284,32 +277,14 @@ const AudioRecorder = () => {
             } );
     }
 
-    const appendTranscriptYou = () => {
-        const transcriptUpdated = [ transcriptAppendedYou, transcriptChunkYou ]
-        //console.log( transcriptUpdated )
-        setTranscriptAppendedYou( transcriptUpdated.join( ' ' ) );
-    }
-
-    const appendTranscriptPartner = () => {
-        const transcriptUpdated = [ transcriptAppendedPartner, transcriptChunkPartner ]
-        //console.log( transcriptUpdated )
-        setTranscriptAppendedPartner( transcriptUpdated.join( ' ' ) );
-    }
-
+    ////////////////////// Handle transcript chunks //////////////////////////
     useEffect( () => {
-        ( transcriptChunkYou !== null ) && appendTranscriptYou();
+        ( transcriptChunkYou !== null ) && setTranscriptAppendedYou( [ transcriptAppendedYou, transcriptChunkYou ].join( ' ' ) );
     }, [ transcriptChunkYou ] )
 
     useEffect( () => {
-        ( transcriptChunkPartner !== null ) && appendTranscriptPartner();
+        ( transcriptChunkPartner !== null ) && setTranscriptAppendedPartner( [ transcriptAppendedPartner, transcriptChunkPartner ].join( ' ' ) );
     }, [ transcriptChunkPartner ] )
-
-    // not in use
-    useEffect( () => {
-        //console.log( 'transcript chunk updated' );
-        //( transcriptChunk !== null ) && appendTranscript();
-    }, [ transcriptChunk ] )
-
 
     useEffect( () => {
         // Active only for the last chunk of transcription and then finalise the transcript
@@ -356,6 +331,15 @@ const AudioRecorder = () => {
                     ) ) }
                 </Select>
             </div>
+
+            <h2>デモ</h2>
+            <p>実際に英会話レッスンを録音してみましょう！(マイク付きイヤフォン推奨)</p>
+            <p>なお、スピーカーからの音声記録のため、画面と音声の共有を許可してください。</p>
+
+            <button style={ { margin: '10px' } } onClick={ () => initialiseMediaStreams() }> 共有を許可 </button>
+
+            <p>マイクからの音声は「あなた」に、スピーカーからの音声は「相手」に記録されます！</p>
+
             <Button
                 //style={{marginTop: '10px'}}
                 //variant="contained"
@@ -365,19 +349,15 @@ const AudioRecorder = () => {
             >
             </Button>
 
-            { ( !isRecording && blobAppendedCombined !== null ) &&
-                <button style={ { margin: '20px' } } onClick={ playMediaRecorderCombined }> PLAY </button>
-            }
-            <a href={ downloadUrl } download id="download">{ ( downloadUrl !== null ) ? 'Download' : '' }</a>
 
             <div style={ { display: 'flex', flexDirection: 'row' } }>
-                <Card style={ { width: '60vw', margin: '20px' } } >
+                <Card style={ { width: '40vw', margin: '20px' } } >
                     <CardContent>
                         <Typography color="textSecondary" gutterBottom>相手</Typography>
                         <Typography>{ transcriptAppendedPartner }</Typography>
                     </CardContent>
                 </Card>
-                <Card style={ { width: '60vw', margin: '20px' } } >
+                <Card style={ { width: '40vw', margin: '20px' } } >
                     <CardContent>
                         <Typography color="textSecondary" gutterBottom>あなた</Typography>
                         <Typography>{ transcriptAppendedYou }</Typography>
@@ -386,7 +366,7 @@ const AudioRecorder = () => {
             </div>
 
             { ( transcript !== null ) &&
-                <Card style={ { width: '100%', marginTop: '20px' } } >
+                <Card style={ { width: '80vw', marginTop: '20px' } } >
                     <CardContent>
                         <Typography color="textSecondary" gutterBottom>今回の会話の分析結果はこちら！</Typography>
                         {/*<Typography>{ 'Transcript: ' + transcript }</Typography> 
@@ -396,10 +376,240 @@ const AudioRecorder = () => {
                     </CardContent>
                 </Card>
             }
+            { ( !isRecording && blobAppendedCombined !== null ) &&
+                // ( transcript !== null ) &&
+                <button style={ { margin: '20px' } } onClick={ playMediaRecorderCombined }> PLAY </button>
+            }
+            <a href={ downloadUrl } download id="download">{ ( downloadUrl !== null ) ? 'Download' : '' }</a>
+
+            <h2 style={ { marginTop: '50px' } }>{ "英会話分析登録フォーム" } </h2>
+            <ContactWrapper id="contact">
+                <div className="content-container"
+                    style={ { width: '80vw' } }>
+
+                    <form
+                        name="contact"
+                        method="POST"
+                        data-netlify="true"
+                        data-netlify-honeypot="bot-field"
+                    >
+                        <input type="hidden" name="form-name" value="contact" />
+                        <div className="input-area">
+                            <input
+                                type="text"
+                                name="name"
+                                aria-label="Name"
+                                required
+                                autoComplete="off"
+                            />
+                            <label className="label-name" for="name">
+                                <span className="content-name">名前</span>
+                            </label>
+                        </div>
+
+                        <div className="input-area">
+                            <input
+                                type="email"
+                                name="email"
+                                aria-label="Email"
+                                required
+                                autoComplete="off"
+                            />
+                            <label className="label-name" for="email">
+                                <span className="content-name">メールアドレス</span>
+                            </label>
+                        </div>
+
+                        <div className="input-area">
+                            <input
+                                type="file"
+                                name="audio"
+                                aria-label="audio"
+                                //required
+                                autoComplete="off"
+                            />
+                            <label className="label-name" for="audio">
+                                <span className="content-name">音声ファイル</span>
+                            </label>
+                        </div>
+
+                        <div className="input-area"
+                            style={ {
+                                display: 'none'
+                            } }>
+                            <input
+                                type="text"
+                                name="Transcript_you"
+                                aria-label="Transcript_you"
+                                value={ transcriptAppendedYou }
+                                autoComplete="off"
+                            />
+                            <label className="label-name" for="Transcript_you">
+                                <span className="content-name">Transcript_you</span>
+                            </label>
+                        </div>
+
+                        <div className="input-area"
+                            style={ {
+                                display: 'none'
+                            } }>
+                            <input
+                                type="text"
+                                name="Transcript_partner"
+                                aria-label="Transcript_partner"
+                                value={ transcriptAppendedPartner }
+                                autoComplete="off"
+                            />
+                            <label className="label-name" for="Transcript_partner">
+                                <span className="content-name">Transcript_partner</span>
+                            </label>
+                        </div>
+
+                        <div
+                            className="input-area button-area"
+                            style={ { marginBottom: '30px' } }
+                        >
+                            <Button
+                                label="Send Contact Form"
+                                cta={ "送信" }
+                                type="submit"
+                            />
+                        </div>
+                    </form>
+                </div>
+            </ContactWrapper>
 
         </div>
 
     );
 }
+
+const ContactWrapper = styled.section`
+  padding: 50px 30px;
+  background-color: #fff;
+
+  .content-container {
+    width: 100%;
+    margin: 0 auto;
+
+    h2 {
+      text-align: left;
+      background: -webkit-linear-gradient(45deg, #f441a5, #03a9f4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+
+      @media (min-width: 768px) {
+        text-align: center;
+      }
+
+          font-size: 2.5rem;
+
+        @media (min-width: 768px) {
+          font-size: 3.0rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 3.5rem;
+        }
+
+    }
+    p {
+      margin-bottom: 2rem;
+      color: black;
+
+      @media (min-width: 768px) {
+        text-align: center;
+      }
+
+         font-size: 1.2rem;
+
+        @media (min-width: 768px) {
+          font-size: 1.3rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 1.6rem;
+        }
+ 
+    }
+
+    form {
+      position: relative;
+      overflow: hidden;
+
+      .input-area {
+        margin-bottom: 40px;
+        position: relative;
+
+        &.button-area {
+          text-align: center;
+          margin-bottom: 0;
+        }
+      }
+
+      input,
+      textarea {
+        height: 100%;
+        font-size: 1rem;
+        letter-spacing: 0.25rem;
+        padding: 20px;
+        display: block;
+        width: 100% !important;
+        border: none;
+        background-color: #0b132e;
+        color: #fff;
+        text-transform: uppercase;
+        position: relative;
+        box-sizing: border-box;
+        outline: none;
+
+        &:focus,
+        &:valid {
+          + .label-name {
+            .content-name {
+              transform: translateY(-25%);
+              font-size: 0.7rem;
+              opacity: 0.2;
+            }
+            &::after {
+              transform: translateX(0%);
+            }
+          }
+        }
+      }
+
+      label {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+
+        &::after {
+          content: "";
+          position: absolute;
+          left: 0px;
+          bottom: -1px;
+          height: 1px;
+          background: linear-gradient(90deg, #f441a5, #03a9f4);
+          width: 100%;
+          transform: translateX(-100%);
+          transition: transform 0.3s ease;
+        }
+      }
+
+      .content-name {
+        position: absolute;
+        top: 10px;
+        left: 20px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.25rem;
+        font-size: 0.8rem;
+      }
+    }
+  }
+`
 
 export default AudioRecorder;

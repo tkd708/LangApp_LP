@@ -19,9 +19,9 @@ export const links = [
     //    id: "prices",
     //    text: "prices",
     //  },
-    {
-        path: "/",
-        id: "contact",
-        text: "お問い合わせ",
-    },
+    // {
+    //    path: "/",
+    //    id: "contact",
+    //    text: "お問い合わせ",
+    // },
 ]

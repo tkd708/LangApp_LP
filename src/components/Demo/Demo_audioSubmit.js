@@ -21,10 +21,6 @@ const Demo = () => {
                 className="content-container"
                 style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }
             >
-                <h2>デモ</h2>
-                <p>実際に英会話レッスンを録音してみましょう！</p>
-                <p>マイク付きイヤフォンの使用を推奨しております。なお、スピーカーからの音声記録のため、画面と音声の共有を許可してください。</p>
-                <p>マイクからの音声は「あなた」に、スピーカーからの音声は「相手」に記録されます！</p>
                 <AudioRecorder />
 
             </div>
