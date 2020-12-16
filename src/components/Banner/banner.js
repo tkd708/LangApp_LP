@@ -7,7 +7,7 @@ import { Link } from "react-scroll"
 import { motion } from "framer-motion"
 
 const Banner = () => {
-  const data = useStaticQuery(graphql`
+    const data = useStaticQuery( graphql`
     query {
       file(relativePath: { eq: "language-exchange5.jpg" }) {
         childImageSharp {
@@ -19,83 +19,83 @@ const Banner = () => {
     }
   `)
 
-  const variants = {
-    visible: { opacity: 1, y: 0 },
-    hidden: { opacity: 0, y: 20 },
-  }
+    const variants = {
+        visible: { opacity: 1, y: 0 },
+        hidden: { opacity: 0, y: 20 },
+    }
 
-    const browserLang =  'ja' // tentatively all in Japanese
-   // (typeof window !== `undefined`)
-   //? (window.navigator.languages && window.navigator.languages[0]) ||
-   //         window.navigator.language ||
-   //         window.navigator.userLanguage ||
-   //        window.navigator.browserLanguage
-   // : ''; 
+    const browserLang = 'ja' // tentatively all in Japanese
+    // (typeof window !== `undefined`)
+    //? (window.navigator.languages && window.navigator.languages[0]) ||
+    //         window.navigator.language ||
+    //         window.navigator.userLanguage ||
+    //        window.navigator.browserLanguage
+    // : ''; 
 
-  return (
-    <BannerWrapper>
-      <BackgroundImage
-        Tag="section"
-        className="hero-image grayscale"
-        fluid={data.file.childImageSharp.fluid}
-        style={{
-            backgroundAttachment: 'fixed' 
-           }}
-        >
-        <div className="hero-content">
-          <motion.h1
-            initial="hidden"
-            className="logo"
-            animate="visible"
-            variants={variants}
-            transition={{ ease: "easeOut", duration: 0.8, delay: 1 }}
-          >
-            <span>LangApp</span>
-          </motion.h1>
-          <motion.h2
-            initial="hidden"
-            animate="visible"
-            variants={variants}
-            transition={{ ease: "easeOut", duration: 0.8, delay: 1.5 }}
-          >
-           {browserLang=='ja'
-        ? `あなたの英会話をAIが記録・分析！` 
-        : "A solution to boost your conversation skills"}
-          </motion.h2>
-          <motion.h2
-　　         //style={{fontSize: '1.3rem'}}
-            initial="hidden"
-            animate="visible"
-            variants={variants}
-            transition={{ ease: "easeOut", duration: 0.8, delay: 1.5 }}
-          >
-           {browserLang=='ja'
-        ? `英会話レッスンの効率的な復習をサポート` 
-        : "A solution to boost your conversation skills"}
-          </motion.h2>
-          
-          <iframe
-            className="youtube"
-            id="ytplayer"
-            type="text/html"
-            width="640"
-            height="360"
-            src="https://www.youtube.com/embed/AVVGrQ4uCHw?autoplay=1&origin=http://langapp.netlify.app"
-            frameborder="0"
-          />
-          <Link to="contact" smooth={true} duration={500}>
-            <span className="sr-only">Jump to about</span>
-            <Button
-              cta="メールアドレスで先行登録"
-              label="Banner Learn More"
-              anchor={true}
-              href="linking"
-            />
-          </Link>
-        </div>
-      </BackgroundImage>
-    </BannerWrapper>
-  )
+    return (
+        <BannerWrapper>
+            <BackgroundImage
+                Tag="section"
+                className="hero-image grayscale"
+                fluid={ data.file.childImageSharp.fluid }
+                style={ {
+                    backgroundAttachment: 'fixed'
+                } }
+            >
+                <div className="hero-content">
+                    <motion.h1
+                        initial="hidden"
+                        className="logo"
+                        animate="visible"
+                        variants={ variants }
+                        transition={ { ease: "easeOut", duration: 0.8, delay: 1 } }
+                    >
+                        <span>LangApp</span>
+                    </motion.h1>
+                    <motion.h2
+                        initial="hidden"
+                        animate="visible"
+                        variants={ variants }
+                        transition={ { ease: "easeOut", duration: 0.8, delay: 1.5 } }
+                    >
+                        { browserLang == 'ja'
+                            ? `あなたの英会話をAIが記録・分析！`
+                            : "A solution to boost your conversation skills" }
+                    </motion.h2>
+                    <motion.h2
+                        //style={{fontSize: '1.3rem'}}
+                        initial="hidden"
+                        animate="visible"
+                        variants={ variants }
+                        transition={ { ease: "easeOut", duration: 0.8, delay: 1.5 } }
+                    >
+                        { browserLang == 'ja'
+                            ? `英会話レッスンの効率的な復習をサポート`
+                            : "A solution to boost your conversation skills" }
+                    </motion.h2>
+
+                    <iframe
+                        className="youtube"
+                        id="ytplayer"
+                        type="text/html"
+                        width="640"
+                        height="360"
+                        src="https://www.youtube.com/embed/AVVGrQ4uCHw?autoplay=1&origin=http://langapp.netlify.app"
+                        frameborder="0"
+                    />
+                    <Link to="demo" smooth={ true } duration={ 500 }>
+                        <span className="sr-only">Jump to demo</span>
+                        <Button
+                            cta="英会話分析を試してみる！"
+                            label="Banner Learn More"
+                            anchor={ true }
+                            href="linking"
+                        />
+                    </Link>
+                </div>
+            </BackgroundImage>
+        </BannerWrapper>
+    )
 }
 
 const BannerWrapper = styled.section`

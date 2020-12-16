@@ -114,7 +114,7 @@ const AudioRecorder = () => {
 
         const recorder = new MediaRecorder( streamMic, {
             mimeType: 'audio/webm;codecs=opus',
-            audioBitsPerSecond: 41 * 1000
+            audioBitsPerSecond: 16 * 1000
         } );
         recorder.addEventListener( 'start', () => {
             setBlobArrayMic( [] );
@@ -138,7 +138,7 @@ const AudioRecorder = () => {
 
         const recorder = new MediaRecorder( streamScreen, {
             mimeType: 'video/webm;codecs=vp8',
-            audioBitsPerSecond: 41 * 1000
+            audioBitsPerSecond: 16 * 1000
         } );
         recorder.addEventListener( 'start', () => {
             setBlobArrayScreen( [] )
@@ -185,6 +185,10 @@ const AudioRecorder = () => {
 
     /////////////// Audio recorder operation ////////////////
     const startRecording = () => {
+        if( !mediaRecorderCombined ) {
+            alert( "スピーカー音声を録音するため、画面と音声の共有を許可してください。" );
+            return;
+        }
         /// delete previous records if exist
         setTranscriptAppendedYou( null )
         setTranscriptAppendedPartner( null )
@@ -332,11 +336,11 @@ const AudioRecorder = () => {
                 </Select>
             </div>
 
-            <h2>デモ</h2>
-            <p>実際に英会話レッスンを録音してみましょう！(マイク付きイヤフォン推奨)</p>
-            <p>なお、スピーカーからの音声記録のため、画面と音声の共有を許可してください。</p>
+            <h2>英会話分析デモ</h2>
+            <p>実際にオンライン英会話を録音してみましょう！(マイク付きイヤフォン推奨)</p>
+            <p>なお、スピーカーからの音声記録のため、下記ボタンから画面と音声の共有を許可してください。</p>
 
-            <button style={ { margin: '10px' } } onClick={ () => initialiseMediaStreams() }> 共有を許可 </button>
+            <button style={ { margin: '10px' } } onClick={ () => initialiseMediaStreams() }> 画面と音声の共有を許可 </button>
 
             <p>マイクからの音声は「あなた」に、スピーカーからの音声は「相手」に記録されます！</p>
 
@@ -344,7 +348,7 @@ const AudioRecorder = () => {
                 //style={{marginTop: '10px'}}
                 //variant="contained"
                 //color="primary"
-                cta={ isRecording ? 'End' : 'Start!' } // from the template
+                cta={ isRecording ? '録音を終了' : '会話の録音を開始' } // from the template
                 onClick={ () => { isRecording ? stopRecording() : startRecording() } }
             >
             </Button>
@@ -378,11 +382,13 @@ const AudioRecorder = () => {
             }
             { ( !isRecording && blobAppendedCombined !== null ) &&
                 // ( transcript !== null ) &&
-                <button style={ { margin: '20px' } } onClick={ playMediaRecorderCombined }> PLAY </button>
+                <button style={ { margin: '20px' } } onClick={ playMediaRecorderCombined }> 録音した会話を再生 </button>
             }
-            <a href={ downloadUrl } download id="download">{ ( downloadUrl !== null ) ? 'Download' : '' }</a>
+            <a href={ downloadUrl } download id="download">{ ( downloadUrl !== null ) ? '音声ファイルをダウンロード' : '' }</a>
 
             <h2 style={ { marginTop: '50px' } }>{ "英会話分析登録フォーム" } </h2>
+            <p>会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>
+            <p>会話の音声ファイルをダウンロードして、下記フォームより送付していただければ、分析レポートを指定の連絡先にお届けいたします！</p>
             <ContactWrapper id="contact">
                 <div className="content-container"
                     style={ { width: '80vw' } }>
@@ -409,14 +415,14 @@ const AudioRecorder = () => {
 
                         <div className="input-area">
                             <input
-                                type="email"
+                                type="text"
                                 name="email"
                                 aria-label="Email"
                                 required
                                 autoComplete="off"
                             />
                             <label className="label-name" for="email">
-                                <span className="content-name">メールアドレス</span>
+                                <span className="content-name">メールアドレス(あるいはご希望の連絡手段)</span>
                             </label>
                         </div>
 
@@ -514,7 +520,7 @@ const ContactWrapper = styled.section`
 
     }
     p {
-      margin-bottom: 2rem;
+      margin-bottom: 10px;
       color: black;
 
       @media (min-width: 768px) {
@@ -558,7 +564,7 @@ const ContactWrapper = styled.section`
         border: none;
         background-color: #0b132e;
         color: #fff;
-        text-transform: uppercase;
+        //text-transform: uppercase;
         position: relative;
         box-sizing: border-box;
         outline: none;
@@ -604,7 +610,7 @@ const ContactWrapper = styled.section`
         top: 10px;
         left: 20px;
         transition: all 0.3s ease;
-        text-transform: uppercase;
+        //text-transform: uppercase;
         letter-spacing: 0.25rem;
         font-size: 0.8rem;
       }
