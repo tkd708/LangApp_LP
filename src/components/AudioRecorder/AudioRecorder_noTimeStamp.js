@@ -52,20 +52,10 @@ const AudioRecorder = () => {
     const [ blobAppendedCombined, setBlobAppendedCombined ] = useState( null );
     const [ downloadUrl, setDownloadUrl ] = useState( null );
 
-    const [ transcriptArrayYou, setTranscriptArrayYou ] = useState( [] );
-    const transcriptArrayYouRef = useRef( transcriptArrayYou )
-    useEffect( () => {
-        transcriptArrayYouRef.current = transcriptArrayYou
-    }, [ transcriptArrayYou ] )
-    const [ transcriptArrayMinYou, setTranscriptArrayMinYou ] = useState( [] );
-
-    const [ transcriptArrayPartner, setTranscriptArrayPartner ] = useState( [] );
-    const transcriptArrayPartnerRef = useRef( transcriptArrayPartner )
-    useEffect( () => {
-        transcriptArrayPartnerRef.current = transcriptArrayPartner
-    }, [ transcriptArrayPartner ] )
-    const [ transcriptArrayMinPartner, setTranscriptArrayMinPartner ] = useState( [] );
-
+    const [ transcriptChunkYou, setTranscriptChunkYou ] = useState( null );
+    const [ transcriptChunkPartner, setTranscriptChunkPartner ] = useState( null );
+    const [ transcriptAppendedYou, setTranscriptAppendedYou ] = useState( [] );
+    const [ transcriptAppendedPartner, setTranscriptAppendedPartner ] = useState( [] );
     const [ transcript, setTranscript ] = useState( null );
 
     const [ transcribeLang, setTranscribeLang ] = useState( 'en-US' );
@@ -200,8 +190,8 @@ const AudioRecorder = () => {
             return;
         }
         /// delete previous records if exist
-        setTranscriptArrayYou( [] )
-        setTranscriptArrayPartner( [] )
+        setTranscriptAppendedYou( [] )
+        setTranscriptAppendedPartner( [] )
         setDownloadUrl( null )
 
         setIsRecording( true );
@@ -285,74 +275,46 @@ const AudioRecorder = () => {
                 //console.log(res)
                 //console.log( 'transcript :', res.data.transcript === '' );
                 const transcript = ( res.data.transcript === '' ) ? ' ' : res.data.transcript;
-                console.log( 'transcript :', transcript );
-                ( destination === 'you' ) ?
-                    setTranscriptArrayYou( [ ...transcriptArrayYouRef.current, transcript ] ) :
-                    setTranscriptArrayPartner( [ ...transcriptArrayPartnerRef.current, transcript ] );
-                ( destination === 'you' ) ?
-                    console.log( 'script array you: ', transcriptArrayYouRef.current ) :
-                    console.log( "script array partner", transcriptArrayPartnerRef.current );
+                //console.log( 'transcript :', transcript );
+                ( destination === 'you' ) ? setTranscriptChunkYou( transcript ) : setTranscriptChunkPartner( transcript );
             } )
             .catch( ( err ) => {
                 console.log( 'transcribe err :', err );
             } );
     }
 
-
-    //////////////////////// Make transcript array into another array per minute
+    ////////////////////// Handle transcript chunks //////////////////////////
     useEffect( () => {
-        // Active only for the last chunk of transcription and then finalise the transcript
-        if( transcriptArrayYou.length === 0 ) return
-        const transcriptArrayMinAppended = []
-        for( let i = 0; i < transcriptArrayYou.length / 6; i++ ) {
-            const transcriptArrayMin = transcriptArrayYou.slice( 0 + i * 6, 6 + i * 6 ).join( ' ' )
-            transcriptArrayMinAppended.push( transcriptArrayMin )
-        }
-        setTranscriptArrayMinYou( transcriptArrayMinAppended );
-    }, [ transcriptArrayYou ] )
+        ( transcriptChunkYou !== null ) && setTranscriptAppendedYou( [ ...transcriptAppendedYou, transcriptChunkYou ] );
+        console.log( 'length you: ', transcriptAppendedYou.length );
+    }, [ transcriptChunkYou ] )
 
     useEffect( () => {
-        // Active only for the last chunk of transcription and then finalise the transcript
-        if( transcriptArrayPartner.length === 0 ) return
-        const transcriptArrayMinAppended = []
-        for( let i = 0; i < transcriptArrayPartner.length / 6; i++ ) {
-            const transcriptArrayMin = transcriptArrayPartner.slice( 0 + i * 6, 6 + i * 6 ).join( ' ' )
-            transcriptArrayMinAppended.push( transcriptArrayMin )
-        }
-        setTranscriptArrayMinPartner( transcriptArrayMinAppended );
-    }, [ transcriptArrayPartner ] )
+        ( transcriptChunkPartner !== null ) && setTranscriptAppendedPartner( [ ...transcriptAppendedPartner, transcriptChunkPartner ] );
+        console.log( 'length partner: ', transcriptAppendedPartner.length );
+    }, [ transcriptChunkPartner ] )
 
-
-    ///////////////// The whole transcript of YOU after finishing the recording
     useEffect( () => {
         // Active only for the last chunk of transcription and then finalise the transcript
-        ( !isRecording && transcriptArrayYou.length !== 0 ) && setTranscript( transcriptArrayYou.join( ' ' ) );
+        ( !isRecording && transcriptAppendedYou.length !== 0 ) && setTranscript( transcriptAppendedYou.join( ' ' ) );
         //console.log('last chunk of transcript appended');
-    }, [ transcriptArrayYou ] )
+    }, [ transcriptAppendedYou ] )
+
 
 
     //////// After transcribing... vocab analysis
-    useEffect( () => {
-        if( transcript === null ) return
-
+    const vocabAnalysis = () => {
         const transcriptArray = transcript.split( " " );
         setVocab1( transcriptArray.length );
-
         const conversationLength = ( endTime - startTime ) / 1000 / 60;
         setVocab2( ( transcriptArray.length / conversationLength ).toFixed( 1 ) );
-
         const uniq = [ ...new Set( transcriptArray ) ];
         setVocab3( uniq.length );
         //console.log( uniq )
+    }
 
-        const vocabCounts = [];
-        //transcriptArray.forEach( ( x ) => { vocabCounts[ x ] = ( vocabCounts[ x ] || 0 ) + 1; } );
-        transcriptArray.forEach( ( x ) => { vocabCounts[ x ] = ( vocabCounts[ x ] || 0 ) + 1; } );
-        //vocabCounts.map( ( x ) => console.log( Object.value( x ) ) )
-        //console.log( Object.values( vocabCounts ) );
-        //console.log( Object.keys( vocabCounts ) );
-        setVocab4( vocabCounts );
-
+    useEffect( () => {
+        ( transcript !== null ) && vocabAnalysis();
     }, [ transcript ] )
 
 
@@ -379,12 +341,12 @@ const AudioRecorder = () => {
             </div>
 
             <h2>英会話分析デモ</h2>
-            <p>実際にオンライン英会話を録音してみましょう！</p>
-            <p>あなたとご相手の音声を別々に書き起こすため、マイク付きイヤフォン推奨しています。なお、スピーカーからの音声記録のために下記ボタンから画面と音声の共有を許可してください。</p>
+            <p>実際にオンライン英会話を録音してみましょう！(マイク付きイヤフォン推奨)</p>
+            <p>なお、スピーカーからの音声記録のため、下記ボタンから画面と音声の共有を許可してください。</p>
 
             <button style={ { margin: '10px' } } onClick={ () => initialiseMediaStreams() }> 画面と音声の共有を許可 </button>
 
-            <p>マイクからの音声は「あなた」に、スピーカーからの音声は「相手」に記録されます！開始ボタンを押してからは、ウィンドウを最小化して普段通りのオンライン英会話にお戻りください。</p>
+            <p>マイクからの音声は「あなた」に、スピーカーからの音声は「相手」に記録されます！</p>
 
             <Button
                 //style={{marginTop: '10px'}}
@@ -400,30 +362,18 @@ const AudioRecorder = () => {
                 <Card style={ { width: '40vw', margin: '20px' } } >
                     <CardContent>
                         <Typography color="textSecondary" gutterBottom>相手</Typography>
+                        { ( transcriptAppendedPartner !== null ) && transcriptAppendedPartner.map( ( object, i ) => {
+                            return <Typography key={ i }>{ object }</Typography>
+                        } ) }
                     </CardContent>
-                    { transcriptArrayMinPartner.slice( 0, 10 ).map( ( object, i ) => {
-                        return (
-                            <CardContent>
-                                <Typography color="textSecondary">{ "--- 00:0" + i + ":00 ---" }</Typography>
-                                <Typography key={ i }>{ object }</Typography>
-                                {( i === 9 ) && <Typography>{ '10分以上の書き起こしは下記登録フォームから録音された会話をご送付ください！' }</Typography> }
-                            </CardContent>
-                        )
-                    } ) }
                 </Card>
                 <Card style={ { width: '40vw', margin: '20px' } } >
                     <CardContent>
                         <Typography color="textSecondary" gutterBottom>あなた</Typography>
+                        { ( transcriptAppendedYou !== null ) && transcriptAppendedYou.map( ( object, i ) => {
+                            return <Typography key={ i }>{ 'transcript:', i, object }</Typography>
+                        } ) }
                     </CardContent>
-                    { transcriptArrayMinYou.slice( 0, 10 ).map( ( object, i ) => {
-                        return (
-                            <CardContent>
-                                <Typography color="textSecondary">{ "--- 00:0" + i + ":00 ---" }</Typography>
-                                <Typography key={ i }>{ object }</Typography>
-                                {( i === 9 ) && <Typography>{ '10分以上の書き起こしは下記登録フォームから録音された会話をご送付ください！' }</Typography> }
-                            </CardContent>
-                        )
-                    } ) }
                 </Card>
             </div>
 
@@ -431,7 +381,9 @@ const AudioRecorder = () => {
                 <Card style={ { width: '80vw', marginTop: '20px' } } >
                     <CardContent>
                         <Typography color="textSecondary" gutterBottom>今回の会話の分析結果はこちら！</Typography>
-                        <Typography>{ `流暢さ(word per minute): ${ vocab2 } ` }</Typography>
+                        {/*<Typography>{ 'Transcript: ' + transcript }</Typography> 
+                        <Typography>{ `今回の会話での単語数: ${ vocab1 }` }</Typography> */ }
+                        <Typography>{ `今回の会話での流暢さ(word per minute): ${ vocab2 } ` }</Typography>
                         <Typography>{ `使用した単語数: ${ vocab3 } ` }</Typography>
                     </CardContent>
                 </Card>
@@ -440,13 +392,10 @@ const AudioRecorder = () => {
                 // ( transcript !== null ) &&
                 <button style={ { margin: '20px' } } onClick={ playMediaRecorderCombined }> 録音した会話を再生 </button>
             }
-
-            <a href={ downloadUrl } download="recording" id="download">
-                { ( downloadUrl !== null ) ? ( <button>'音声ファイルをダウンロード'</button> ) : '' }
-            </a>
+            <a href={ downloadUrl } download id="download">{ ( downloadUrl !== null ) ? '音声ファイルをダウンロード' : '' }</a>
 
             <h2 style={ { marginTop: '50px' } }>{ "英会話分析登録フォーム" } </h2>
-            <p>いかがでしたでしょうか？10分の会話の書き起こしだけでも、振り返ることでたくさんの気づきや学びがあるのではないでしょうか。録音された会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>
+            <p>会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>
             <p>会話の音声ファイルをダウンロードして、下記フォームより送付していただければ、分析レポートを指定の連絡先にお届けいたします！</p>
             <ContactWrapper id="contact">
                 <div className="content-container"
@@ -501,8 +450,8 @@ const AudioRecorder = () => {
                         <div className="input-area">
                             <input
                                 type="text"
-                                rows="5"
                                 name="opinion"
+                                rows="5"
                                 aria-label="opinion"
                                 //required
                                 autoComplete="off"
@@ -520,7 +469,7 @@ const AudioRecorder = () => {
                                 type="text"
                                 name="Transcript_you"
                                 aria-label="Transcript_you"
-                                value={ transcriptArrayMinYou }
+                                value={ transcriptAppendedYou }
                                 autoComplete="off"
                             />
                             <label className="label-name" for="Transcript_you">
@@ -536,7 +485,7 @@ const AudioRecorder = () => {
                                 type="text"
                                 name="Transcript_partner"
                                 aria-label="Transcript_partner"
-                                value={ transcriptArrayMinPartner }
+                                value={ transcriptAppendedPartner }
                                 autoComplete="off"
                             />
                             <label className="label-name" for="Transcript_partner">
@@ -558,7 +507,7 @@ const AudioRecorder = () => {
                 </div>
             </ContactWrapper>
 
-        </div >
+        </div>
 
     );
 }
