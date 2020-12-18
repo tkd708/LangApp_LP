@@ -381,7 +381,7 @@ const AudioRecorder = () => {
     /////////////// UI //////////////////////
     return (
         <div
-            style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }
+            style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', maxWidth: '90%' } }
         >
             <div style={ { display: 'none' } }>
                 <Select

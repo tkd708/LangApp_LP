@@ -6,56 +6,56 @@ import { Link, animateScroll as scroll } from "react-scroll"
 
 const Navbar = () => {
 
-  const [isOpen, setNav] = useState(false)
+    const [ isOpen, setNav ] = useState( false )
 
-  const toggleNav = () => setNav(isOpen => !isOpen)
+    const toggleNav = () => setNav( isOpen => !isOpen )
 
-  return (
-    <NavWrapper>
-      <div className="masthead flex-container">
-        {/* <img src={Logo} alt="LangApp Logo" /> */}
-        <button
-          className={
-            isOpen ? 
-              `${"toggle-btn"} ${"toggle-btn-active"}`: 
-              `${"toggle-btn"}`
-          }
-          type="button"
-          onClick={toggleNav}
-          aria-label="Menu Button"
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-      </div>
-      <ul
-        className={ 
-          isOpen ?
-            `${"nav-links"} ${"show-nav"}` :
-            `${"nav-links"}`
-          }
-      >
-        {links.map((item, index) => {
-          return (
-            <li key={index}>
-              <Link
-                activeClass="active"
-                to={item.id}
-                spy={true}
-                smooth={true}
-                duration={500}
-                offset={-50}
-                onClick={toggleNav}
-              >
-                {item.text}
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
-    </NavWrapper>
-  )
+    return (
+        <NavWrapper>
+            <div className="masthead flex-container">
+                {/* <img src={Logo} alt="LangApp Logo" /> */ }
+                <button
+                    className={
+                        isOpen ?
+                            `${ "toggle-btn" } ${ "toggle-btn-active" }` :
+                            `${ "toggle-btn" }`
+                    }
+                    type="button"
+                    onClick={ toggleNav }
+                    aria-label="Menu Button"
+                >
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <ul
+                className={
+                    isOpen ?
+                        `${ "nav-links" } ${ "show-nav" }` :
+                        `${ "nav-links" }`
+                }
+            >
+                { links.map( ( item, index ) => {
+                    return (
+                        <li key={ index }>
+                            <Link
+                                activeClass="active"
+                                to={ item.id }
+                                spy={ true }
+                                smooth={ true }
+                                duration={ 500 }
+                                offset={ -50 }
+                                onClick={ toggleNav }
+                            >
+                                { item.text }
+                            </Link>
+                        </li>
+                    )
+                } ) }
+            </ul>
+        </NavWrapper>
+    )
 }
 
 const NavWrapper = styled.nav`
@@ -203,7 +203,7 @@ const NavWrapper = styled.nav`
 
       li {
         margin-left: 1rem;
-        width: 120px;
+        width: 135px;
       }
     }
   }

@@ -86,7 +86,7 @@ const Banner = () => {
                     <Link to="demo" smooth={ true } duration={ 500 }>
                         <span className="sr-only">Jump to demo</span>
                         <Button
-                            cta="英会話分析を試してみる！"
+                            cta="英会話分析を試す！"
                             label="Banner Learn More"
                             anchor={ true }
                             href="linking"
