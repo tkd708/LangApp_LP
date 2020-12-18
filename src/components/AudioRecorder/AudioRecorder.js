@@ -285,13 +285,13 @@ const AudioRecorder = () => {
                 //console.log(res)
                 //console.log( 'transcript :', res.data.transcript === '' );
                 const transcript = ( res.data.transcript === '' ) ? ' ' : res.data.transcript;
-                console.log( 'transcript :', transcript );
+                console.log( 'transcript from', destination, ' :', transcript );
                 ( destination === 'you' ) ?
                     setTranscriptArrayYou( [ ...transcriptArrayYouRef.current, transcript ] ) :
                     setTranscriptArrayPartner( [ ...transcriptArrayPartnerRef.current, transcript ] );
-                ( destination === 'you' ) ?
-                    console.log( 'script array you: ', transcriptArrayYouRef.current ) :
-                    console.log( "script array partner", transcriptArrayPartnerRef.current );
+                //( destination === 'you' ) ?
+                //    console.log( 'script array you: ', transcriptArrayYouRef.current ) :
+                //    console.log( "script array partner", transcriptArrayPartnerRef.current );
             } )
             .catch( ( err ) => {
                 console.log( 'transcribe err :', err );
@@ -324,34 +324,55 @@ const AudioRecorder = () => {
 
 
     ///////////////// The whole transcript of YOU after finishing the recording
-    useEffect( () => {
-        // Active only for the last chunk of transcription and then finalise the transcript
+    useEffect( () => {　// Active only for the last chunk of transcription and then finalise the transcript
         ( !isRecording && transcriptArrayYou.length !== 0 ) && setTranscript( transcriptArrayYou.join( ' ' ) );
         //console.log('last chunk of transcript appended');
     }, [ transcriptArrayYou ] )
 
+    useEffect( () => {
+        //( !isRecording && transcriptArrayPartner.length !== 0 ) && setTranscript( transcriptArrayPartner.join( ' ' ) );
+    }, [ transcriptArrayPartner ] )
 
     //////// After transcribing... vocab analysis
     useEffect( () => {
         if( transcript === null ) return
 
-        const transcriptArray = transcript.split( " " );
-        setVocab1( transcriptArray.length );
+        const transcriptWordArray = transcript.replace( /[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "" ).split( " " );
+        setVocab1( transcriptWordArray.length );
 
+        // words per minute
         const conversationLength = ( endTime - startTime ) / 1000 / 60;
-        setVocab2( ( transcriptArray.length / conversationLength ).toFixed( 1 ) );
+        setVocab2( ( transcriptWordArray.length / conversationLength ).toFixed( 1 ) );
 
-        const uniq = [ ...new Set( transcriptArray ) ];
+        // size of vocab
+        const uniq = [ ...new Set( transcriptWordArray ) ];
         setVocab3( uniq.length );
         //console.log( uniq )
 
+        // vocab counts... removing articles, prepositions and pronouns etc.
         const vocabCounts = [];
-        //transcriptArray.forEach( ( x ) => { vocabCounts[ x ] = ( vocabCounts[ x ] || 0 ) + 1; } );
-        transcriptArray.forEach( ( x ) => { vocabCounts[ x ] = ( vocabCounts[ x ] || 0 ) + 1; } );
-        //vocabCounts.map( ( x ) => console.log( Object.value( x ) ) )
-        //console.log( Object.values( vocabCounts ) );
-        //console.log( Object.keys( vocabCounts ) );
-        setVocab4( vocabCounts );
+        const vocabCountArray = [];
+        transcriptWordArray.forEach( ( e ) => {
+            const x = e.toLowerCase();
+            if( x === '' || x === 'a' || x === 'the' ||
+                x === 'i' || x === 'my' || x === 'me' || x === 'mine' || x === 'you' || x === 'your' || x === 'yours' ||
+                x === 'he' || x === 'him' || x === 'his' || x === 'she' || x === 'her' || x === 'hers' ||
+                x === 'we' || x === 'us' || x === 'our' || x === 'ours' || x === 'they' || x === 'them' || x === 'thier' || x === 'thiers' ||
+                x === 'it' || x === 'this' || x === 'that' || x === 'there' ||
+                x === 'and' || x === 'but' ||
+                x === 'at' || x === 'in' || x === 'on' || x === 'of' || x === 'from' || x === 'for' ||
+                x === 'am' || x === 'are' || x === 'is' || x === 'be'
+            ) return
+            vocabCounts[ x ] = ( vocabCounts[ x ] || 0 ) + 1;
+        } );
+        Object.entries( vocabCounts ).forEach( ( [ key, value ] ) => {
+            const wordCount = { word: key, count: value }
+            vocabCountArray.push( wordCount )
+        } );
+        vocabCountArray.sort( function ( a, b ) {
+            return a.count > b.count ? -1 : 1;
+        } );
+        setVocab4( vocabCountArray );
 
     }, [ transcript ] )
 
@@ -384,7 +405,7 @@ const AudioRecorder = () => {
 
             <button style={ { margin: '10px' } } onClick={ () => initialiseMediaStreams() }> 画面と音声の共有を許可 </button>
 
-            <p>マイクからの音声は「あなた」に、スピーカーからの音声は「相手」に記録されます！開始ボタンを押してからは、ウィンドウを最小化して普段通りのオンライン英会話にお戻りください。</p>
+            <p>マイクからの音声は「あなた」に、スピーカーからの音声は「相手」に記録されます！開始ボタンを押してからは、普段通りのオンライン英会話にお戻りください。</p>
 
             <Button
                 //style={{marginTop: '10px'}}
@@ -430,9 +451,13 @@ const AudioRecorder = () => {
             { ( transcript !== null ) &&
                 <Card style={ { width: '80vw', marginTop: '20px' } } >
                     <CardContent>
-                        <Typography color="textSecondary" gutterBottom>今回の会話の分析結果はこちら！</Typography>
+                        <Typography color="textSecondary" gutterBottom>今回の"あなた"の会話の分析結果はこちら！</Typography>
                         <Typography>{ `流暢さ(word per minute): ${ vocab2 } ` }</Typography>
                         <Typography>{ `使用した単語数: ${ vocab3 } ` }</Typography>
+                        <Typography>{ `使用頻度の高い単語 TOP5` }</Typography>
+                        { vocab4.slice( 0, 5 ).map( ( x ) => {
+                            return ( <Typography>{ `${ x.word }: ${ x.count } 回` }</Typography> )
+                        } ) }
                     </CardContent>
                 </Card>
             }
@@ -446,7 +471,7 @@ const AudioRecorder = () => {
             </a>
 
             <h2 style={ { marginTop: '50px' } }>{ "英会話分析登録フォーム" } </h2>
-            <p>いかがでしたでしょうか？10分の会話の書き起こしだけでも、振り返ることでたくさんの気づきや学びがあるのではないでしょうか。録音された会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>
+            <p>いかがでしたでしょうか？10分の会話の書き起こしだけでも、多くの気づきや学びがあるのではないでしょうか。録音された会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>
             <p>会話の音声ファイルをダウンロードして、下記フォームより送付していただければ、分析レポートを指定の連絡先にお届けいたします！</p>
             <ContactWrapper id="contact">
                 <div className="content-container"
@@ -460,94 +485,69 @@ const AudioRecorder = () => {
                     >
                         <input type="hidden" name="form-name" value="contact" />
                         <div className="input-area">
-                            <input
-                                type="text"
-                                name="name"
-                                aria-label="Name"
-                                required
-                                autoComplete="off"
-                            />
+                            <input type="text" name="name" aria-label="Name" required autoComplete="off" />
                             <label className="label-name" for="name">
                                 <span className="content-name">名前</span>
                             </label>
                         </div>
 
                         <div className="input-area">
-                            <input
-                                type="text"
-                                name="email"
-                                aria-label="Email"
-                                required
-                                autoComplete="off"
-                            />
+                            <input type="text" name="email" aria-label="Email" required autoComplete="off" />
                             <label className="label-name" for="email">
                                 <span className="content-name">メールアドレス(あるいはご希望の連絡手段)</span>
                             </label>
                         </div>
 
                         <div className="input-area">
-                            <input
-                                type="file"
-                                name="audio"
-                                aria-label="audio"
-                                //required
-                                autoComplete="off"
-                            />
+                            <input type="file" name="audio" aria-label="audio" required />
                             <label className="label-name" for="audio">
                                 <span className="content-name">音声ファイル</span>
                             </label>
                         </div>
 
                         <div className="input-area">
-                            <input
-                                type="text"
-                                rows="5"
-                                name="opinion"
-                                aria-label="opinion"
-                                //required
-                                autoComplete="off"
-                            />
+                            <textarea type="text" rows="5" name="opinion" aria-label="opinion" required autoComplete="off" />
                             <label className="label-name" for="opinion">
-                                <span className="content-name">ご意見・ご要望など</span>
+                                <span className="content-name" style={ { color: '#fff' } }>ご意見・ご要望など</span>
                             </label>
                         </div>
 
-                        <div className="input-area"
-                            style={ {
-                                display: 'none'
-                            } }>
-                            <input
-                                type="text"
-                                name="Transcript_you"
-                                aria-label="Transcript_you"
-                                value={ transcriptArrayMinYou }
-                                autoComplete="off"
-                            />
+                        <div className="input-area" style={ { display: 'none' } }>
+                            <input type="text" name="Transcript_you" aria-label="Transcript_you" value={ transcriptArrayMinYou } />
                             <label className="label-name" for="Transcript_you">
                                 <span className="content-name">Transcript_you</span>
                             </label>
                         </div>
 
-                        <div className="input-area"
-                            style={ {
-                                display: 'none'
-                            } }>
-                            <input
-                                type="text"
-                                name="Transcript_partner"
-                                aria-label="Transcript_partner"
-                                value={ transcriptArrayMinPartner }
-                                autoComplete="off"
-                            />
+                        <div className="input-area" style={ { display: 'none' } }>
+                            <input type="text" name="Transcript_partner" aria-label="Transcript_partner" value={ transcriptArrayMinPartner } />
                             <label className="label-name" for="Transcript_partner">
                                 <span className="content-name">Transcript_partner</span>
                             </label>
                         </div>
 
-                        <div
-                            className="input-area button-area"
-                            style={ { marginBottom: '30px' } }
-                        >
+                        <div className="input-area" style={ { display: 'none' } }>
+                            <input type="text" name="words_per_minute" aria-label="words_per_minute" value={ vocab2 } />
+                            <label className="label-name" for="words_per_minute">
+                                <span className="content-name">words_per_minute</span>
+                            </label>
+                        </div>
+
+                        <div className="input-area" style={ { display: 'none' } }>
+                            <input type="text" name="vocab_size" aria-label="vocab_size" value={ vocab3 } />
+                            <label className="label-name" for="vocab_size">
+                                <span className="content-name">vocab_size</span>
+                            </label>
+                        </div>
+
+                        <div className="input-area" style={ { display: 'none' } }>
+                            <input type="text" name="vocab_counts" aria-label="vocab_counts" value={ vocab4 } />
+                            <label className="label-name" for="vocab_counts">
+                                <span className="content-name">vocab_counts</span>
+                            </label>
+                        </div>
+
+                        <div className="input-area button-area" style={ { marginBottom: '30px' } }   >
                             <Button
                                 label="Send Contact Form"
                                 cta={ "送信" }
