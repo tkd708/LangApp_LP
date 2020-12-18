@@ -422,12 +422,12 @@ const AudioRecorder = () => {
                     <CardContent>
                         <Typography color="textSecondary" gutterBottom>相手</Typography>
                     </CardContent>
-                    { transcriptArrayMinPartner.slice( 0, 10 ).map( ( object, i ) => {
+                    { transcriptArrayMinPartner.slice( 0, 5 ).map( ( object, i ) => {
                         return (
                             <CardContent>
-                                <Typography color="textSecondary">{ "--- 00:0" + i + ":00 ---" }</Typography>
+                                <Typography color="textSecondary">{ "--- Time 00:0" + i + ":00 ---" }</Typography>
                                 <Typography key={ i }>{ object }</Typography>
-                                {( i === 9 ) && <Typography>{ '10分以上の書き起こしは下記登録フォームから録音された会話をご送付ください！' }</Typography> }
+                                {( i === 4 ) && <Typography>{ '5分以上の書き起こしは下記登録フォームから録音された会話をご送付ください！' }</Typography> }
                             </CardContent>
                         )
                     } ) }
@@ -436,12 +436,12 @@ const AudioRecorder = () => {
                     <CardContent>
                         <Typography color="textSecondary" gutterBottom>あなた</Typography>
                     </CardContent>
-                    { transcriptArrayMinYou.slice( 0, 10 ).map( ( object, i ) => {
+                    { transcriptArrayMinYou.slice( 0, 5 ).map( ( object, i ) => {
                         return (
                             <CardContent>
-                                <Typography color="textSecondary">{ "--- 00:0" + i + ":00 ---" }</Typography>
+                                <Typography color="textSecondary">{ "--- Time 00:0" + i + ":00 ---" }</Typography>
                                 <Typography key={ i }>{ object }</Typography>
-                                {( i === 9 ) && <Typography>{ '10分以上の書き起こしは下記登録フォームから録音された会話をご送付ください！' }</Typography> }
+                                {( i === 4 ) && <Typography>{ '5分以上の書き起こしは下記登録フォームから録音された会話をご送付ください！' }</Typography> }
                             </CardContent>
                         )
                     } ) }
@@ -474,7 +474,7 @@ const AudioRecorder = () => {
             </a>
 
             <h2 style={ { marginTop: '50px' } }>{ "英会話分析登録フォーム" } </h2>
-            <p>いかがでしたでしょうか？10分の会話の書き起こしだけでも、多くの気づきや学びがあるのではないでしょうか。録音された会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>
+            <p>いかがでしたでしょうか？5分間の会話の書き起こしだけでも、多くの気づきや学びがあるのではないでしょうか。録音された会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>
             <p>会話の音声ファイルをダウンロードして、下記フォームより送付していただければ、分析レポートを指定の連絡先にお届けいたします！</p>
             <ContactWrapper id="contact">
                 <div className="content-container"
