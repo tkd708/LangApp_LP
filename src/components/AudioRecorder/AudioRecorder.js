@@ -544,7 +544,8 @@ const AudioRecorder = () => {
                         </div>
 
                         <div className="input-area" style={ { display: 'none' } }>
-                            <input type="text" name="vocab_counts" aria-label="vocab_counts" value={ vocab4 } />
+                            <input type="text" name="vocab_counts" aria-label="vocab_counts"
+                                value={ vocab4.map( ( x ) => { `${ x.word }: ${ x.count } 回` } ) } />
                             <label className="label-name" for="vocab_counts">
                                 <span className="content-name">vocab_counts</span>
                             </label>
