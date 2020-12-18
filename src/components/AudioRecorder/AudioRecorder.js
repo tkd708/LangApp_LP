@@ -360,7 +360,7 @@ const AudioRecorder = () => {
                 x === 'we' || x === 'us' || x === 'our' || x === 'ours' || x === 'they' || x === 'them' || x === 'thier' || x === 'thiers' ||
                 x === 'it' || x === 'this' || x === 'that' || x === 'there' ||
                 x === 'and' || x === 'but' ||
-                x === 'at' || x === 'in' || x === 'on' || x === 'of' || x === 'from' || x === 'for' ||
+                x === 'at' || x === 'in' || x === 'on' || x === 'of' || x === 'from' || x === 'for' || x === 'to' ||
                 x === 'am' || x === 'are' || x === 'is' || x === 'be'
             ) return
             vocabCounts[ x ] = ( vocabCounts[ x ] || 0 ) + 1;
