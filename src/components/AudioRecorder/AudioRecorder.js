@@ -448,6 +448,9 @@ const AudioRecorder = () => {
                 </Card>
             </div>
 
+            { ( transcript === null ) &&
+                <p>会話の録音を終了し、分析が完了すると結果が以下に表示されます。</p> }
+
             { ( transcript !== null ) &&
                 <Card style={ { width: '80vw', marginTop: '20px' } } >
                     <CardContent>
@@ -467,7 +470,7 @@ const AudioRecorder = () => {
             }
 
             <a href={ downloadUrl } download="recording" id="download">
-                { ( downloadUrl !== null ) ? ( <button>'音声ファイルをダウンロード'</button> ) : '' }
+                { ( downloadUrl !== null ) ? ( <button>会話の音声ファイルをダウンロード</button> ) : '' }
             </a>
 
             <h2 style={ { marginTop: '50px' } }>{ "英会話分析登録フォーム" } </h2>
