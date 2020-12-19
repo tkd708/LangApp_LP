@@ -11,7 +11,6 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
-
 import TranscribeLangs from './transcribeLangs.json';
 
 const AudioRecorder = () => {
@@ -47,10 +46,20 @@ const AudioRecorder = () => {
     }, [ isRecording ] )
 
     const [ startTime, setStartTime ] = useState( '' ); // milliseconds
+    const startTimeRef = useRef( startTime )
+    useEffect( () => {
+        startTimeRef.current = startTime
+    }, [ startTime ] )
     const [ endTime, setEndTime ] = useState( '' ); // milliseconds
 
     const [ blobAppendedCombined, setBlobAppendedCombined ] = useState( null );
     const [ downloadUrl, setDownloadUrl ] = useState( null );
+
+    const [ transcribeErrorArrray, setTranscribeErrorArray ] = useState( [] );
+    const transcribeErrorArrrayRef = useRef( transcribeErrorArrray )
+    useEffect( () => {
+        transcribeErrorArrrayRef.current = transcribeErrorArrray
+    }, [ transcribeErrorArrray ] )
 
     const [ transcriptArrayYou, setTranscriptArrayYou ] = useState( [] );
     const transcriptArrayYouRef = useRef( transcriptArrayYou )
@@ -137,8 +146,8 @@ const AudioRecorder = () => {
         } );
         recorder.addEventListener( 'stop', () => {
             const blob = new Blob( blobArrayMicRef.current, { 'type': 'audio/webm;codecs=opus' } );
-            const destination = 'you'
-            blobToBase64( blob, destination )
+            const speaker = 'you'
+            blobToBase64( blob, speaker )
         } );
         setMediaRecorderMic( recorder );
     }
@@ -160,8 +169,8 @@ const AudioRecorder = () => {
         } );
         recorder.addEventListener( 'stop', () => {
             const blob = new Blob( blobArrayScreenRef.current, { 'type': 'audio/webm;codecs=opus' } );
-            const destination = 'partner'
-            blobToBase64( blob, destination )
+            const speaker = 'partner'
+            blobToBase64( blob, speaker )
 
         } );
         setMediaRecorderScreen( recorder );
@@ -201,7 +210,10 @@ const AudioRecorder = () => {
         }
         /// delete previous records if exist
         setTranscriptArrayYou( [] )
+        setTranscriptArrayMinYou( [] )
         setTranscriptArrayPartner( [] )
+        setTranscriptArrayMinPartner( [] )
+        setTranscript( null )
         setDownloadUrl( null )
 
         setIsRecording( true );
@@ -236,7 +248,6 @@ const AudioRecorder = () => {
 
         const endTime = new Date();
         setEndTime( endTime.getTime() );
-
         // console.log( 'recoding ended' );
     }
 
@@ -256,20 +267,20 @@ const AudioRecorder = () => {
 
 
     ///////////////// Functions to convert and send blobs to transcribe //////////////////
-    const blobToBase64 = ( blob, destination ) => {
+    const blobToBase64 = ( blob, speaker ) => {
         const reader = new FileReader();
         reader.readAsDataURL( blob );
         reader.onloadend = function () {
             //console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
             const recordString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
-            console.log( 'sent audio for ', destination, 'as string of', recordString.slice( -100 ) )
-            sendGoogle( recordString, destination )
+            console.log( 'sent audio from ', speaker, 'as string of', recordString.slice( -100 ) )
+            sendGoogle( recordString, speaker )
         }
     }
 
 
     ////////////////////////// Send audio strings to Google for transcription //////////////////////
-    const sendGoogle = ( recordString, destination ) => {
+    const sendGoogle = ( recordString, speaker ) => {
         const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-expo';
 
         axios
@@ -284,17 +295,25 @@ const AudioRecorder = () => {
             .then( ( res ) => {
                 //console.log(res)
                 //console.log( 'transcript :', res.data.transcript === '' );
-                const transcript = ( res.data.transcript === '' ) ? ' ' : res.data.transcript;
-                console.log( 'transcript from', destination, ' :', transcript );
-                ( destination === 'you' ) ?
-                    setTranscriptArrayYou( [ ...transcriptArrayYouRef.current, transcript ] ) :
-                    setTranscriptArrayPartner( [ ...transcriptArrayPartnerRef.current, transcript ] );
-                //( destination === 'you' ) ?
+                ( speaker === 'you' ) ?
+                    setTranscriptArrayYou( [ ...transcriptArrayYouRef.current, res.data.transcript ] ) :
+                    setTranscriptArrayPartner( [ ...transcriptArrayPartnerRef.current, res.data.transcript ] );
+                //( speaker === 'you' ) ?
                 //    console.log( 'script array you: ', transcriptArrayYouRef.current ) :
                 //    console.log( "script array partner", transcriptArrayPartnerRef.current );
+
+                const transcribedTime = new Date();
+                console.log( 'transcribed from', speaker, ( ( transcribedTime.getTime() - startTimeRef.current ) / 1000 ), 'seconds after starting ', res.data.transcript );
             } )
             .catch( ( err ) => {
-                console.log( 'transcribe err :', err );
+                const errorTime = new Date();
+                const errorStatus = {
+                    errorMessage: err,
+                    errorAt: speaker,
+                    errorTimeFromStartTime: ( ( errorTime.getTime() - startTimeRef.current ) / 1000 ),
+                }
+                setTranscribeErrorArray( [ ...transcribeErrorArrrayRef.current, errorStatus ] );
+                console.log( errorStatus );
             } );
     }
 
@@ -400,7 +419,7 @@ const AudioRecorder = () => {
             </div>
 
             <h2>英会話分析デモ</h2>
-            <p>実際にオンライン英会話を録音してみましょう！</p>
+            <p>実際にオンライン英会話を録音してみましょう！(現在iOS非対応)</p>
             <p>あなたとご相手の音声を別々に書き起こすため、マイク付きイヤフォン推奨しています。なお、スピーカーからの音声記録のために下記ボタンから画面と音声の共有を許可してください。</p>
 
             <button style={ { margin: '10px' } } onClick={ () => initialiseMediaStreams() }> 画面と音声の共有を許可 </button>
@@ -548,6 +567,14 @@ const AudioRecorder = () => {
                                 value={ vocab4.map( ( x ) => `${ x.word }: ${ x.count } 回` ) } />
                             <label className="label-name" for="vocab_counts">
                                 <span className="content-name">vocab_counts</span>
+                            </label>
+                        </div>
+
+                        <div className="input-area" style={ { display: 'none' } }>
+                            <input type="text" name="error_reports" aria-label="error_reports"
+                                value={ transcribeErrorArrray.map( ( x ) => `Error: ${ x.errorMessage } received from ${ x.errorAt } at ${ x.errorTimeFromStartTime } seconds after starting` ) } />
+                            <label className="label-name" for="error_reports">
+                                <span className="content-name">error_reports</span>
                             </label>
                         </div>
 
