@@ -456,12 +456,12 @@ const AudioRecorder = () => {
             </div>
 
             <h2>英会話分析デモ</h2>
-            <p>実際にオンライン英会話を録音してみましょう！(現在iOS非対応)</p>
-            <p>あなたとご相手の音声を別々に書き起こすため、マイク付きイヤフォン推奨しています。なお、スピーカーからの音声記録のために下記ボタンから画面と音声の共有を許可してください。</p>
+            <p>実際にオンライン英会話を録音してみましょう！(マイク付きイヤフォン推奨)</p>
+            <p>STEP 1: スピーカーからの音声記録のために下記ボタンから画面と音声の共有を許可してください。</p>
 
             <button style={ { margin: '10px' } } onClick={ () => initialiseMediaStreams() }> 画面と音声の共有を許可 </button>
 
-            <p>マイクからの音声は「あなた」に、スピーカーからの音声は「相手」に記録されます！開始ボタンを押してからは、普段通りのオンライン英会話にお戻りください。</p>
+            <p>STEP 2: 下記ボタンから録音を開始しして、普段通りのオンライン英会話にお戻りください。</p>
 
             <Button
                 //style={{marginTop: '10px'}}
@@ -472,6 +472,7 @@ const AudioRecorder = () => {
             >
             </Button>
 
+            <p>マイクからの音声は「あなた」に、スピーカーからの音声は「相手」に記録されます！</p>
 
             <div style={ { display: 'flex', flexDirection: 'row' } }>
                 <Card style={ { width: '40vw', margin: '20px' } } >
@@ -522,109 +523,115 @@ const AudioRecorder = () => {
             }
             { ( !isRecording && blobAppendedCombined !== null ) &&
                 // ( transcript !== null ) &&
-                <button style={ { margin: '20px' } } onClick={ playMediaRecorderCombined }> 録音した会話を再生 </button>
+                <div>
+                    {/*<p>いかがでしたでしょうか？5分間の会話の書き起こしだけでも、多くの気づきや学びがあるのではないでしょうか。録音された会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>*/ }
+                    <button style={ { margin: '20px' } } onClick={ playMediaRecorderCombined }> 録音した会話を再生 </button>
+
+                    <p>STEP 3: 会話の音声ファイルをダウンロードして、下記フォームより送付していただければ、分析レポートを指定の連絡先にお届けいたします！</p>
+
+                    <a href={ downloadUrl } download="recording" id="download">
+                        { ( downloadUrl !== null ) ? ( <button style={ { marginBottom: '50px' } }>会話の音声ファイルをダウンロード</button> ) : '' }
+                    </a>
+
+                    <ContactWrapper id="contact">
+                        <div className="content-container"
+                            style={ { width: '80vw' } }>
+
+                            <form
+                                name="contact"
+                                method="POST"
+                                data-netlify="true"
+                                data-netlify-honeypot="bot-field"
+                            >
+                                <input type="hidden" name="form-name" value="contact" />
+                                <div className="input-area">
+                                    <input type="text" name="name" aria-label="Name" required autoComplete="off" />
+                                    <label className="label-name" for="name">
+                                        <span className="content-name">名前</span>
+                                    </label>
+                                </div>
+
+                                <div className="input-area">
+                                    <input type="text" name="email" aria-label="Email" required autoComplete="off" />
+                                    <label className="label-name" for="email">
+                                        <span className="content-name">メールアドレス(あるいはご希望の連絡手段)</span>
+                                    </label>
+                                </div>
+
+                                <div className="input-area">
+                                    <input type="file" name="audio" aria-label="audio" required />
+                                    <label className="label-name" for="audio">
+                                        <span className="content-name">音声ファイル</span>
+                                    </label>
+                                </div>
+
+                                {/*<div className="input-area">
+                                    <textarea type="text" rows="5" name="opinion" aria-label="opinion" required autoComplete="off" />
+                                    <label className="label-name" for="opinion">
+                                        <span className="content-name" style={ { color: '#fff' } }>ご意見・ご要望など</span>
+                                    </label>
+                                </div> */}
+
+                                <div className="input-area" style={ { display: 'none' } }>
+                                    <input type="text" name="Transcript_you" aria-label="Transcript_you" value={ transcriptArrayMinYou } />
+                                    <label className="label-name" for="Transcript_you">
+                                        <span className="content-name">Transcript_you</span>
+                                    </label>
+                                </div>
+
+                                <div className="input-area" style={ { display: 'none' } }>
+                                    <input type="text" name="Transcript_partner" aria-label="Transcript_partner" value={ transcriptArrayMinPartner } />
+                                    <label className="label-name" for="Transcript_partner">
+                                        <span className="content-name">Transcript_partner</span>
+                                    </label>
+                                </div>
+
+                                <div className="input-area" style={ { display: 'none' } }>
+                                    <input type="text" name="words_per_minute" aria-label="words_per_minute" value={ vocab2 } />
+                                    <label className="label-name" for="words_per_minute">
+                                        <span className="content-name">words_per_minute</span>
+                                    </label>
+                                </div>
+
+                                <div className="input-area" style={ { display: 'none' } }>
+                                    <input type="text" name="vocab_size" aria-label="vocab_size" value={ vocab3 } />
+                                    <label className="label-name" for="vocab_size">
+                                        <span className="content-name">vocab_size</span>
+                                    </label>
+                                </div>
+
+                                <div className="input-area" style={ { display: 'none' } }>
+                                    <input type="text" name="vocab_counts" aria-label="vocab_counts"
+                                        value={ vocab4.map( ( x ) => `${ x.word }: ${ x.count } 回` ) } />
+                                    <label className="label-name" for="vocab_counts">
+                                        <span className="content-name">vocab_counts</span>
+                                    </label>
+                                </div>
+
+                                <div className="input-area" style={ { display: 'none' } }>
+                                    <input type="text" name="error_reports" aria-label="error_reports"
+                                        value={ transcribeErrorArrray.map( ( x ) => `Error: ${ x.errorMessage } received from ${ x.errorAt } at ${ x.errorTimeFromStartTime } seconds after starting` ) } />
+                                    <label className="label-name" for="error_reports">
+                                        <span className="content-name">error_reports</span>
+                                    </label>
+                                </div>
+
+                                <div className="input-area button-area" style={ { marginBottom: '30px' } }   >
+                                    <Button
+                                        label="Send Contact Form"
+                                        cta={ "送信" }
+                                        type="submit"
+                                    />
+                                </div>
+                            </form>
+                        </div>
+                    </ContactWrapper>
+
+                </div>
             }
 
-            <a href={ downloadUrl } download="recording" id="download">
-                { ( downloadUrl !== null ) ? ( <button>会話の音声ファイルをダウンロード</button> ) : '' }
-            </a>
 
-            <h2 style={ { marginTop: '50px' } }>{ "英会話分析登録フォーム" } </h2>
-            <p>いかがでしたでしょうか？5分間の会話の書き起こしだけでも、多くの気づきや学びがあるのではないでしょうか。録音された会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>
-            <p>会話の音声ファイルをダウンロードして、下記フォームより送付していただければ、分析レポートを指定の連絡先にお届けいたします！</p>
-            <ContactWrapper id="contact">
-                <div className="content-container"
-                    style={ { width: '80vw' } }>
 
-                    <form
-                        name="contact"
-                        method="POST"
-                        data-netlify="true"
-                        data-netlify-honeypot="bot-field"
-                    >
-                        <input type="hidden" name="form-name" value="contact" />
-                        <div className="input-area">
-                            <input type="text" name="name" aria-label="Name" required autoComplete="off" />
-                            <label className="label-name" for="name">
-                                <span className="content-name">名前</span>
-                            </label>
-                        </div>
-
-                        <div className="input-area">
-                            <input type="text" name="email" aria-label="Email" required autoComplete="off" />
-                            <label className="label-name" for="email">
-                                <span className="content-name">メールアドレス(あるいはご希望の連絡手段)</span>
-                            </label>
-                        </div>
-
-                        <div className="input-area">
-                            <input type="file" name="audio" aria-label="audio" required />
-                            <label className="label-name" for="audio">
-                                <span className="content-name">音声ファイル</span>
-                            </label>
-                        </div>
-
-                        <div className="input-area">
-                            <textarea type="text" rows="5" name="opinion" aria-label="opinion" required autoComplete="off" />
-                            <label className="label-name" for="opinion">
-                                <span className="content-name" style={ { color: '#fff' } }>ご意見・ご要望など</span>
-                            </label>
-                        </div>
-
-                        <div className="input-area" style={ { display: 'none' } }>
-                            <input type="text" name="Transcript_you" aria-label="Transcript_you" value={ transcriptArrayMinYou } />
-                            <label className="label-name" for="Transcript_you">
-                                <span className="content-name">Transcript_you</span>
-                            </label>
-                        </div>
-
-                        <div className="input-area" style={ { display: 'none' } }>
-                            <input type="text" name="Transcript_partner" aria-label="Transcript_partner" value={ transcriptArrayMinPartner } />
-                            <label className="label-name" for="Transcript_partner">
-                                <span className="content-name">Transcript_partner</span>
-                            </label>
-                        </div>
-
-                        <div className="input-area" style={ { display: 'none' } }>
-                            <input type="text" name="words_per_minute" aria-label="words_per_minute" value={ vocab2 } />
-                            <label className="label-name" for="words_per_minute">
-                                <span className="content-name">words_per_minute</span>
-                            </label>
-                        </div>
-
-                        <div className="input-area" style={ { display: 'none' } }>
-                            <input type="text" name="vocab_size" aria-label="vocab_size" value={ vocab3 } />
-                            <label className="label-name" for="vocab_size">
-                                <span className="content-name">vocab_size</span>
-                            </label>
-                        </div>
-
-                        <div className="input-area" style={ { display: 'none' } }>
-                            <input type="text" name="vocab_counts" aria-label="vocab_counts"
-                                value={ vocab4.map( ( x ) => `${ x.word }: ${ x.count } 回` ) } />
-                            <label className="label-name" for="vocab_counts">
-                                <span className="content-name">vocab_counts</span>
-                            </label>
-                        </div>
-
-                        <div className="input-area" style={ { display: 'none' } }>
-                            <input type="text" name="error_reports" aria-label="error_reports"
-                                value={ transcribeErrorArrray.map( ( x ) => `Error: ${ x.errorMessage } received from ${ x.errorAt } at ${ x.errorTimeFromStartTime } seconds after starting` ) } />
-                            <label className="label-name" for="error_reports">
-                                <span className="content-name">error_reports</span>
-                            </label>
-                        </div>
-
-                        <div className="input-area button-area" style={ { marginBottom: '30px' } }   >
-                            <Button
-                                label="Send Contact Form"
-                                cta={ "送信" }
-                                type="submit"
-                            />
-                        </div>
-                    </form>
-                </div>
-            </ContactWrapper>
 
         </div >
 
