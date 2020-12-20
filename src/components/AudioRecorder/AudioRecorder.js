@@ -626,8 +626,6 @@ const AudioRecorder = () => {
                 </div>
             </ContactWrapper>
 
-            <p onClick={ sendNetlifyForm }> netlify form </p>
-
         </div >
 
     );
