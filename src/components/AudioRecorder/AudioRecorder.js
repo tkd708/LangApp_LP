@@ -396,6 +396,43 @@ const AudioRecorder = () => {
     }, [ transcript ] )
 
 
+    /////////////// Form Send ////////////////
+    const sendNetlifyForm = () => {
+        const url = 'https://langapp.netlify.app/';
+
+        const headers = {
+            'authority': 'langapp.netlify.app',
+            'cache-control': 'max-age=0',
+            'upgrade-insecure-requests': '1',
+            'origin': 'https://langapp.netlify.app',
+            'content-type': 'application/x-www-form-urlencoded',
+            'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1',
+            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-mode': 'navigate',
+            'sec-fetch-user': '?1',
+            'sec-fetch-dest': 'document',
+            'referer': 'https://langapp.netlify.app/',
+            'accept-language': 'ja,en-GB;q=0.9,en;q=0.8,en-US;q=0.7,es;q=0.6',
+            'cookie': '_ga=GA1.3.1556620205.1604828616; _gid=GA1.3.1616654157.1606885023'
+        };
+
+        const dataString = 'form-name=contact' + '^&name=testhttprequest' + '&email=test%40mail';
+
+        axios
+            .request( {
+                url,
+                method: 'POST',
+                headers: headers,
+                body: dataString
+            } )
+            .then( ( res ) => {
+                //console.log(res)
+            } )
+            .catch( ( err ) => {
+                console.log( err );
+            } );
+    }
 
     /////////////// UI //////////////////////
     return (
@@ -588,6 +625,8 @@ const AudioRecorder = () => {
                     </form>
                 </div>
             </ContactWrapper>
+
+            <p onClick={ sendNetlifyForm }> netlify form </p>
 
         </div >
 
