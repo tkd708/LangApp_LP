@@ -13,6 +13,26 @@ import Typography from '@material-ui/core/Typography';
 
 import TranscribeLangs from './transcribeLangs.json';
 
+import AWS from 'aws-sdk';
+
+AWS.config = new AWS.Config( {
+    accessKeyId: process.env.GATSBY_AWS_accessKey,
+    secretAccessKey: process.env.GATSBY_AWS_secretKey,
+    region: 'us-east-2',
+} );
+// Create S3 service object
+const s3 = new AWS.S3( { apiVersion: '2006-03-01' } );
+
+// Call S3 to list the buckets
+s3.listBuckets( function ( err, data ) {
+    if( err ) {
+        console.log( "AWS Error", err );
+    } else {
+        console.log( "AWS Success", data.Buckets );
+    }
+} );
+
+
 const AudioRecorder = () => {
     const [ streamMic, setStreamMic ] = useState( null ); //
     const [ streamScreen, setStreamScreen ] = useState( null ); //
