@@ -32,12 +32,13 @@ module.exports.handler = async function ( event, context ) {
         apiVersion: '2006-03-01',
         params: { Bucket: 'langapp-audio-analysis' }
     } );
-    console.log( s3 );
+    //console.log( s3 );
 
     const uploadParams = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
 
     uploadParams.Key = JSON.parse( event.body ).recordingName;
 
+    console.log( 'received audio: ', JSON.parse( event.body ).audio.slice( 0, 100 ) )
     const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
     const decodedPath = '/tmp/decoded.wav';
     await fsp.writeFile( decodedPath, decodedAudio );
