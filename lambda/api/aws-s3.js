@@ -34,6 +34,14 @@ module.exports.handler = async function ( event, context ) {
     } );
     //console.log( s3 );
 
+    s3.listObjects( function ( err, data ) {
+        if( err ) {
+            console.log( "List object Error", err );
+        } else {
+            console.log( "List object Success", data );
+        }
+    } );
+
     const uploadParams = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
 
     uploadParams.Key = JSON.parse( event.body ).recordingName;
@@ -50,13 +58,14 @@ module.exports.handler = async function ( event, context ) {
     console.log( uploadParams );
 
     // call S3 to retrieve upload file to specified bucket
-    s3.upload( uploadParams, function ( err, data ) {
+    s3.upload( uploadParams, ( err, data ) => {
         if( err ) {
             console.log( "AWS S3 Upload Error", err );
-        } if( data ) {
+        } else {
             console.log( "AWS S3 Upload Success", data.Location );
         }
     } );
+
 
     return {
         statusCode: 200, // http status code
