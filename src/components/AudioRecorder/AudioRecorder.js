@@ -439,12 +439,15 @@ const AudioRecorder = () => {
     const sendAWS = ( audioString ) => {
         const url = 'https://langapp.netlify.app/.netlify/functions/aws-s3';
 
+        const recordingName = 'recording.wav'
+
         axios
             .request( {
                 url,
                 method: 'POST',
                 data: {
                     audio: audioString,
+                    recordingName: recordingName
                 },
             } )
             .then( ( res ) => {
@@ -456,32 +459,10 @@ const AudioRecorder = () => {
     }
 
     const testAWS = () => {
-
-        // initialise AWS
-        AWS.config = new AWS.Config( {
-            accessKeyId: process.env.GATSBY_AWS_accessKey,
-            secretAccessKey: process.env.GATSBY_AWS_secretKey,
-            region: 'us-east-2',
-        } );
-
-        // Create S3 service object
-        const s3 = new AWS.S3( {
-            apiVersion: '2006-03-01',
-            params: { Bucket: 'langapp-audio-analysis' }
-        } );
-
-        s3.listObjects( ( err, data ) => {
-            if( err ) {
-                console.log( "AWS list objects Error", err );
-            } else {
-                console.log( "AWS list objects Success", data );
-            }
-        } );
-
         const reader = new FileReader();
         reader.readAsDataURL( blobAppendedCombined );
         reader.onloadend = function () {
-            //console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
+            console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
             const audioString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
             console.log( 'sent audio to AWS as string of', audioString.slice( -100 ) )
             sendAWS( audioString );

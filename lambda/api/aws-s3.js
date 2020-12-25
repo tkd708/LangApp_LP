@@ -33,15 +33,9 @@ module.exports.handler = async function ( event, context ) {
         params: { Bucket: 'langapp-audio-analysis' }
     } );
 
-    s3.listObjects( ( err, data ) => {
-        if( err ) {
-            console.log( "AWS list objects Error", err );
-        } else {
-            console.log( "AWS list objects Success", data );
-        }
-    } );
+    const uploadParams = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
 
-    const uploadParams = { Bucket: 'langapp-audio-analysis', Key: '/', Body: '' };
+    uploadParams.Key = JSON.parse( event.body ).recordingName;
 
     const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
     const decodedPath = '/tmp/decoded.wav';
@@ -49,11 +43,7 @@ module.exports.handler = async function ( event, context ) {
     const decodedFile = await fsp.readFile( decodedPath );
     console.log( 'received and read audio: ' + decodedFile.toString( 'base64' ).slice( 0, 100 ) )
 
-    const fileStream = fsp.createReadStream( decodedPath );
-    fileStream.on( 'error', function ( err ) {
-        console.log( 'File read before AWS upload Error', err );
-    } );
-    uploadParams.Body = fileStream;
+    uploadParams.Body = decodedFile;
 
     // call S3 to retrieve upload file to specified bucket
     s3.upload( uploadParams, function ( err, data ) {
