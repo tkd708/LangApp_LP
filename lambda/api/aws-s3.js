@@ -32,6 +32,7 @@ module.exports.handler = async function ( event, context ) {
         apiVersion: '2006-03-01',
         params: { Bucket: 'langapp-audio-analysis' }
     } );
+    console.log( s3 );
 
     const uploadParams = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
 
@@ -44,6 +45,8 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'received and read audio: ' + decodedFile.toString( 'base64' ).slice( 0, 100 ) )
 
     uploadParams.Body = decodedFile;
+
+    console.log( uploadParams );
 
     // call S3 to retrieve upload file to specified bucket
     s3.upload( uploadParams, function ( err, data ) {
