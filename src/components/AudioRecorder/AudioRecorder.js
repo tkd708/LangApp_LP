@@ -195,7 +195,7 @@ const AudioRecorder = () => {
 
         recorderCombined.addEventListener( 'stop', () => {
             // console.log( 'blob chunk array from both', blobChunkArray )
-            const blob = new Blob( blobArrayCombinedRef.current, { 'type': 'audio/wav; codecs=opus' } );
+            const blob = new Blob( blobArrayCombinedRef.current, { 'type': 'audio/wav;codecs=opus' } );
             setBlobAppendedCombined( blob )
         } );
 
@@ -463,7 +463,7 @@ const AudioRecorder = () => {
         reader.readAsDataURL( blobAppendedCombined );
         reader.onloadend = function () {
             console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
-            const audioString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
+            const audioString = reader.result.toString().replace( 'data:audio/wav;codecs=opus;base64,', '' );
             console.log( 'sent audio to AWS as string of', audioString.slice( -100 ) )
             sendAWS( audioString );
         }
