@@ -13,6 +13,8 @@ import Typography from '@material-ui/core/Typography';
 
 import TranscribeLangs from './transcribeLangs.json';
 
+import AWS from 'aws-sdk';
+
 const AudioRecorder = () => {
     const [ streamMic, setStreamMic ] = useState( null ); //
     const [ streamScreen, setStreamScreen ] = useState( null ); //
@@ -434,7 +436,7 @@ const AudioRecorder = () => {
             } );
     }
 
-    const sendAWS = ( audio ) => {
+    const sendAWS = ( audioString ) => {
         const url = 'https://langapp.netlify.app/.netlify/functions/aws-s3';
 
         axios
@@ -442,22 +444,49 @@ const AudioRecorder = () => {
                 url,
                 method: 'POST',
                 data: {
-                    audio: audio,
+                    audio: audioString,
                 },
             } )
             .then( ( res ) => {
-                console.log( res );
+                console.log( 'AWS by netlify functions success', res );
             } )
             .catch( ( err ) => {
-                console.log( err );
+                console.log( 'AWS by netlify functions error', err );
             } );
     }
 
-    useEffect( () => {
-        console.log( 'AWS test' )
-        sendAWS( 'test' )
-    }, [] )
+    const testAWS = () => {
 
+        // initialise AWS
+        AWS.config = new AWS.Config( {
+            accessKeyId: process.env.GATSBY_AWS_accessKey,
+            secretAccessKey: process.env.GATSBY_AWS_secretKey,
+            region: 'us-east-2',
+        } );
+
+        // Create S3 service object
+        const s3 = new AWS.S3( {
+            apiVersion: '2006-03-01',
+            params: { Bucket: 'langapp-audio-analysis' }
+        } );
+
+        s3.listObjects( ( err, data ) => {
+            if( err ) {
+                console.log( "AWS list objects Error", err );
+            } else {
+                console.log( "AWS list objects Success", data );
+            }
+        } );
+
+        const reader = new FileReader();
+        reader.readAsDataURL( blobAppendedCombined );
+        reader.onloadend = function () {
+            //console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
+            const audioString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
+            console.log( 'sent audio to AWS as string of', audioString.slice( -100 ) )
+            sendAWS( audioString );
+        }
+    }
     /////////////// UI //////////////////////
     return (
         <div
@@ -550,6 +579,7 @@ const AudioRecorder = () => {
                 <div>
                     {/*<p>いかがでしたでしょうか？5分間の会話の書き起こしだけでも、多くの気づきや学びがあるのではないでしょうか。録音された会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>*/ }
                     <button style={ { margin: '20px' } } onClick={ playMediaRecorderCombined }> 録音した会話を再生 </button>
+                    <button style={ { margin: '20px' } } onClick={ testAWS }> 会話音声を送信 </button>
 
                     <p>STEP 3: 会話の音声ファイルをダウンロードして、下記フォームより送付していただければ、分析レポートを指定の連絡先にお届けいたします！</p>
 
