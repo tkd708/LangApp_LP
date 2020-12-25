@@ -26,13 +26,14 @@ module.exports.handler = async function ( event, context ) {
         secretAccessKey: process.env.GATSBY_AWS_secretKey,
         region: 'us-east-2',
     } );
+    console.log( '----------- aws config -------------', AWS.config )
 
     // Create S3 service object
     const s3 = new AWS.S3( {
         apiVersion: '2006-03-01',
         params: { Bucket: 'langapp-audio-analysis' }
     } );
-    //console.log( s3 );
+    console.log( '----------- s3 object -------------', s3 );
 
     s3.listObjects( function ( err, data ) {
         if( err ) {
@@ -55,7 +56,7 @@ module.exports.handler = async function ( event, context ) {
 
     uploadParams.Body = decodedFile;
 
-    console.log( uploadParams );
+    console.log( '----------- aws upload params -------------', uploadParams );
 
     // call S3 to retrieve upload file to specified bucket
     s3.upload( uploadParams, ( err, data ) => {
@@ -66,6 +67,7 @@ module.exports.handler = async function ( event, context ) {
         }
     } );
 
+    console.log( '----------- end aws upload -------------' );
 
     return {
         statusCode: 200, // http status code
