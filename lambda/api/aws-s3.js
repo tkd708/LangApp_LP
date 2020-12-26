@@ -33,13 +33,13 @@ module.exports.handler = async function ( event, context ) {
         apiVersion: '2006-03-01',
         params: { Bucket: 'langapp-audio-analysis' }
     } );
-    console.log( '----------- s3 object -------------', s3 );
+    //console.log( '----------- s3 object -------------', s3 );
 
     const methods1 = Object.getOwnPropertyNames( AWS.S3.prototype )
-    console.log( '-------------- list of methods AWS S3 ------------------', methods1 )
+    //console.log( '-------------- list of methods AWS S3 ------------------', methods1 )
 
     const methods2 = Object.getOwnPropertyNames( s3 )
-    console.log( '-------------- list of methods s3 object ------------------', methods2 )
+    //console.log( '-------------- list of methods s3 object ------------------', methods2 )
 
 
     s3.listObjects( ( err, data ) => {
@@ -92,7 +92,7 @@ module.exports.handler = async function ( event, context ) {
     } )
         .catch(
             ( err ) => {
-                console.error( "Upload error", err, err.stack );
+                console.error( "Upload error", err );
             } );
 
     const [ response ] = await uploadPromise.then();
