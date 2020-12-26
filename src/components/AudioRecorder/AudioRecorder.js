@@ -436,39 +436,35 @@ const AudioRecorder = () => {
             } );
     }
 
-    const sendAWS = ( audioString ) => {
-        const url = 'https://langapp.netlify.app/.netlify/functions/aws-s3';
-
-        const recordingName = 'recording.wav'
-
-        axios
-            .request( {
-                url,
-                method: 'POST',
-                data: {
-                    audio: audioString,
-                    recordingName: recordingName
-                },
-            } )
-            .then( ( res ) => {
-                console.log( 'AWS by netlify functions success', res );
-            } )
-            .catch( ( err ) => {
-                console.log( 'AWS by netlify functions error', err );
-            } );
-    }
-
-    const testAWS = () => {
+    const sendAWS = () => {
         const reader = new FileReader();
         reader.readAsDataURL( blobAppendedCombined );
         reader.onloadend = function () {
             console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
             const audioString = reader.result.toString().replace( 'data:audio/wav;codecs=opus;base64,', '' );
             console.log( 'sent audio to AWS as string of', audioString.slice( -100 ) )
-            sendAWS( audioString );
+
+            const url = 'https://langapp.netlify.app/.netlify/functions/aws-s3';
+
+            const recordingName = 'recording.wav'
+
+            axios
+                .request( {
+                    url,
+                    method: 'POST',
+                    data: {
+                        audio: audioString,
+                        recordingName: recordingName
+                    },
+                } )
+                .then( ( res ) => {
+                    console.log( 'AWS by netlify functions success', res );
+                } )
+                .catch( ( err ) => {
+                    console.log( 'AWS by netlify functions error', err );
+                } );
         }
     }
-
 
 
     /////////////// UI //////////////////////

@@ -35,7 +35,9 @@ module.exports.handler = async function ( event, context ) {
     } );
     console.log( '----------- s3 object -------------', s3 );
 
-    s3.listObjects( function ( err, data ) {
+    s3.listObjects( ( err, data ) => {
+        console.log( 'list object excecuted' );
+
         if( err ) {
             console.log( "List object Error", err );
         } else {
@@ -60,6 +62,8 @@ module.exports.handler = async function ( event, context ) {
 
     // call S3 to retrieve upload file to specified bucket
     s3.upload( uploadParams, ( err, data ) => {
+        console.log( 'S3 update excecuted' );
+
         if( err ) {
             console.log( "AWS S3 Upload Error", err );
         } else {
