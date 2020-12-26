@@ -3,21 +3,6 @@ const AWS = require( 'aws-sdk' );
 const fs = require( 'fs' );
 const fsp = fs.promises;
 
-// initialise AWS
-AWS.config = new AWS.Config( {
-    accessKeyId: process.env.GATSBY_AWS_accessKey,
-    secretAccessKey: process.env.GATSBY_AWS_secretKey,
-    region: 'us-east-2',
-} );
-//console.log( '----------- aws config -------------', AWS.config )
-
-// Create S3 service object
-const s3 = new AWS.S3( {
-    apiVersion: '2006-03-01',
-    params: { Bucket: 'langapp-audio-analysis' }
-} );
-console.log( '----------- s3 object -------------', s3 );
-
 
 module.exports.handler = async function ( event, context ) {
 
@@ -35,6 +20,20 @@ module.exports.handler = async function ( event, context ) {
     }
 
     //console.log( 'received audio', JSON.parse( event.body ).audio );
+    // initialise AWS
+    AWS.config = new AWS.Config( {
+        accessKeyId: process.env.GATSBY_AWS_accessKey,
+        secretAccessKey: process.env.GATSBY_AWS_secretKey,
+        region: 'us-east-2',
+    } );
+    //console.log( '----------- aws config -------------', AWS.config )
+
+    // Create S3 service object
+    const s3 = new AWS.S3( {
+        apiVersion: '2006-03-01',
+        params: { Bucket: 'langapp-audio-analysis' }
+    } );
+    console.log( '----------- s3 object -------------', s3 );
 
     const methods1 = Object.getOwnPropertyNames( AWS.S3.prototype )
     console.log( '-------------- list of methods AWS S3 ------------------', methods1 )
@@ -78,6 +77,23 @@ module.exports.handler = async function ( event, context ) {
             console.log( "AWS S3 Upload Success", data.Location );
         }
     } );
+
+
+    // Create a promise on S3 service object
+    const uploadPromise = new AWS.S3( {
+        apiVersion: '2006-03-01',
+        params: { Bucket: 'langapp-audio-analysis' }
+    } ).upload( uploadParams ).promise();
+
+    // Handle promise fulfilled/rejected states
+    uploadPromise.then( ( data ) => {
+        console.log( "Successfully uploaded", data )
+    } )
+        .catch(
+            ( err ) => {
+                console.error( "Upload error", err, err.stack );
+            } );
+
 
     console.log( '----------- end aws upload -------------' );
 
