@@ -95,6 +95,9 @@ module.exports.handler = async function ( event, context ) {
                 console.error( "Upload error", err, err.stack );
             } );
 
+    const [ response ] = await uploadPromise.then();
+    console.log( "---------------- promise response --------------------", response );
+
 
     console.log( '----------- end aws upload -------------' );
 
