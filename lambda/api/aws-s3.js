@@ -84,6 +84,7 @@ module.exports.handler = async function ( event, context ) {
         apiVersion: '2006-03-01',
         params: { Bucket: 'langapp-audio-analysis' }
     } ).upload( uploadParams ).promise();
+    console.log( "-------------------- Upload promise object ------------------", uploadPromise );
 
     // Handle promise fulfilled/rejected states
     uploadPromise.then( ( data ) => {
