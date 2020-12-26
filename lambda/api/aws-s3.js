@@ -16,7 +16,7 @@ const s3 = new AWS.S3( {
     apiVersion: '2006-03-01',
     params: { Bucket: 'langapp-audio-analysis' }
 } );
-//console.log( '----------- s3 object -------------', s3 );
+console.log( '----------- s3 object -------------', s3 );
 
 
 module.exports.handler = async function ( event, context ) {
