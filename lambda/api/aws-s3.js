@@ -42,7 +42,7 @@ module.exports.handler = async function ( event, context ) {
     console.log( '-------------- list of methods s3 object ------------------', methods2 )
 
 
-    s3.listObjects( ( err, data ) => {
+    AWS.S3.listObjects( ( err, data ) => {
         console.log( 'list object excecuted' );
 
         if( err ) {
