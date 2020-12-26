@@ -468,6 +468,9 @@ const AudioRecorder = () => {
             sendAWS( audioString );
         }
     }
+
+
+
     /////////////// UI //////////////////////
     return (
         <div
@@ -560,7 +563,6 @@ const AudioRecorder = () => {
                 <div>
                     {/*<p>いかがでしたでしょうか？5分間の会話の書き起こしだけでも、多くの気づきや学びがあるのではないでしょうか。録音された会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>*/ }
                     <button style={ { margin: '20px' } } onClick={ playMediaRecorderCombined }> 録音した会話を再生 </button>
-                    <button style={ { margin: '20px' } } onClick={ testAWS }> 会話音声を送信 </button>
 
                     <p>STEP 3: 会話の音声ファイルをダウンロードして、下記フォームより送付していただければ、分析レポートを指定の連絡先にお届けいたします！</p>
 
