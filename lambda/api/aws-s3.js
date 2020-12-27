@@ -3,7 +3,6 @@ const AWS = require( 'aws-sdk' );
 const fs = require( 'fs' );
 const fsp = fs.promises;
 
-
 module.exports.handler = async function ( event, context ) {
 
     // avoid CORS errors
@@ -51,7 +50,10 @@ module.exports.handler = async function ( event, context ) {
 
     const uploadParams = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
 
-    uploadParams.Key = `${ JSON.parse( event.body ).uuid }/audio.wav`;
+    const now = new Date();
+    const dateTimeNow = `${ now.getFullYear() }-${ now.getMonth() + 1 }-${ now.getDate() } ${ now.getHours() }:${ now.getMinutes() }:${ now.getSeconds() }`;
+
+    uploadParams.Key = `${ dateTimeNow }-${ JSON.parse( event.body ).uuid }/audio.wav`;
 
     console.log( 'received audio: ', JSON.parse( event.body ).audio.slice( 0, 100 ) )
     const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
@@ -65,14 +67,14 @@ module.exports.handler = async function ( event, context ) {
     console.log( '----------- aws upload params -------------', uploadParams );
 
     // call S3 to retrieve upload file to specified bucket
-    s3.upload( uploadParams, ( err, data ) => {
-        console.log( 'S3 update excecuted' );
-        if( err ) {
-            console.log( "AWS S3 Upload Error", err );
-        } else {
-            console.log( "AWS S3 Upload Success", data.Location );
-        }
-    } );
+    //s3.upload( uploadParams, ( err, data ) => {
+    //    console.log( 'S3 update excecuted' );
+    //    if( err ) {
+    //        console.log( "AWS S3 Upload Error", err );
+    //    } else {
+    //        console.log( "AWS S3 Upload Success", data.Location );
+    //    }
+    //} );
 
 
     // Create a promise on S3 service object
