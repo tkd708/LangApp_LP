@@ -13,7 +13,7 @@ import Typography from '@material-ui/core/Typography';
 
 import TranscribeLangs from './transcribeLangs.json';
 
-import AWS from 'aws-sdk';
+import { v4 as uuidv4 } from 'uuid';
 
 const AudioRecorder = () => {
     const [ streamMic, setStreamMic ] = useState( null ); //
@@ -87,6 +87,8 @@ const AudioRecorder = () => {
     const [ vocab4, setVocab4 ] = useState( [ "especially", "durable", "collaborate" ] );
     const [ vocab5, setVocab5 ] = useState( [ "affordable", "exclusively", "estimate", "retrieve", "variation" ] );
 
+    const uuid = uuidv4();
+    //console.log( uuid );
     const myURL = typeof window !== `undefined` ? window.URL || window.webkitURL : ''
 
     const initialiseMediaStreams = () => {
@@ -456,6 +458,7 @@ const AudioRecorder = () => {
                     url,
                     method: 'POST',
                     data: {
+                        uuid: uuid,
                         audio: audioString,
                         recordingName: recordingName
                     },
@@ -563,13 +566,12 @@ const AudioRecorder = () => {
                     {/*<p>いかがでしたでしょうか？5分間の会話の書き起こしだけでも、多くの気づきや学びがあるのではないでしょうか。録音された会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>*/ }
                     <button style={ { margin: '20px' } } onClick={ playMediaRecorderCombined }> 録音した会話を再生 </button>
                     <button style={ { margin: '20px' } } onClick={ stopMediaRecorderCombined }> 再生停止 </button>
-                    <button style={ { margin: '20px' } } onClick={ sendAWS }> 送信 </button>
 
-                    <p>STEP 3: 会話の音声ファイルをダウンロードして、下記フォームより送付していただければ、分析レポートを指定の連絡先にお届けいたします！</p>
+                    <p>STEP 3: 下記フォームより会話の音声を送付していただければ、詳細な分析レポートを指定の連絡先にお届けいたします！</p>
 
-                    <a href={ downloadUrl } download="recording" id="download">
+                    {/*<a href={ downloadUrl } download="recording" id="download">
                         { ( downloadUrl !== null ) ? ( <button style={ { marginBottom: '50px' } }>会話の音声ファイルをダウンロード</button> ) : '' }
-                    </a>
+                    </a>*/}
 
                     <ContactWrapper id="contact">
                         <div className="content-container"
@@ -582,6 +584,13 @@ const AudioRecorder = () => {
                                 data-netlify-honeypot="bot-field"
                             >
                                 <input type="hidden" name="form-name" value="contact" />
+                                <div className="input-area" style={ { display: 'none' } }>
+                                    <input type="text" name="uuid" aria-label="uuid" value={ uuid } />
+                                    <label className="label-name" for="uuid">
+                                        <span className="content-name">uuid</span>
+                                    </label>
+                                </div>
+
                                 <div className="input-area">
                                     <input type="text" name="name" aria-label="Name" required autoComplete="off" />
                                     <label className="label-name" for="name">
@@ -596,14 +605,14 @@ const AudioRecorder = () => {
                                     </label>
                                 </div>
 
-                                <div className="input-area">
+                                {/*<div className="input-area">
                                     <input type="file" name="audio" aria-label="audio" required />
                                     <label className="label-name" for="audio">
                                         <span className="content-name">音声ファイル</span>
                                     </label>
                                 </div>
 
-                                {/*<div className="input-area">
+                                <div className="input-area">
                                     <textarea type="text" rows="5" name="opinion" aria-label="opinion" required autoComplete="off" />
                                     <label className="label-name" for="opinion">
                                         <span className="content-name" style={ { color: '#fff' } }>ご意見・ご要望など</span>
@@ -658,6 +667,7 @@ const AudioRecorder = () => {
                                     <Button
                                         label="Send Contact Form"
                                         cta={ "送信" }
+                                        onClick={ sendAWS }
                                         type="submit"
                                     />
                                 </div>

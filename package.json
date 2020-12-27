@@ -58,6 +58,7 @@
     "twilio": "^3.50.0",
     "twilio-video": "^2.7.2",
     "typeface-gothic-a1": "0.0.61",
+    "uuid": "^8.3.2",
     "webpack-node-externals": "^2.5.2"
   },
   "devDependencies": {
