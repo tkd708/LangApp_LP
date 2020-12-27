@@ -658,7 +658,8 @@ const AudioRecorder = () => {
                                 </div>
 
                                 <div className="input-area" style={ { display: 'none' } }>
-                                    <input type="text" name="uuid" aria-label="uuid" value={ uuid } />
+                                    <input type="text" name="uuid" aria-label="uuid"
+                                        value={ JSON.stringify( uuid ) } />
                                     <label className="label-name" for="uuid">
                                         <span className="content-name">uuid</span>
                                     </label>
