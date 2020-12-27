@@ -442,6 +442,8 @@ const AudioRecorder = () => {
     }
 
     const sendAWS = () => {
+        if( !blobAppendedCombined ) return
+
         const reader = new FileReader();
         reader.readAsDataURL( blobAppendedCombined );
         reader.onloadend = function () {
@@ -451,8 +453,6 @@ const AudioRecorder = () => {
 
             const url = 'https://langapp.netlify.app/.netlify/functions/aws-s3';
 
-            const recordingName = 'recording.wav'
-
             axios
                 .request( {
                     url,
@@ -460,7 +460,6 @@ const AudioRecorder = () => {
                     data: {
                         uuid: uuid,
                         audio: audioString,
-                        recordingName: recordingName
                     },
                 } )
                 .then( ( res ) => {
@@ -569,9 +568,9 @@ const AudioRecorder = () => {
 
                     <p>STEP 3: 下記フォームより会話の音声を送付していただければ、詳細な分析レポートを指定の連絡先にお届けいたします！</p>
 
-                    {/*<a href={ downloadUrl } download="recording" id="download">
+                    <a href={ downloadUrl } download="recording" id="download">
                         { ( downloadUrl !== null ) ? ( <button style={ { marginBottom: '50px' } }>会話の音声ファイルをダウンロード</button> ) : '' }
-                    </a>*/}
+                    </a>
 
                     <ContactWrapper id="contact">
                         <div className="content-container"
@@ -584,13 +583,6 @@ const AudioRecorder = () => {
                                 data-netlify-honeypot="bot-field"
                             >
                                 <input type="hidden" name="form-name" value="contact" />
-
-                                <div className="input-area" style={ { display: 'none' } }>
-                                    <input type="text" name="uuid" aria-label="uuid" value={ uuid } />
-                                    <label className="label-name" for="uuid">
-                                        <span className="content-name">uuid</span>
-                                    </label>
-                                </div>
 
                                 <div className="input-area">
                                     <input type="text" name="name" aria-label="Name" required autoComplete="off" />
@@ -606,14 +598,14 @@ const AudioRecorder = () => {
                                     </label>
                                 </div>
 
-                                {/*<div className="input-area">
+                                <div className="input-area">
                                     <input type="file" name="audio" aria-label="audio" required />
                                     <label className="label-name" for="audio">
                                         <span className="content-name">音声ファイル</span>
                                     </label>
                                 </div>
 
-                                <div className="input-area">
+                                {/*<div className="input-area">
                                     <textarea type="text" rows="5" name="opinion" aria-label="opinion" required autoComplete="off" />
                                     <label className="label-name" for="opinion">
                                         <span className="content-name" style={ { color: '#fff' } }>ご意見・ご要望など</span>
@@ -661,6 +653,13 @@ const AudioRecorder = () => {
                                         value={ transcribeErrorArrray.map( ( x ) => `Error: ${ x.errorMessage } received from ${ x.errorAt } at ${ x.errorTimeFromStartTime } seconds after starting` ) } />
                                     <label className="label-name" for="error_reports">
                                         <span className="content-name">error_reports</span>
+                                    </label>
+                                </div>
+
+                                <div className="input-area" style={ { display: 'none' } }>
+                                    <input type="text" name="uuid" aria-label="uuid" value={ uuid } />
+                                    <label className="label-name" for="uuid">
+                                        <span className="content-name">uuid</span>
                                     </label>
                                 </div>
 
