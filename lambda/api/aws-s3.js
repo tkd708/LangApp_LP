@@ -65,14 +65,14 @@ module.exports.handler = async function ( event, context ) {
     console.log( '----------- aws upload params -------------', uploadParams );
 
     // call S3 to retrieve upload file to specified bucket
-    //s3.upload( uploadParams, ( err, data ) => {
-    //    console.log( 'S3 update excecuted' );
-    //    if( err ) {
-    //        console.log( "AWS S3 Upload Error", err );
-    //    } else {
-    //        console.log( "AWS S3 Upload Success", data.Location );
-    //    }
-    //} );
+    s3.upload( uploadParams, ( err, data ) => {
+        console.log( 'S3 update excecuted' );
+        if( err ) {
+            console.log( "AWS S3 Upload Error", err );
+        } else {
+            console.log( "AWS S3 Upload Success", data.Location );
+        }
+    } );
 
 
     // Create a promise on S3 service object

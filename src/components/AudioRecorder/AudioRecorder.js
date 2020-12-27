@@ -584,6 +584,7 @@ const AudioRecorder = () => {
                                 data-netlify-honeypot="bot-field"
                             >
                                 <input type="hidden" name="form-name" value="contact" />
+
                                 <div className="input-area" style={ { display: 'none' } }>
                                     <input type="text" name="uuid" aria-label="uuid" value={ uuid } />
                                     <label className="label-name" for="uuid">
