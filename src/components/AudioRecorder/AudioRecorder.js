@@ -269,6 +269,7 @@ const AudioRecorder = () => {
         if( !blobAppendedCombined ) return
         const blobURL = myURL.createObjectURL( blobAppendedCombined );
         setDownloadUrl( blobURL );
+        sendAWS();
     }, [ blobAppendedCombined ] )
 
 
