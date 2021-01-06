@@ -568,6 +568,7 @@ const AudioRecorder = () => {
                     {/*<button style={ { margin: '20px' } } onClick={ stopMediaRecorderCombined }> 再生停止 </button>*/ }
 
                     <p>STEP 3: 下記フォームより会話の音声を送付していただければ、詳細な分析レポートを指定の連絡先にお届けいたします！</p>
+                    <p>*音声ファイルの送信に不具合が生じているため、一時的にtake708gym[at]gmail.comまでメール添付でのご送付をお願いいたします。ご不便をおかけして大変申し訳ございません。一刻も早い復旧に向けて作業を進めております。</p>
 
                     <a href={ downloadUrl } download="recording" id="download">
                         { ( downloadUrl !== null ) ? ( <button style={ { marginBottom: '50px' } }>会話の音声ファイルをダウンロード</button> ) : '' }
