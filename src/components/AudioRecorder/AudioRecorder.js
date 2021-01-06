@@ -500,7 +500,7 @@ const AudioRecorder = () => {
 
             <button style={ { margin: '10px' } } onClick={ () => initialiseMediaStreams() }> 画面と音声の共有を許可 </button>
 
-            <p>STEP 2: 下記ボタンから録音を開始しして、普段通りのオンライン英会話にお戻りください。</p>
+            <p>STEP 2: 下記ボタンから録音を開始して、普段通りのオンライン英会話にお戻りください。</p>
 
             <Button
                 //style={{marginTop: '10px'}}
