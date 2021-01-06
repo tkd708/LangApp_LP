@@ -495,6 +495,8 @@ const AudioRecorder = () => {
             </div>
 
             <h2>英会話分析デモ</h2>
+            <p>*音声ファイルの送信に不具合が生じているため、一時的にtake708gym[at]gmail.comまでメール添付でのご送付をお願いいたします。ご不便をおかけして大変申し訳ございません。一刻も早い復旧に向けて作業を進めております。</p>
+
             <p>実際にオンライン英会話を録音してみましょう！(マイク付きイヤフォン推奨)</p>
             <p>STEP 1: スピーカーからの音声記録のために下記ボタンから画面と音声の共有を許可してください。</p>
 
@@ -568,7 +570,6 @@ const AudioRecorder = () => {
                     {/*<button style={ { margin: '20px' } } onClick={ stopMediaRecorderCombined }> 再生停止 </button>*/ }
 
                     <p>STEP 3: 下記フォームより会話の音声を送付していただければ、詳細な分析レポートを指定の連絡先にお届けいたします！</p>
-                    <p>*音声ファイルの送信に不具合が生じているため、一時的にtake708gym[at]gmail.comまでメール添付でのご送付をお願いいたします。ご不便をおかけして大変申し訳ございません。一刻も早い復旧に向けて作業を進めております。</p>
 
                     <a href={ downloadUrl } download="recording" id="download">
                         { ( downloadUrl !== null ) ? ( <button style={ { marginBottom: '50px' } }>会話の音声ファイルをダウンロード</button> ) : '' }
