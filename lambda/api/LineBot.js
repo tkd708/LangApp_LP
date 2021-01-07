@@ -30,6 +30,7 @@ module.exports.handler = async function ( event, context ) {
         };
         client.replyMessage( body.events[ 0 ].replyToken, message )
             .then( ( response ) => {
+                console.log( response );
                 let lambdaResponse = {
                     statusCode: 200,
                     headers: { "X-Line-Status": "OK" },
