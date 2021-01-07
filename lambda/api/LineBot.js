@@ -1,4 +1,4 @@
-'use strict';
+require( 'dotenv' ).config();
 const line = require( '@line/bot-sdk' );
 const crypto = require( 'crypto' );
 const client = new line.Client( { channelAccessToken: process.env.GATSBY_LINE_accesstoken } );
