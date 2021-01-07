@@ -25,8 +25,7 @@ module.exports.handler = async function ( event, context ) {
         context.succeed( lambdaResponse );
     } else {
         let text = body.events[ 0 ].message.text;
-        console.log( 'received text', text );
-
+        console.log( 'received text...', text );
         const message = {
             'type': 'text',
             'text': text
@@ -41,7 +40,7 @@ module.exports.handler = async function ( event, context ) {
                 };
                 context.succeed( lambdaResponse );
             } )
-            .catch( ( err ) => console.log( err ) );
+            .catch( ( err ) => console.log( 'error in reply...', err ) );
     }
     //} else {
     //    console.log( '署名認証エラー' );
