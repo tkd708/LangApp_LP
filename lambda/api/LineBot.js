@@ -1,7 +1,10 @@
 require( 'dotenv' ).config();
 const line = require( '@line/bot-sdk' );
 const crypto = require( 'crypto' );
-const client = new line.Client( { channelAccessToken: process.env.GATSBY_LINE_accesstoken } );
+const client = new line.Client( {
+    channelAccessToken: process.env.GATSBY_LINE_accesstoken,
+    channelSecret: process.env.GATSBY_LINE_channelsecret
+} );
 
 
 module.exports.handler = async function ( event, context ) {
