@@ -317,7 +317,7 @@ const AudioRecorder = () => {
                 ( speaker === 'you' ) &&
                     axios
                         .request( {
-                            'https://langapp.netlify.app/.netlify/functions/LineBotTranscript',
+                            url: 'https://langapp.netlify.app/.netlify/functions/LineBotTranscript',
                             method: 'POST',
                             data: {
                                 transcript: res.data.transcript,
