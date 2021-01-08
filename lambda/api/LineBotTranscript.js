@@ -11,6 +11,8 @@ const ffmpeg = require( 'fluent-ffmpeg' );
 ffmpeg.setFfmpegPath( ffmpegPath );
 const fsp = fs.promises;
 
+const AWS = require( 'aws-sdk' );
+
 
 module.exports.handler = async function ( event, context ) {
 
@@ -30,20 +32,11 @@ module.exports.handler = async function ( event, context ) {
     let body = JSON.parse( event.body );
 
     console.log( 'received audio...', body.audioString );
-    console.log( 'ffmpeg path >>>> ', ffmpegPath );
-
 
     // Encoding wav audio to m4a
     const decodedAudio = new Buffer.from( JSON.parse( event.body ).audioString, 'base64' );
     const decodedPath = '/tmp/decoded.wav';
     await fsp.writeFile( decodedPath, decodedAudio );
-
-    const decodedFile = await fsp.readFile( decodedPath );
-    console.log( 'received and read audio: ' + decodedFile.toString( 'base64' ).slice( 0, 100 ) )
-
-    const myURL = typeof window !== `undefined` ? window.URL || window.webkitURL : ''
-    const fileURL = myURL.createObjectURL( decodedFile );
-    console.log( 'file URL...', fileURL );
 
     const encodedPath = '/tmp/encoded.m4a';
     const ffmpeg_encode_audio = () => {
@@ -67,13 +60,51 @@ module.exports.handler = async function ( event, context ) {
     }
     await ffmpeg_encode_audio()
 
+    // initialise AWS
+    AWS.config = new AWS.Config( {
+        accessKeyId: process.env.GATSBY_AWS_accessKey,
+        secretAccessKey: process.env.GATSBY_AWS_secretKey,
+        region: 'us-east-2',
+    } );
+
+    // Create S3 service object
+    const s3 = new AWS.S3( {
+        apiVersion: '2006-03-01',
+        params: { Bucket: 'langapp-audio-analysis' }
+    } );
+
+    const uploadParams = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
+    const now = new Date();
+    const dateTimeNow = `${ now.getFullYear() }-${ now.getMonth() + 1 }-${ now.getDate() } ${ now.getHours() }:${ now.getMinutes() }:${ now.getSeconds() }`;
+    uploadParams.Key = `${ dateTimeNow }-/audio.m4a`;
+
+    const decodedFile = await fsp.readFile( decodedPath );
+    uploadParams.Body = decodedFile;
+
+    // call S3 to retrieve upload file to specified bucket
+    await s3.upload( uploadParams )
+        .promise()
+        .then( ( data ) => {
+            console.log( "Successfully uploaded", data )
+            const audio = {
+                'type': 'audio',
+                'originalContentUrl': data.Location,
+                'duration': 10000,
+            };
+            await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", audio )
+                .then( ( response ) => {
+                    console.log( 'audio push message attempted...', response );
+                } )
+                .catch( ( err ) => console.log( 'error in audio push message...', err ) );
+            console.log( 'audio push message event executed' );
+        } )
+        .catch(
+            ( err ) => {
+                console.error( "Upload error", err );
+            } );
 
 
-    const audio = {
-        'type': 'audio',
-        'originalContentUrl': body.transcript,
-        'duration': 10000,
-    };
+
     //await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", audio )
     //    .then( ( response ) => {
     //        console.log( 'audio push message attempted...', response );
