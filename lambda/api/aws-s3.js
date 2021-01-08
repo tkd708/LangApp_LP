@@ -68,6 +68,7 @@ module.exports.handler = async function ( event, context ) {
 
     // call S3 to retrieve upload file to specified bucket
     await s3.upload( uploadParams )
+        .promise()
         .then( ( data ) => {
             console.log( "Successfully uploaded", data )
         } )
