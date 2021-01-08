@@ -33,6 +33,7 @@ module.exports.handler = async function ( event, context ) {
             'type': 'text',
             'text': text
         };
+
         await client.replyMessage( body.events[ 0 ].replyToken, message )
             .then( ( response ) => {
                 console.log( 'reply attempted...', response );
@@ -44,8 +45,20 @@ module.exports.handler = async function ( event, context ) {
                 context.succeed( lambdaResponse );
             } )
             .catch( ( err ) => console.log( 'error in reply...', err ) );
-
         console.log( 'reply event executed' );
+
+        await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", message )
+            .then( ( response ) => {
+                console.log( 'additional push message attempted...', response );
+                let lambdaResponse = {
+                    statusCode: 200,
+                    headers: { "X-Line-Status": "OK" },
+                    body: '{"result":"completed"}'
+                };
+                context.succeed( lambdaResponse );
+            } )
+            .catch( ( err ) => console.log( 'error in additional push message...', err ) );
+        console.log( 'additional push message event executed' );
 
         // trying a promise object
         // const replyPromise = client.replyMessage( body.events[ 0 ].replyToken, message ).promise();
