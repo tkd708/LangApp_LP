@@ -6,13 +6,16 @@ const client = new line.Client( {
     channelSecret: process.env.GATSBY_LINE_channelsecret
 } );
 
+const methods = Object.getOwnPropertyNames( client )
+console.log( '-------------- list of methods line client object ------------------', methods )
+
 
 module.exports.handler = async function ( event, context ) {
 
     //let signature = crypto.createHmac( 'sha256', process.env.GATSBY_LINE_channelsecret ).update( event.body ).digest( 'base64' );
     //let checkHeader = ( event.headers || {} )[ 'X-Line-Signature' ];
     let body = JSON.parse( event.body );
-    //console.log( event );
+    console.log( event );
 
     //if( signature === checkHeader ) {
     if( body.events[ 0 ].replyToken === '00000000000000000000000000000000' ) { //接続確認エラー回避
