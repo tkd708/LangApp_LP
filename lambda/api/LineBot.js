@@ -12,7 +12,7 @@ module.exports.handler = async function ( event, context ) {
     //let signature = crypto.createHmac( 'sha256', process.env.GATSBY_LINE_channelsecret ).update( event.body ).digest( 'base64' );
     //let checkHeader = ( event.headers || {} )[ 'X-Line-Signature' ];
     let body = JSON.parse( event.body );
-    console.log( event );
+    //console.log( event );
 
     //if( signature === checkHeader ) {
     if( body.events[ 0 ].replyToken === '00000000000000000000000000000000' ) { //接続確認エラー回避
@@ -30,7 +30,7 @@ module.exports.handler = async function ( event, context ) {
             'type': 'text',
             'text': text
         };
-        client.replyMessage( body.events[ 0 ].replyToken, message )
+        await client.replyMessage( body.events[ 0 ].replyToken, message )
             .then( ( response ) => {
                 console.log( 'reply attempted...', response );
                 let lambdaResponse = {
@@ -41,6 +41,8 @@ module.exports.handler = async function ( event, context ) {
                 context.succeed( lambdaResponse );
             } )
             .catch( ( err ) => console.log( 'error in reply...', err ) );
+
+        console.log( 'reply event executed' );
 
         // trying a promise object
         const replyPromise = client.replyMessage( body.events[ 0 ].replyToken, message ).promise();
