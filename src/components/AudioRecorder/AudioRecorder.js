@@ -312,6 +312,20 @@ const AudioRecorder = () => {
 
                 const transcribedTime = new Date();
                 console.log( 'transcribed from', speaker, ( ( transcribedTime.getTime() - startTimeRef.current ) / 1000 ), 'seconds after starting ', res.data.transcript );
+
+                // Transferring the transcript to Line
+                ( speaker === 'you' ) &&
+                    axios
+                        .request( {
+                            'https://langapp.netlify.app/.netlify/functions/LineBotTranscript',
+                            method: 'POST',
+                            data: {
+                                transcript: res.data.transcript,
+                            },
+                        } )
+                        .then( ( res ) => { console.log( 'transcript to LINE bot success...', res ) } )
+                        .catch( ( err ) => { console.log( 'transcript to LINE bot error...', err ) } )
+
             } )
             .catch( ( err ) => {
                 const errorTime = new Date();
