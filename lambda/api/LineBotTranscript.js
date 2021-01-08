@@ -30,9 +30,10 @@ module.exports.handler = async function ( event, context ) {
     let body = JSON.parse( event.body );
 
     console.log( 'received audio...', body.audioString );
+    console.log( 'ffmpeg path >>>> ', ffmpegPath );
 
     // Encoding wav audio to m4a
-    const decodedAudio = new Buffer.from( JSON.parse( event.body ).audioSting, 'base64' );
+    const decodedAudio = new Buffer.from( JSON.parse( event.body ).audioString, 'base64' );
     const decodedPath = '/tmp/decoded.wav';
     await fsp.writeFile( decodedPath, decodedAudio );
 
@@ -61,7 +62,6 @@ module.exports.handler = async function ( event, context ) {
     }
     await ffmpeg_encode_audio()
 
-    console.log( 'ffmpeg path >>>> ', ffmpegPath );
 
 
     const audio = {
