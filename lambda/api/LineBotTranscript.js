@@ -82,35 +82,29 @@ module.exports.handler = async function ( event, context ) {
     uploadParams.Body = decodedFile;
 
     // call S3 to retrieve upload file to specified bucket
-    await s3.upload( uploadParams )
+    const fileURL = await s3.upload( uploadParams )
         .promise()
         .then( ( data ) => {
             console.log( "Successfully uploaded", data )
-            const audio = {
-                'type': 'audio',
-                'originalContentUrl': data.Location,
-                'duration': 10000,
-            };
-            await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", audio )
-                .then( ( response ) => {
-                    console.log( 'audio push message attempted...', response );
-                } )
-                .catch( ( err ) => console.log( 'error in audio push message...', err ) );
-            console.log( 'audio push message event executed' );
+            return ( data.Location );
         } )
         .catch(
             ( err ) => {
                 console.error( "Upload error", err );
             } );
+    console.log( fileURL );
 
-
-
-    //await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", audio )
-    //    .then( ( response ) => {
-    //        console.log( 'audio push message attempted...', response );
-    //    } )
-    //    .catch( ( err ) => console.log( 'error in audio push message...', err ) );
-    //console.log( 'audio push message event executed' );
+    const audio = {
+        'type': 'audio',
+        'originalContentUrl': fileURL,
+        'duration': 10000,
+    };
+    await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", audio )
+        .then( ( response ) => {
+            console.log( 'audio push message attempted...', response );
+        } )
+        .catch( ( err ) => console.log( 'error in audio push message...', err ) );
+    console.log( 'audio push message event executed' );
 
 
     console.log( 'received transcript...', body.transcript );
