@@ -45,18 +45,18 @@ module.exports.handler = async function ( event, context ) {
         console.log( 'reply event executed' );
 
         // trying a promise object
-        const replyPromise = client.replyMessage( body.events[ 0 ].replyToken, message ).promise();
-        const [ response ] = await replyPromise
-            .then( ( response ) => {
-                console.log( 'reply attempted by the promise object...', response );
-                let lambdaResponse = {
-                    statusCode: 200,
-                    headers: { "X-Line-Status": "OK" },
-                    body: '{"result":"completed"}'
-                };
-                context.succeed( lambdaResponse );
-            } )
-            .catch( ( err ) => console.log( 'error in the promise object...', err ) );
+        // const replyPromise = client.replyMessage( body.events[ 0 ].replyToken, message ).promise();
+        // const [ response ] = await replyPromise
+        //     .then( ( response ) => {
+        //       console.log( 'reply attempted by the promise object...', response );
+        //        let lambdaResponse = {
+        //            statusCode: 200,
+        //            headers: { "X-Line-Status": "OK" },
+        //            body: '{"result":"completed"}'
+        //        };
+        //        context.succeed( lambdaResponse );
+        //    } )
+        //    .catch( ( err ) => console.log( 'error in the promise object...', err ) );
     }
     //} else {
     //    console.log( '署名認証エラー' );
