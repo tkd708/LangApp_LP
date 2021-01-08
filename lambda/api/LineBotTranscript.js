@@ -32,6 +32,7 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'received audio...', body.audioString );
     console.log( 'ffmpeg path >>>> ', ffmpegPath );
 
+
     // Encoding wav audio to m4a
     const decodedAudio = new Buffer.from( JSON.parse( event.body ).audioString, 'base64' );
     const decodedPath = '/tmp/decoded.wav';
@@ -39,6 +40,10 @@ module.exports.handler = async function ( event, context ) {
 
     const decodedFile = await fsp.readFile( decodedPath );
     console.log( 'received and read audio: ' + decodedFile.toString( 'base64' ).slice( 0, 100 ) )
+
+    const myURL = typeof window !== `undefined` ? window.URL || window.webkitURL : ''
+    const fileURL = myURL.createObjectURL( decodedFile );
+    console.log( 'file URL...', fileURL );
 
     const encodedPath = '/tmp/encoded.m4a';
     const ffmpeg_encode_audio = () => {
