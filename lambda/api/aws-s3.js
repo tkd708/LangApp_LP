@@ -67,22 +67,22 @@ module.exports.handler = async function ( event, context ) {
     console.log( '----------- aws upload params -------------', uploadParams );
 
     // call S3 to retrieve upload file to specified bucket
-    //s3.upload( uploadParams, ( err, data ) => {
-    //    console.log( 'S3 update excecuted' );
-    //    if( err ) {
-    //        console.log( "AWS S3 Upload Error", err );
-    //    } else {
-    //        console.log( "AWS S3 Upload Success", data.Location );
-    //    }
-    //} );
+    await s3.upload( uploadParams, ( err, data ) => {
+        console.log( 'S3 update excecuted' );
+        if( err ) {
+            console.log( "AWS S3 Upload Error", err );
+        } else {
+            console.log( "AWS S3 Upload Success", data.Location );
+        }
+    } );
 
 
     // Create a promise on S3 service object
-    const uploadPromise = new AWS.S3( {
-        apiVersion: '2006-03-01',
-        params: { Bucket: 'langapp-audio-analysis' }
-    } ).upload( uploadParams ).promise();
-    console.log( "-------------------- Upload promise object ------------------", uploadPromise );
+    //const uploadPromise = new AWS.S3( {
+    //    apiVersion: '2006-03-01',
+    //    params: { Bucket: 'langapp-audio-analysis' }
+    //} ).upload( uploadParams ).promise();
+    //console.log( "-------------------- Upload promise object ------------------", uploadPromise );
 
     // Handle promise fulfilled/rejected states
     //uploadPromise.then( ( data ) => {
@@ -93,8 +93,8 @@ module.exports.handler = async function ( event, context ) {
     //            console.error( "Upload error", err );
     //        } );
 
-    const [ response ] = await uploadPromise.then();
-    console.log( "---------------- promise response --------------------", response );
+    //const [ response ] = await uploadPromise.then();
+    //console.log( "---------------- promise response --------------------", response );
 
 
     console.log( '----------- end aws upload -------------' );
