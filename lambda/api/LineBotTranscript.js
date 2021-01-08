@@ -92,21 +92,28 @@ module.exports.handler = async function ( event, context ) {
             ( err ) => {
                 console.error( "Upload error", err );
             } );
-    console.log( fileURL );
+    console.log( 's3 file url...', fileURL );
 
+
+    // push message of audio
     const audio = {
         'type': 'audio',
         'originalContentUrl': fileURL,
         'duration': 10000,
     };
-    await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", audio )
-        .then( ( response ) => {
-            console.log( 'audio push message attempted...', response );
+    const audioPushRes = await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", audio )
+        .then( ( res ) => {
+            console.log( 'audio push message attempted...', res );
+            return ( res )
         } )
-        .catch( ( err ) => console.log( 'error in audio push message...', err ) );
-    console.log( 'audio push message event executed' );
+        .catch( ( err ) => {
+            console.log( 'error in audio push message...', err )
+            return ( err )
+        } );
+    console.log( 'audio push message event executed...', audioPushRes );
 
 
+    // push message of transcript
     console.log( 'received transcript...', body.transcript );
     const message = {
         'type': 'text',
