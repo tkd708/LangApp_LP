@@ -6,16 +6,17 @@ const client = new line.Client( {
     channelSecret: process.env.GATSBY_LINE_channelsecret
 } );
 
-const methods = Object.getOwnPropertyNames( client )
-console.log( '-------------- list of methods line client object ------------------', methods )
 
 
 module.exports.handler = async function ( event, context ) {
 
+    //const methods = Object.getOwnPropertyNames( client )
+    //console.log( '-------------- list of methods line client object ------------------', methods )
+
     //let signature = crypto.createHmac( 'sha256', process.env.GATSBY_LINE_channelsecret ).update( event.body ).digest( 'base64' );
     //let checkHeader = ( event.headers || {} )[ 'X-Line-Signature' ];
     let body = JSON.parse( event.body );
-    console.log( event );
+    //console.log( event );
 
     //if( signature === checkHeader ) {
     if( body.events[ 0 ].replyToken === '00000000000000000000000000000000' ) { //接続確認エラー回避
@@ -37,12 +38,6 @@ module.exports.handler = async function ( event, context ) {
         await client.replyMessage( body.events[ 0 ].replyToken, message )
             .then( ( response ) => {
                 console.log( 'reply attempted...', response );
-                let lambdaResponse = {
-                    statusCode: 200,
-                    headers: { "X-Line-Status": "OK" },
-                    body: '{"result":"completed"}'
-                };
-                context.succeed( lambdaResponse );
             } )
             .catch( ( err ) => console.log( 'error in reply...', err ) );
         console.log( 'reply event executed' );
@@ -50,15 +45,17 @@ module.exports.handler = async function ( event, context ) {
         await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", message )
             .then( ( response ) => {
                 console.log( 'additional push message attempted...', response );
-                let lambdaResponse = {
-                    statusCode: 200,
-                    headers: { "X-Line-Status": "OK" },
-                    body: '{"result":"completed"}'
-                };
-                context.succeed( lambdaResponse );
             } )
             .catch( ( err ) => console.log( 'error in additional push message...', err ) );
         console.log( 'additional push message event executed' );
+
+        let lambdaResponse = {
+            statusCode: 200,
+            headers: { "X-Line-Status": "OK" },
+            body: '{"result":"completed"}'
+        };
+        context.succeed( lambdaResponse );
+
 
         // trying a promise object
         // const replyPromise = client.replyMessage( body.events[ 0 ].replyToken, message ).promise();
