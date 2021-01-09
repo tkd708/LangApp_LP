@@ -23,7 +23,15 @@ import { v4 as uuidv4 } from 'uuid';
 
 const AudioRecorder = () => {
     const [ appID, setAppID ] = useState( '' );
+    const appIDRef = useRef( appID )
+    useEffect( () => {
+        appIDRef.current = appID
+    }, [ appID ] )
     const [ recordingID, setRecordingID ] = useState( null );
+    const recordingIDRef = useRef( recordingID )
+    useEffect( () => {
+        recordingIDRef.current = recordingID
+    }, [ recordingID ] )
 
     const [ mediaRecorderMic, setMediaRecorderMic ] = useState( null ); //
     const [ blobArrayMic, setBlobArrayMic ] = useState( [] );
@@ -311,6 +319,7 @@ const AudioRecorder = () => {
                     }
                     setTranscribeErrorArray( [ ...transcribeErrorArrrayRef.current, errorStatus ] );
                     console.log( errorStatus );
+                    return ( errorStatus );
                 } );
 
         /////////////////////// Transferring the transcript and the audio to LINE via AWS S3
@@ -319,8 +328,8 @@ const AudioRecorder = () => {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotTranscript',
                 method: 'POST',
                 data: {
-                    appID: appID,
-                    recordingID: recordingID,
+                    appID: appIDRef.current,
+                    recordingID: recordingIDRef.current,
                     audioString: recordString,
                     transcript: transcript,
                 },
@@ -481,7 +490,7 @@ const AudioRecorder = () => {
                 label="お名前" // to be replaced with LangApp ID
                 variant="filled"
                 value={ appID }
-                onChange={ ( e ) => { setAppID( e.target.value ); } }
+                onChange={ ( e ) => { ( !isRecording ) && setAppID( e.target.value ); } }
                 inputProps={ {
                     style: { backgroundColor: 'white' },
                 } }

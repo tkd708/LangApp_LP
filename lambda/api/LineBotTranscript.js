@@ -47,7 +47,7 @@ module.exports.handler = async function ( event, context ) {
                 .input( decodedPath )
                 .outputOptions( [
                     '-f s16le',
-                    '-acodec libfaac', /// GCP >> pcm_s16le, LINE(m4a) >> libfaac?
+                    '-acodec pcm_s16le', /// GCP >> pcm_s16le, LINE(m4a) >> libfaac?
                     '-vn',
                     '-ac 1',
                     '-ar 16k', //41k or 16k
