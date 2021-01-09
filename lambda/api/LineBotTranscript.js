@@ -47,7 +47,7 @@ module.exports.handler = async function ( event, context ) {
                 .input( decodedPath )
                 .outputOptions( [
                     '-f s16le',
-                    '-acodec pcm_s16le',
+                    '-acodec libfaac', /// GCP >> pcm_s16le, LINE(m4a) >> libfaac?
                     '-vn',
                     '-ac 1',
                     '-ar 16k', //41k or 16k
@@ -82,8 +82,8 @@ module.exports.handler = async function ( event, context ) {
     const time = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( -8 );
     uploadParams.Key = `${ date }-${ body.appID }-${ body.recordingID }/audio-${ time }.m4a`;
 
-    const decodedFile = await fsp.readFile( decodedPath );
-    uploadParams.Body = decodedFile;
+    const encodedFile = await fsp.readFile( encodedPath );
+    uploadParams.Body = encodedFile;
 
     // call S3 to retrieve upload file to specified bucket
     const fileURL = await s3.upload( uploadParams )
