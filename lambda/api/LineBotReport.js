@@ -9,6 +9,19 @@ const client = new line.Client( {
 
 module.exports.handler = async function ( event, context ) {
 
+    // avoid CORS errors
+    if( event.httpMethod == "OPTIONS" ) {
+        console.log( "OPTIONS query received" );
+        return {
+            'statusCode': 200,
+            'headers': {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+            },
+            'body': "Done"
+        }
+    }
+
     let body = JSON.parse( event.body );
     console.log( 'received report...', body );
 

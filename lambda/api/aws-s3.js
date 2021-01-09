@@ -48,12 +48,14 @@ module.exports.handler = async function ( event, context ) {
     //    }
     //} );
 
+
+    ////////////////////////// S3 upload parameters
     const uploadParams = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
+    //const now = new Date();
+    //const dateTimeNow = `${ now.getFullYear() }-${ now.getMonth() + 1 }-${ now.getDate() } ${ now.getHours() }:${ now.getMinutes() }:${ now.getSeconds() }`;
+    const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
 
-    const now = new Date();
-    const dateTimeNow = `${ now.getFullYear() }-${ now.getMonth() + 1 }-${ now.getDate() } ${ now.getHours() }:${ now.getMinutes() }:${ now.getSeconds() }`;
-
-    uploadParams.Key = `${ dateTimeNow }-${ JSON.parse( event.body ).uuid }/audio.wav`;
+    uploadParams.Key = `${ date }-${ JSON.parse( event.body ).appID }-${ JSON.parse( event.body ).recordingID }/audioFull.wav`;
 
     console.log( 'received audio: ', JSON.parse( event.body ).audio.slice( 0, 100 ) )
     const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
@@ -66,7 +68,7 @@ module.exports.handler = async function ( event, context ) {
 
     console.log( '----------- aws upload params -------------', uploadParams );
 
-    // call S3 to retrieve upload file to specified bucket
+    ////////////////////////////// call S3 to retrieve upload file to specified bucket
     await s3.upload( uploadParams )
         .promise()
         .then( ( data ) => {

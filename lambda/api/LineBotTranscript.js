@@ -33,7 +33,7 @@ module.exports.handler = async function ( event, context ) {
 
     console.log( 'received audio...', body.audioString );
 
-    // Encoding wav audio to m4a
+    // Encoding wav audio to m4a... maybe not necessary
     const decodedAudio = new Buffer.from( JSON.parse( event.body ).audioString, 'base64' );
     const decodedPath = '/tmp/decoded.wav';
     await fsp.writeFile( decodedPath, decodedAudio );
@@ -73,10 +73,12 @@ module.exports.handler = async function ( event, context ) {
         params: { Bucket: 'langapp-audio-analysis' }
     } );
 
+    // S3 Upload parameters
     const uploadParams = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
-    const now = new Date();
-    const dateTimeNow = `${ now.getFullYear() }-${ now.getMonth() + 1 }-${ now.getDate() } ${ now.getHours() }:${ now.getMinutes() }:${ now.getSeconds() }`;
-    uploadParams.Key = `${ dateTimeNow }-/audio.m4a`;
+
+    const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
+    const time = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( -8 );
+    uploadParams.Key = `${ date }-${ JSON.parse( event.body ).appID }-${ JSON.parse( event.body ).recordingID }/audio-${ time }.m4a`;
 
     const decodedFile = await fsp.readFile( decodedPath );
     uploadParams.Body = decodedFile;
@@ -99,9 +101,9 @@ module.exports.handler = async function ( event, context ) {
     const audio = {
         'type': 'audio',
         'originalContentUrl': fileURL,
-        'duration': 10000,
+        'duration': 30000,
     };
-    const audioPushRes = await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", audio )
+    const audioPushRes = await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", audio, notificationDisabled = true )
         .then( ( res ) => {
             console.log( 'audio push message attempted...', res );
             return ( res )
@@ -119,7 +121,7 @@ module.exports.handler = async function ( event, context ) {
         'type': 'text',
         'text': body.transcript
     };
-    await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", message )
+    await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", message, notificationDisabled = true )
         .then( ( response ) => {
             console.log( 'transcript push message attempted...', response );
         } )
@@ -127,6 +129,7 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'transcript push message event executed' );
 
 
+    // success of API
     let lambdaResponse = {
         statusCode: 200,
         headers: { "X-Line-Status": "OK" },
