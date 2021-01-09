@@ -82,8 +82,8 @@ module.exports.handler = async function ( event, context ) {
     const time = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( -8 );
     uploadParams.Key = `${ date }-${ body.appID }-${ body.recordingID }/audio-${ time }.m4a`;
 
-    const encodedFile = await fsp.readFile( encodedPath );
-    uploadParams.Body = encodedFile;
+    const audioFile = await fsp.readFile( decodedPath );
+    uploadParams.Body = audioFile;
 
     // call S3 to retrieve upload file to specified bucket
     const fileURL = await s3.upload( uploadParams )
