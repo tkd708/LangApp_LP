@@ -29,12 +29,14 @@ module.exports.handler = async function ( event, context ) {
         }
     }
 
-    let body = JSON.parse( event.body );
+    const body = JSON.parse( event.body );
 
+    console.log( 'app ID...', body.appID );
+    console.log( 'recording ID...', body.recordingID );
     console.log( 'received audio...', body.audioString );
 
     // Encoding wav audio to m4a... maybe not necessary
-    const decodedAudio = new Buffer.from( JSON.parse( event.body ).audioString, 'base64' );
+    const decodedAudio = new Buffer.from( body.audioString, 'base64' );
     const decodedPath = '/tmp/decoded.wav';
     await fsp.writeFile( decodedPath, decodedAudio );
 
@@ -78,7 +80,7 @@ module.exports.handler = async function ( event, context ) {
 
     const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
     const time = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( -8 );
-    uploadParams.Key = `${ date }-${ JSON.parse( event.body ).appID }-${ JSON.parse( event.body ).recordingID }/audio-${ time }.m4a`;
+    uploadParams.Key = `${ date }-${ body.appID }-${ body.recordingID }/audio-${ time }.m4a`;
 
     const decodedFile = await fsp.readFile( decodedPath );
     uploadParams.Body = decodedFile;
