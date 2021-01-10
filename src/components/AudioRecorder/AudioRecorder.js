@@ -408,12 +408,16 @@ const AudioRecorder = () => {
         } );
         setVocab4( vocabCountArray );
 
-        //////////////// send analysis report to LINE
+        //////////////// send analysis report to LINE and to dynamoDB
         axios
             .request( {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotReport',
                 method: 'POST',
                 data: {
+                    appID: appIDRef.current,
+                    recordingID: recordingIDRef.current,
+                    lengthMinute: conversationLength.toFixed( 1 ),
+                    transcript: transcript,
                     wordsTotal: transcriptWordArray.length,
                     wordsPerMinute: ( transcriptWordArray.length / conversationLength ).toFixed( 1 ),
                     vocab: uniq.length,
