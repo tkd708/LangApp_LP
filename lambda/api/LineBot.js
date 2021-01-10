@@ -27,7 +27,38 @@ module.exports.handler = async function ( event, context ) {
             body: '{"result":"connect check"}'
         };
         context.succeed( lambdaResponse );
+        return
     } else {
+
+        //////////////////// Reply messages below ////////////////////////////
+
+        ///// Registration
+        if( text == '登録' ) {
+            console.log( 'the user to be registered...', body.events[ 0 ].source.userId )
+
+            const userProfile = await client.getProfile( body.events[ 0 ].source.userId )
+                .then( ( res ) => {
+                    console.log( 'get profile attempted...', res );
+                } )
+                .catch( ( err ) => console.log( 'get profile failed...', err ) );
+            console.log( 'get profile event executed' );
+
+            const message = {
+                'type': 'text',
+                'text': `Are you ${ userProfile.displayName }? Your ID is ${ body.events[ 0 ].source.userId }`,
+            };
+
+            //getProfile( userId: string ): Promise < Profile >
+            await client.replyMessage( body.events[ 0 ].replyToken, message )
+                .then( ( res ) => {
+                    console.log( 'user id for registration reply attempted...', res );
+                } )
+                .catch( ( err ) => console.log( 'error in user id for registration reply...', err ) );
+            console.log( 'user id for registration reply event executed' );
+
+        }
+
+
         let text = body.events[ 0 ].message.text;
         console.log( 'received text...', text );
         const message = {
@@ -35,7 +66,7 @@ module.exports.handler = async function ( event, context ) {
             'text': text
         };
 
-
+        //////// Reply the same message
         await client.replyMessage( body.events[ 0 ].replyToken, message )
             .then( ( response ) => {
                 console.log( 'reply attempted...', response );
@@ -43,6 +74,8 @@ module.exports.handler = async function ( event, context ) {
             .catch( ( err ) => console.log( 'error in reply...', err ) );
         console.log( 'reply event executed' );
 
+
+        ////// Transfer the message to me
         await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", message )
             .then( ( response ) => {
                 console.log( 'additional push message attempted...', response );
@@ -50,9 +83,8 @@ module.exports.handler = async function ( event, context ) {
             .catch( ( err ) => console.log( 'error in additional push message...', err ) );
         console.log( 'additional push message event executed' );
 
-        //getProfile( userId: string ): Promise < Profile >
 
-
+        ///// Finish the api
         let lambdaResponse = {
             statusCode: 200,
             headers: { "X-Line-Status": "OK" },

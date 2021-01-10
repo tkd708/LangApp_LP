@@ -224,7 +224,7 @@ const AudioRecorder = () => {
     const startMediaRecorders = () => {
         console.log( 'recorders on' )
         mediaRecorderMic.start( 1000 );
-        setTimeout( () => { repeatMediaRecorders(); }, 30000 );
+        setTimeout( () => { repeatMediaRecorders(); }, 10000 );
     }
 
 
@@ -483,7 +483,7 @@ const AudioRecorder = () => {
 
             <h2>英会話分析デモ</h2>
             <p>*音声ファイルの送信に不具合が生じているため、一時的にtake708gym[at]gmail.comまでメール添付でのご送付をお願いしております。ご不便をおかけして大変申し訳ございません。一刻も早い復旧に向けて作業を進めております。</p>
-            <p>実際にオンライン英会話を録音してみましょう！(マイク付きイヤフォン推奨)</p>
+            <p>実際にオンライン英会話を録音してみましょう！(マイク付きイヤホン推奨)</p>
             <TextField
                 required
                 id="filled-required"
