@@ -81,7 +81,7 @@ module.exports.handler = async function ( event, context ) {
             // Notify the user that the ID is registered
             const message = {
                 'type': 'text',
-                'text': `ご登録どうもありがとうございます！LangAppのウェブサイトで英会話を録音される際に、「お名前」の項目にLineの表示名「 ${ userProfile.displayName }」をご入力ください。音声とその書き起こし、英会話の分析結果をLangAppBotよりお届けいたします！`,
+                'text': `ご登録どうもありがとうございます！LangAppのウェブサイトで英会話を録音される際に、「お名前」の項目にLINEの表示名「 ${ userProfile.displayName }」をご入力ください。音声とその書き起こし、英会話の分析結果をLangAppBotよりお届けいたします！`,
             };
 
             await client.replyMessage( body.events[ 0 ].replyToken, message )
