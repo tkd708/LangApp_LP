@@ -470,12 +470,11 @@ const AudioRecorder = () => {
                 <CardContent>
                     <Typography color="textSecondary" gutterBottom>書き起こし</Typography>
                 </CardContent>
-                { transcriptArrayMinYou.slice( 0, 5 ).map( ( object, i ) => {
+                { transcriptArrayMinYou.map( ( object, i ) => {
                     return (
                         <CardContent>
                             <Typography color="textSecondary">{ "--- Time 00:0" + i + ":00 ---" }</Typography>
                             <Typography key={ i }>{ object }</Typography>
-                            {( i === 4 ) && <Typography>{ '5分以上の書き起こしは下記登録フォームから録音された会話をご送付ください！' }</Typography> }
                         </CardContent>
                     )
                 } ) }
