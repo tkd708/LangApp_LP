@@ -119,22 +119,22 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'fetched line id...', userLineId )
 
 
-    ///////////////// push message of audio
+    ///////////////// push message of audio.... tentatively omitted, need to work on ffmpeg first to convert the audio into m4a
     const audio = {
         'type': 'audio',
         'originalContentUrl': fileURL,
         'duration': 30000,
     };
-    const audioPushRes = await client.pushMessage( userLineId, audio, notificationDisabled = true )
-        .then( ( res ) => {
-            console.log( 'audio push message attempted...', res );
-            return ( res )
-        } )
-        .catch( ( err ) => {
-            console.log( 'error in audio push message...', err )
-            return ( err )
-        } );
-    console.log( 'audio push message event executed...', audioPushRes );
+    //const audioPushRes = await client.pushMessage( userLineId, audio, notificationDisabled = true )
+    //    .then( ( res ) => {
+    //        console.log( 'audio push message attempted...', res );
+    //        return ( res )
+    //    } )
+    //    .catch( ( err ) => {
+    //        console.log( 'error in audio push message...', err )
+    //        return ( err )
+    //    } );
+    //console.log( 'audio push message event executed...', audioPushRes );
 
 
     /////////////// push message of transcript
