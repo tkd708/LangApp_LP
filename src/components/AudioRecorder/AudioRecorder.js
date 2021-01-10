@@ -88,9 +88,8 @@ const AudioRecorder = () => {
     const [ vocab4, setVocab4 ] = useState( [ "especially", "durable", "collaborate" ] );
     const [ vocab5, setVocab5 ] = useState( [ "affordable", "exclusively", "estimate", "retrieve", "variation" ] );
 
-    //console.log( uuid );
     const myURL = typeof window !== `undefined` ? window.URL || window.webkitURL : ''
-    const intervalSeconds = 60; // interval of the repeating audio recording
+    const intervalSeconds = 30; // interval of the repeating audio recording
 
     //////////////// Construct a media recorder for mic to be repeated for transcription
     const constructMediaRecorderMic = async () => {
@@ -191,7 +190,7 @@ const AudioRecorder = () => {
     const startMediaRecorders = () => {
         console.log( 'recorders on' )
         mediaRecorderMic.start( 1000 );
-        setTimeout( () => { repeatMediaRecorders(); }, intervalSeconds * 1000 - 100 );
+        setTimeout( () => { repeatMediaRecorders(); }, intervalSeconds * 1000 );
     }
 
 
