@@ -57,7 +57,7 @@ module.exports.handler = async function ( event, context ) {
     ///////////// Store the analysis results to dynamoDB
     const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
 
-    const params = {
+    const paramsReport = {
         TableName: 'LangAppData',
         Item: {
             UserName: body.appID,
@@ -70,7 +70,7 @@ module.exports.handler = async function ( event, context ) {
             Transcript: body.transcript,
         }
     };
-    docClient.put( params, ( err, data ) => {
+    docClient.put( paramsReport, ( err, data ) => {
         if( err ) console.log( 'Adding the conversation analysis to dynamoDB failed...', err )
         else console.log( 'Adding the conversation analysis to dynamoDB was successful...', data )
     } );
