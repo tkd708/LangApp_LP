@@ -106,7 +106,7 @@ module.exports.handler = async function ( event, context ) {
         KeyConditionExpression: 'UserName = :UserName ',
         ExpressionAttributeValues: { ':UserName': body.appID, }
     };
-    const userLineId = docClient.quary( params, ( err, data ) => {
+    const userLineId = docClient.query( params, ( err, data ) => {
         if( err ) console.log( 'LINE user ID fetch from dynamoDB failed...', err );
         else {
             console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
@@ -122,7 +122,7 @@ module.exports.handler = async function ( event, context ) {
         'originalContentUrl': fileURL,
         'duration': 30000,
     };
-    const audioPushRes = await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", audio, notificationDisabled = true )
+    const audioPushRes = await client.pushMessage( userLineId, audio, notificationDisabled = true )
         .then( ( res ) => {
             console.log( 'audio push message attempted...', res );
             return ( res )
@@ -140,7 +140,7 @@ module.exports.handler = async function ( event, context ) {
         'type': 'text',
         'text': body.transcript
     };
-    await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", message, notificationDisabled = true )
+    await client.pushMessage( userLineId, message, notificationDisabled = true )
         .then( ( response ) => {
             console.log( 'transcript push message attempted...', response );
         } )
