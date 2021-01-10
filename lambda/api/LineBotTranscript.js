@@ -106,13 +106,16 @@ module.exports.handler = async function ( event, context ) {
         KeyConditionExpression: 'UserName = :UserName ',
         ExpressionAttributeValues: { ':UserName': body.appID, }
     };
-    const userLineId = docClient.query( params, ( err, data ) => {
-        if( err ) console.log( 'LINE user ID fetch from dynamoDB failed...', err );
-        else {
+    const userLineId = await docClient.query( params )
+        .promise()
+        .then( ( data ) => {
             console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
             return ( data.Items[ 0 ].UserLineId );
-        }
-    } );
+        } )
+        .catch(
+            ( err ) => {
+                console.log( 'LINE user ID fetch from dynamoDB failed...', err );
+            } );
     console.log( 'fetched line id...', userLineId )
 
 
