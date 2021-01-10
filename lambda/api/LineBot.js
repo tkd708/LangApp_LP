@@ -6,6 +6,9 @@ const client = new line.Client( {
     channelSecret: process.env.GATSBY_LINE_channelsecret
 } );
 
+const AWS = require( 'aws-sdk' );
+
+
 
 
 module.exports.handler = async function ( event, context ) {
@@ -17,6 +20,16 @@ module.exports.handler = async function ( event, context ) {
     //let checkHeader = ( event.headers || {} )[ 'X-Line-Signature' ];
     let body = JSON.parse( event.body );
     console.log( event );
+
+
+    /////////////// initialise AWS
+    AWS.config = new AWS.Config( {
+        accessKeyId: process.env.GATSBY_AWS_accessKey,
+        secretAccessKey: process.env.GATSBY_AWS_secretKey,
+        region: 'us-east-2',
+    } );
+    const docClient = new AWS.DynamoDB.DocumentClient();
+
 
     //if( signature === checkHeader ) {
     if( body.events[ 0 ].replyToken === '00000000000000000000000000000000' ) { //接続確認エラー回避
@@ -37,10 +50,13 @@ module.exports.handler = async function ( event, context ) {
 
         ////////////////////////////// Reply messages below /////////////////////////////////////
 
-        ///// Registration
+
+
+        //////////////////////////// Registration
         if( text == '登録' ) {
             console.log( 'the user to be registered...', body.events[ 0 ].source.userId )
 
+            // Get the user profile
             const userProfile = await client.getProfile( body.events[ 0 ].source.userId )
                 .then( ( res ) => {
                     console.log( 'get profile attempted...', res );
@@ -49,12 +65,25 @@ module.exports.handler = async function ( event, context ) {
                 .catch( ( err ) => console.log( 'get profile failed...', err ) );
             console.log( 'get profile event executed' );
 
+            // Store the user name and ID in the dynamoDB
+            const params = {
+                TableName: 'LangAppUsers',
+                Item: {
+                    UserName: userProfile.displayName,
+                    UserLineId: body.events[ 0 ].source.userI,
+                }
+            };
+            docClient.put( params, ( err, data ) => {
+                if( err ) console.log( 'Adding the user name and id on dynamoDB failed...', err )
+                else console.log( 'Adding the user name and id on dynamoDB was successful...', data )
+            } );
+
+            // Notify the user that the ID is registered
             const message = {
                 'type': 'text',
                 'text': `Are you ${ userProfile.displayName }? Your ID is ${ body.events[ 0 ].source.userId }`,
             };
 
-            //getProfile( userId: string ): Promise < Profile >
             await client.replyMessage( body.events[ 0 ].replyToken, message )
                 .then( ( res ) => {
                     console.log( 'user id for registration reply attempted...', res );
