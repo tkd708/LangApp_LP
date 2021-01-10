@@ -99,7 +99,22 @@ module.exports.handler = async function ( event, context ) {
     console.log( 's3 file url...', fileURL );
 
 
-    // push message of audio
+    ///////////////// Get LINE user ID from dynamoDB corresponding to the user name (appID) input by the user on LP
+    const docClient = new AWS.DynamoDB.DocumentClient();
+    const params = {
+        TableName: 'LangAppUsers',
+        Key: { UserName: body.appID }
+    };
+    const userLineId = docClient.get( params, ( err, data ) => {
+        if( err ) console.log( 'LINE user ID fetch from dynamoDB failed...', err );
+        else {
+            console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
+            return ( data.Item.UserLineId );
+        }
+    } );
+
+
+    ///////////////// push message of audio
     const audio = {
         'type': 'audio',
         'originalContentUrl': fileURL,
@@ -117,7 +132,7 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'audio push message event executed...', audioPushRes );
 
 
-    // push message of transcript
+    /////////////// push message of transcript
     console.log( 'received transcript...', body.transcript );
     const message = {
         'type': 'text',

@@ -70,7 +70,7 @@ module.exports.handler = async function ( event, context ) {
                 TableName: 'LangAppUsers',
                 Item: {
                     UserName: userProfile.displayName,
-                    UserLineId: body.events[ 0 ].source.userI,
+                    UserLineId: body.events[ 0 ].source.userId,
                 }
             };
             docClient.put( params, ( err, data ) => {

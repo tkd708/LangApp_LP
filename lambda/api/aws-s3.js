@@ -100,6 +100,8 @@ module.exports.handler = async function ( event, context ) {
 
     console.log( '----------- end aws upload -------------' );
 
+
+    //////////////// Finish the api
     return {
         statusCode: 200, // http status code
         headers: {
