@@ -21,7 +21,21 @@ import TranscribeLangs from './transcribeLangs.json';
 
 import { v4 as uuidv4 } from 'uuid';
 
+const COMMON_WORDS = [
+    'yes', 'no', 'yeah', 'ok', 'okay',
+    '', 'a', 'the',
+    'i', 'my', 'me', 'mine', 'you', 'your', 'yours',
+    'he', 'him', 'his', 'she', 'her', 'hers',
+    'we', 'us', 'our', 'ours', 'they', 'them', 'thier', 'thiers',
+    'it', 'this', 'that', 'there',
+    'and', 'but',
+    'at', 'in', 'on', 'of', 'from', 'for', 'to',
+    'am', 'are', 'is', 'be'
+]
+
+
 const AudioRecorder = () => {
+
     const [ appID, setAppID ] = useState( '' );
     const appIDRef = useRef( appID )
     useEffect( () => {
@@ -34,20 +48,7 @@ const AudioRecorder = () => {
     }, [ recordingID ] )
 
     const [ mediaRecorderMic, setMediaRecorderMic ] = useState( null ); //
-    const [ blobArrayMic, setBlobArrayMic ] = useState( [] );
-    const blobArrayMicRef = useRef( blobArrayMic )
-    useEffect( () => {
-        blobArrayMicRef.current = blobArrayMic
-    }, [ blobArrayMic ] )
-
     const [ mediaRecorderMicLong, setMediaRecorderMicLong ] = useState( null ); //
-    const [ blobArrayMicLong, setBlobArrayMicLong ] = useState( [] );
-    const blobArrayMicLongRef = useRef( blobArrayMicLong )
-    useEffect( () => {
-        blobArrayMicLongRef.current = blobArrayMicLong
-    }, [ blobArrayMicLong ] )
-
-
     const [ isRecording, setIsRecording ] = useState( false );
     const isRecordingRef = useRef( isRecording )
     useEffect( () => {
@@ -109,15 +110,11 @@ const AudioRecorder = () => {
         } );
         recorder.addEventListener( 'dataavailable', ( e ) => {
             if( e.data.size > 0 ) {
-                setBlobArrayMic( [ ...blobArrayMicRef.current, e.data ] )
+                const speaker = 'you'
+                blobToBase64( e.data, speaker );
+                // const base64Audio = await blobToBase64( blob );
+                // sendGoogle(base64Audio)
             }
-        } );
-        recorder.addEventListener( 'stop', () => {
-            const blob = new Blob( blobArrayMicRef.current, { 'type': 'audio/webm;codecs=opus' } );
-            const speaker = 'you'
-            blobToBase64( blob, speaker );
-            console.log( 'blob length was...', blobArrayMicRef.current.length );
-            setBlobArrayMic( [] );
         } );
         setMediaRecorderMic( recorder );
         //console.log( 'mic recorder set...', recorder );
@@ -139,17 +136,10 @@ const AudioRecorder = () => {
             mimeType: 'audio/webm;codecs=opus',
             audioBitsPerSecond: 16 * 1000
         } );
-        recorderLong.addEventListener( 'start', () => {
-            setBlobArrayMicLong( [] );
-        } );
         recorderLong.addEventListener( 'dataavailable', ( e ) => {
             if( e.data.size > 0 ) {
-                setBlobArrayMicLong( [ ...blobArrayMicLongRef.current, e.data ] )
+                setBlobAppendedLong( e.data )
             }
-        } );
-        recorderLong.addEventListener( 'stop', () => {
-            const blob = new Blob( blobArrayMicLongRef.current, { 'type': 'audio/webm;codecs=opus' } );
-            setBlobAppendedLong( blob )
         } );
         setMediaRecorderMicLong( recorderLong );
         //console.log( 'mic recorder long set...', recorderLong );
@@ -180,7 +170,7 @@ const AudioRecorder = () => {
 
         setIsRecording( true );
         startMediaRecorders();
-        mediaRecorderMicLong.start( 1000 )
+        mediaRecorderMicLong.start()
 
         const startTime = new Date();
         setStartTime( startTime.getTime() );
@@ -189,7 +179,7 @@ const AudioRecorder = () => {
 
     const startMediaRecorders = () => {
         console.log( 'recorders on' )
-        mediaRecorderMic.start( 1000 );
+        mediaRecorderMic.start();
         setTimeout( () => { repeatMediaRecorders(); }, intervalSeconds * 1000 );
     }
 
@@ -242,8 +232,9 @@ const AudioRecorder = () => {
 
     ///////////////// Functions to convert and send blobs to transcribe //////////////////
     const blobToBase64 = ( blob, speaker ) => {
+        const newBlob = new Blob( [ blob ], { type: blob.type } )
         const reader = new FileReader();
-        reader.readAsDataURL( blob );
+        reader.readAsDataURL( newBlob );
         reader.onloadend = function () {
             //console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
             const recordString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
@@ -352,21 +343,12 @@ const AudioRecorder = () => {
 
         // vocab counts... removing articles, prepositions and pronouns etc.
         const vocabCounts = [];
-        const vocabCountArray = [];
-        transcriptWordArray.forEach( ( e ) => {
-            const x = e.toLowerCase();
-            if( x === 'yes' || x === 'no' || x === 'yeah' || x === 'ok' || x === 'okay' ||
-                x === '' || x === 'a' || x === 'the' ||
-                x === 'i' || x === 'my' || x === 'me' || x === 'mine' || x === 'you' || x === 'your' || x === 'yours' ||
-                x === 'he' || x === 'him' || x === 'his' || x === 'she' || x === 'her' || x === 'hers' ||
-                x === 'we' || x === 'us' || x === 'our' || x === 'ours' || x === 'they' || x === 'them' || x === 'thier' || x === 'thiers' ||
-                x === 'it' || x === 'this' || x === 'that' || x === 'there' ||
-                x === 'and' || x === 'but' ||
-                x === 'at' || x === 'in' || x === 'on' || x === 'of' || x === 'from' || x === 'for' || x === 'to' ||
-                x === 'am' || x === 'are' || x === 'is' || x === 'be'
-            ) return
-            vocabCounts[ x ] = ( vocabCounts[ x ] || 0 ) + 1;
+        transcriptWordArray.forEach( ( word ) => {
+            const lowerWord = word.toLowerCase();
+            if( COMMON_WORDS.includes( lowerWord ) ) return
+            vocabCounts[ lowerWord ] = ( vocabCounts[ lowerWord ] || 0 ) + 1;
         } );
+        const vocabCountArray = [];
         Object.entries( vocabCounts ).forEach( ( [ key, value ] ) => {
             const wordCount = { word: key, count: value }
             vocabCountArray.push( wordCount )
@@ -454,8 +436,8 @@ const AudioRecorder = () => {
             </div>
 
             <h2>英会話分析デモ</h2>
-            <p>*音声ファイルの送信に不具合が生じているため、一時的にtake708gym[at]gmail.comまでメール添付でのご送付をお願いしております。ご不便をおかけして大変申し訳ございません。一刻も早い復旧に向けて作業を進めております。</p>
             <p>実際にオンライン英会話を録音してみましょう！(マイク付きイヤホン推奨)</p>
+            <p>*音声ファイルは自動で送信されるようになりました！お名前のみ下記にご入力して、録音を開始ボタンを押してください。（音声ダウンロードも可能です）</p>
             <TextField
                 required
                 id="filled-required"
@@ -468,7 +450,7 @@ const AudioRecorder = () => {
                 } }
             />
             <Button
-                //style={{marginTop: '10px'}}
+                style={ { margin: '20px' } }
                 //variant="contained"
                 //color="primary"
                 cta={ isRecording ? '録音を終了' : '会話の録音を開始' } // from the template
@@ -484,8 +466,6 @@ const AudioRecorder = () => {
                     <StopIcon style={ { fontSize: 40 } } onClick={ () => { audioRecordStop(); } }></StopIcon>
                     <a href={ downloadUrl } download="recording" id="download"> <GetAppIcon style={ { fontSize: 40, color: "white" } } /></a>
                 </div> }
-
-
             <Card style={ { width: '70vw', margin: '20px' } } >
                 <CardContent>
                     <Typography color="textSecondary" gutterBottom>書き起こし</Typography>
@@ -500,7 +480,6 @@ const AudioRecorder = () => {
                     )
                 } ) }
             </Card>
-
             { ( transcript === null ) &&
                 <p>会話の録音を終了し、分析が完了すると結果が以下に表示されます。</p> }
 
