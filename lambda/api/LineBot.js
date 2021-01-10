@@ -30,7 +30,12 @@ module.exports.handler = async function ( event, context ) {
         return
     } else {
 
-        //////////////////// Reply messages below ////////////////////////////
+        let text = body.events[ 0 ].message.text;
+        console.log( 'received text...', text );
+
+
+
+        ////////////////////////////// Reply messages below /////////////////////////////////////
 
         ///// Registration
         if( text == '登録' ) {
@@ -59,14 +64,13 @@ module.exports.handler = async function ( event, context ) {
         }
 
 
-        let text = body.events[ 0 ].message.text;
-        console.log( 'received text...', text );
+
+        //////// Reply the same message
         const message = {
             'type': 'text',
             'text': text
         };
 
-        //////// Reply the same message
         await client.replyMessage( body.events[ 0 ].replyToken, message )
             .then( ( response ) => {
                 console.log( 'reply attempted...', response );
@@ -82,6 +86,9 @@ module.exports.handler = async function ( event, context ) {
             } )
             .catch( ( err ) => console.log( 'error in additional push message...', err ) );
         console.log( 'additional push message event executed' );
+
+
+
 
 
         ///// Finish the api
