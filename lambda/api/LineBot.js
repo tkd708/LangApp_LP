@@ -81,7 +81,7 @@ module.exports.handler = async function ( event, context ) {
             // Notify the user that the ID is registered
             const message = {
                 'type': 'text',
-                'text': `Are you ${ userProfile.displayName }? Your ID is ${ body.events[ 0 ].source.userId }`,
+                'text': `ご登録どうもありがとうございます！LangAppのウェブサイトで英会話を録音される際に、「お名前」の項目にLineの表示名「 ${ userProfile.displayName }」をご入力ください。音声とその書き起こし、英会話の分析結果をLangAppBotよりお届けいたします！`,
             };
 
             await client.replyMessage( body.events[ 0 ].replyToken, message )
@@ -96,26 +96,25 @@ module.exports.handler = async function ( event, context ) {
 
 
         //////// Reply the same message
-        const message = {
-            'type': 'text',
-            'text': text
-        };
-
-        await client.replyMessage( body.events[ 0 ].replyToken, message )
-            .then( ( response ) => {
-                console.log( 'reply attempted...', response );
-            } )
-            .catch( ( err ) => console.log( 'error in reply...', err ) );
-        console.log( 'reply event executed' );
+        //const message = {
+        //    'type': 'text',
+        //    'text': text
+        //};
+        //await client.replyMessage( body.events[ 0 ].replyToken, message )
+        //    .then( ( response ) => {
+        //        console.log( 'reply attempted...', response );
+        //    } )
+        //    .catch( ( err ) => console.log( 'error in reply...', err ) );
+        //console.log( 'reply event executed' );
 
 
         ////// Transfer the message to me
-        await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", message )
-            .then( ( response ) => {
-                console.log( 'additional push message attempted...', response );
-            } )
-            .catch( ( err ) => console.log( 'error in additional push message...', err ) );
-        console.log( 'additional push message event executed' );
+        //await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", message )
+        //    .then( ( response ) => {
+        //        console.log( 'additional push message attempted...', response );
+        //    } )
+        //    .catch( ( err ) => console.log( 'error in additional push message...', err ) );
+        //console.log( 'additional push message event executed' );
 
 
 

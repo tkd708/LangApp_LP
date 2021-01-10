@@ -103,15 +103,17 @@ module.exports.handler = async function ( event, context ) {
     const docClient = new AWS.DynamoDB.DocumentClient();
     const params = {
         TableName: 'LangAppUsers',
-        Key: { UserName: body.appID }
+        KeyConditionExpression: 'UserName = :UserName ',
+        ExpressionAttributeValues: { ':UserName': body.appID, }
     };
-    const userLineId = docClient.get( params, ( err, data ) => {
+    const userLineId = docClient.quary( params, ( err, data ) => {
         if( err ) console.log( 'LINE user ID fetch from dynamoDB failed...', err );
         else {
             console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
-            return ( data.Item.UserLineId );
+            return ( data.Items[ 0 ].UserLineId );
         }
     } );
+    console.log( 'fetched line id...', userLineId )
 
 
     ///////////////// push message of audio
