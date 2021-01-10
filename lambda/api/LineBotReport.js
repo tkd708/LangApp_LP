@@ -65,7 +65,7 @@ module.exports.handler = async function ( event, context ) {
             Date: date,
             LengthMinute: body.lengthMinute,
             WordsTotal: body.wordsTotal,
-            WordsPerMinute: body.WordsPerMinute,
+            WordsPerMinute: body.wordsPerMinute,
             VocabSize: body.vocab,
             Transcript: body.transcript,
         }

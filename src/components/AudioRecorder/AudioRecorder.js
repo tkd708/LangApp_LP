@@ -90,41 +90,9 @@ const AudioRecorder = () => {
 
     //console.log( uuid );
     const myURL = typeof window !== `undefined` ? window.URL || window.webkitURL : ''
-
+    const intervalSeconds = 60; // interval of the repeating audio recording
 
     //////////////// Construct a media recorder for mic to be repeated for transcription
-    const constructMediaRecorderMic_noState = async () => {
-        const streamMic = await navigator.mediaDevices.getUserMedia( {
-            audio: true,
-            video: false
-        } ).then( stream => {
-            //console.log( 'mic stream', stream );
-            return ( stream )
-        } ).catch( error => {
-            console.log( error );
-        } )
-
-        const blobArray = [];
-
-        const recorder = new MediaRecorder( streamMic, {
-            mimeType: 'audio/webm;codecs=opus',
-            audioBitsPerSecond: 16 * 1000
-        } );
-        recorder.addEventListener( 'dataavailable', ( e ) => {
-            if( e.data.size > 0 ) {
-                blobArray.push( e.data.size )
-            }
-        } );
-        recorder.addEventListener( 'stop', () => {
-            const blob = new Blob( blobArray, { 'type': 'audio/webm;codecs=opus' } );
-            const speaker = 'you'
-            blobToBase64( blob, speaker );
-            console.log( 'blob length was...', blobArray.length );
-        } );
-        return ( recorder );
-        //console.log( 'mic recorder set...', recorder );
-    }
-
     const constructMediaRecorderMic = async () => {
         const streamMic = await navigator.mediaDevices.getUserMedia( {
             audio: true,
@@ -191,7 +159,6 @@ const AudioRecorder = () => {
 
     // initialise recorders
     useEffect( () => {
-        //constructMediaRecorderMic_noState();
         constructMediaRecorderMic()
         constructMediaRecorderMicLong();
     }, [] )
@@ -214,7 +181,7 @@ const AudioRecorder = () => {
 
         setIsRecording( true );
         startMediaRecorders();
-        mediaRecorderMicLong.start( 100 )
+        mediaRecorderMicLong.start( 1000 )
 
         const startTime = new Date();
         setStartTime( startTime.getTime() );
@@ -224,7 +191,7 @@ const AudioRecorder = () => {
     const startMediaRecorders = () => {
         console.log( 'recorders on' )
         mediaRecorderMic.start( 1000 );
-        setTimeout( () => { repeatMediaRecorders(); }, 10000 );
+        setTimeout( () => { repeatMediaRecorders(); }, intervalSeconds * 1000 - 100 );
     }
 
 
@@ -304,8 +271,7 @@ const AudioRecorder = () => {
                 .then( ( res ) => {
                     //console.log(res)
                     //console.log( 'transcript :', res.data.transcript === '' );
-                    setTranscriptArrayYou( [ ...transcriptArrayYouRef.current, res.data.transcript ] )
-
+                    //setTranscriptArrayYou( [ ...transcriptArrayYouRef.current, res.data.transcript ] )
                     const transcribedTime = new Date();
                     console.log( 'transcribed from', speaker, ( ( transcribedTime.getTime() - startTimeRef.current ) / 1000 ), 'seconds after starting ', res.data.transcript );
                     return ( res.data.transcript )
@@ -319,8 +285,9 @@ const AudioRecorder = () => {
                     }
                     setTranscribeErrorArray( [ ...transcribeErrorArrrayRef.current, errorStatus ] );
                     console.log( errorStatus );
-                    return ( errorStatus );
+                    return ( 'TRANSCRIPTION ERROR' );
                 } );
+        setTranscriptArrayYou( [ ...transcriptArrayYouRef.current, transcript ] )
 
         /////////////////////// Transferring the transcript and the audio to LINE via AWS S3
         axios
@@ -344,9 +311,10 @@ const AudioRecorder = () => {
     useEffect( () => {
         // Active only for the last chunk of transcription and then finalise the transcript... n = 60 / interval seconds
         if( transcriptArrayYou.length === 0 ) return
-        const transcriptArrayMinAppended = []
-        for( let i = 0; i < transcriptArrayYou.length / 2; i++ ) {
-            const transcriptArrayMin = transcriptArrayYou.slice( 0 + i * 2, 2 + i * 2 ).join( ' ' )
+        const transcriptArrayMinAppended = [];
+        const n = 60 / intervalSeconds; // how many transcript chunks in the array per minute
+        for( let i = 0; i < transcriptArrayYou.length / n; i++ ) {
+            const transcriptArrayMin = transcriptArrayYou.slice( 0 + i * n, n + i * n ).join( ' ' )
             transcriptArrayMinAppended.push( transcriptArrayMin )
         }
         setTranscriptArrayMinYou( transcriptArrayMinAppended );
@@ -354,13 +322,14 @@ const AudioRecorder = () => {
 
 
 
-    ///////////////// The whole transcript of YOU after finishing the recording
+    ///////////////// The whole transcript of YOU after finishing the recording... after the length of the transcript chunk array reaches that derived from the length and interval
     useEffect( () => {
         // Active only for the last chunk of transcription and then finalise the transcript
         if( isRecording ) return
         const conversationLength = ( endTime - startTime ) / 1000;
+        const finalArrayLength = conversationLength / intervalSeconds;
         //console.log( 'conversation length is', conversationLength, 'seconds and the transcript array length is', transcriptArrayYou.length );
-        ( transcriptArrayYou.length !== 0 && transcriptArrayYou.length >= conversationLength / 30 ) && setTranscript( transcriptArrayYou.join( ' ' ) );
+        ( transcriptArrayYou.length !== 0 && transcriptArrayYou.length >= finalArrayLength ) && setTranscript( transcriptArrayYou.join( ' ' ) );
         //console.log('last chunk of transcript appended');
     }, [ transcriptArrayYou ] )
 
