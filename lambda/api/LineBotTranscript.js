@@ -137,6 +137,7 @@ module.exports.handler = async function ( event, context ) {
     //console.log( 'audio push message event executed...', audioPushRes );
 
 
+
     /////////////// push message of transcript
     console.log( 'received transcript...', body.transcript );
     const message = {
