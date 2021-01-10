@@ -44,6 +44,7 @@ module.exports.handler = async function ( event, context ) {
             const userProfile = await client.getProfile( body.events[ 0 ].source.userId )
                 .then( ( res ) => {
                     console.log( 'get profile attempted...', res );
+                    return ( res )
                 } )
                 .catch( ( err ) => console.log( 'get profile failed...', err ) );
             console.log( 'get profile event executed' );
