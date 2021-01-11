@@ -23,6 +23,7 @@ import TranscribeLangs from './transcribeLangs.json';
 
 import { v4 as uuidv4 } from 'uuid';
 
+
 const COMMON_WORDS = [
     'yes', 'no', 'yeah', 'ok', 'okay',
     '', 'a', 'the',
