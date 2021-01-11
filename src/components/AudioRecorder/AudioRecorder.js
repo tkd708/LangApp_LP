@@ -8,7 +8,7 @@ import TextField from '@material-ui/core/TextField';
 //import Button from '@material-ui/core/Button';
 import Button from "../Button/button";
 
-import instructionImg from "../../images/LineBotInstruction.png";
+import instructionImg from "../../images/line-bot-instruction.png";
 
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
