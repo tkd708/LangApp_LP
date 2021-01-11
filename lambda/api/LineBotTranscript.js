@@ -47,8 +47,8 @@ module.exports.handler = async function ( event, context ) {
             ffmpeg()
                 .input( decodedPath )
                 .outputOptions( [
-                    '-f s16le',
-                    '-acodec pcm_s16le', /// GCP >> pcm_s16le, LINE(m4a) >> libfaac?
+                    //'-f s16le',
+                    '-acodec aac', /// GCP >> pcm_s16le, LINE(m4a) >> libfaac?
                     '-vn',
                     '-ac 1',
                     '-ar 16k', //41k or 16k
@@ -62,6 +62,8 @@ module.exports.handler = async function ( event, context ) {
         } )
     }
     await ffmpeg_encode_audio()
+    const encodedFile = await fsp.readFile( encodedPath );
+    console.log( 'converted audio: ' + encodedFile.toString( 'base64' ).slice( 0, 100 ) )
 
     // initialise AWS
     AWS.config = new AWS.Config( {
@@ -78,15 +80,12 @@ module.exports.handler = async function ( event, context ) {
 
     // S3 Upload parameters
     const uploadParams = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
-
     const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
     const time = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( -8 );
     uploadParams.Key = `${ date }-${ body.appID }-${ body.recordingID }/audio-${ time }.m4a`;
+    uploadParams.Body = encodedFile;
 
-    const audioFile = await fsp.readFile( decodedPath );
-    uploadParams.Body = audioFile;
-
-    // call S3 to retrieve upload file to specified bucket
+    // call S3 to retrieve upload file to specified bucket and obtain the file url
     const fileURL = await s3.upload( uploadParams )
         .promise()
         .then( ( data ) => {
@@ -126,16 +125,16 @@ module.exports.handler = async function ( event, context ) {
         'originalContentUrl': fileURL,
         'duration': 30000,
     };
-    //const audioPushRes = await client.pushMessage( userLineId, audio, notificationDisabled = true )
-    //    .then( ( res ) => {
-    //        console.log( 'audio push message attempted...', res );
-    //        return ( res )
-    //    } )
-    //    .catch( ( err ) => {
-    //        console.log( 'error in audio push message...', err )
-    //        return ( err )
-    //    } );
-    //console.log( 'audio push message event executed...', audioPushRes );
+    const audioPushRes = await client.pushMessage( userLineId, audio, notificationDisabled = true )
+        .then( ( res ) => {
+            console.log( 'audio push message attempted...', res );
+            return ( res )
+        } )
+        .catch( ( err ) => {
+            console.log( 'error in audio push message...', err )
+            return ( err )
+        } );
+    console.log( 'audio push message event executed...', audioPushRes );
 
 
 
