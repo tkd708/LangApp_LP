@@ -48,7 +48,7 @@ module.exports.handler = async function ( event, context ) {
                 .input( decodedPath )
                 .outputOptions( [
                     //'-f s16le',
-                    '-acodec aac', /// GCP >> pcm_s16le, LINE(m4a) >> libfaac?
+                    '-acodec aac', /// GCP >> pcm_s16le, LINE(m4a) >> aac
                     '-vn',
                     '-ac 1',
                     '-ar 16k', //41k or 16k
@@ -89,12 +89,12 @@ module.exports.handler = async function ( event, context ) {
     const fileURL = await s3.upload( uploadParams )
         .promise()
         .then( ( data ) => {
-            console.log( "Successfully uploaded", data )
+            console.log( "Audio chunk successfully uploaded to S3", data )
             return ( data.Location );
         } )
         .catch(
             ( err ) => {
-                console.error( "Upload error", err );
+                console.error( "Audio chunk upload to S3 error", err );
             } );
     console.log( 's3 file url...', fileURL );
 
@@ -127,7 +127,7 @@ module.exports.handler = async function ( event, context ) {
     };
     const audioPushRes = await client.pushMessage( userLineId, audio, notificationDisabled = true )
         .then( ( res ) => {
-            console.log( 'audio push message attempted...', res );
+            console.log( 'audio push message successful...', res );
             return ( res )
         } )
         .catch( ( err ) => {
@@ -146,7 +146,7 @@ module.exports.handler = async function ( event, context ) {
     };
     await client.pushMessage( userLineId, message, notificationDisabled = true )
         .then( ( response ) => {
-            console.log( 'transcript push message attempted...', response );
+            console.log( 'transcript push message successful...', response );
         } )
         .catch( ( err ) => console.log( 'error in transcript push message...', err ) );
     console.log( 'transcript push message event executed' );

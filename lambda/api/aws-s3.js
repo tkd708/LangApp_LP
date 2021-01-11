@@ -75,7 +75,7 @@ module.exports.handler = async function ( event, context ) {
                 .input( decodedPath )
                 .outputOptions( [
                     //'-f s16le',
-                    '-acodec aac', /// GCP >> pcm_s16le, LINE(m4a) >> libfaac?
+                    '-acodec aac', /// GCP >> pcm_s16le, LINE(m4a) >> aac
                     '-vn',
                     '-ac 1',
                     '-ar 16k', //41k or 16k
@@ -100,11 +100,11 @@ module.exports.handler = async function ( event, context ) {
     await s3.upload( uploadParams )
         .promise()
         .then( ( data ) => {
-            console.log( "Successfully uploaded", data )
+            console.log( "Full audio successfully uploaded to S3", data )
         } )
         .catch(
             ( err ) => {
-                console.error( "Upload error", err );
+                console.error( "Full audio upload to S3 error", err );
             } );
 
     // Create a promise on S3 service object
