@@ -8,6 +8,8 @@ import TextField from '@material-ui/core/TextField';
 //import Button from '@material-ui/core/Button';
 import Button from "../Button/button"
 
+import instructionImg from "../../images/LineBotInstruction.png"
+
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
 import StopIcon from '@material-ui/icons/Stop';
@@ -376,8 +378,8 @@ const AudioRecorder = () => {
                     topWord3: vocabCountArray[ 2 ],
                 },
             } )
-            .then( ( res ) => { console.log( 'report to LINE bot success...', res ) } )
-            .catch( ( err ) => { console.log( 'report to LINE bot error...', err ) } )
+            .then( ( res ) => { console.log( 'report to LINE bot and dynamoDB success...', res ) } )
+            .catch( ( err ) => { console.log( 'report to LINE bot and dynamoDB error...', err ) } )
 
     }, [ transcript ] )
 
@@ -437,7 +439,8 @@ const AudioRecorder = () => {
 
             <h2>英会話分析デモ</h2>
             <p>実際にオンライン英会話を録音してみましょう！(マイク付きイヤホン推奨)</p>
-            <p>*画面共有は不要で、音声ファイルは自動で送信されるようになりました！お名前のみ下記にご入力して、録音を開始ボタンを押してください。（音声ダウンロードも可能です）</p>
+            <p>*LINEbot「LangApp」と連動して記録・分析できるようになりました！Botから登録後、お名前を下記に入力してから録音を開始してください。</p>
+            <img src={ instructionImg } style={ { width: '80vw', margin: '20px' } } />
             <TextField
                 required
                 id="filled-required"
