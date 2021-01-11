@@ -3,6 +3,10 @@ const AWS = require( 'aws-sdk' );
 const fs = require( 'fs' );
 const fsp = fs.promises;
 
+const ffmpegPath = require( '@ffmpeg-installer/ffmpeg' ).path;
+const ffmpeg = require( 'fluent-ffmpeg' );
+ffmpeg.setFfmpegPath( ffmpegPath );
+
 module.exports.handler = async function ( event, context ) {
 
     // avoid CORS errors
@@ -55,16 +59,39 @@ module.exports.handler = async function ( event, context ) {
     //const dateTimeNow = `${ now.getFullYear() }-${ now.getMonth() + 1 }-${ now.getDate() } ${ now.getHours() }:${ now.getMinutes() }:${ now.getSeconds() }`;
     const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
 
-    uploadParams.Key = `${ date }-${ JSON.parse( event.body ).appID }-${ JSON.parse( event.body ).recordingID }/audioFull.wav`;
+    uploadParams.Key = `${ date }-${ JSON.parse( event.body ).appID }-${ JSON.parse( event.body ).recordingID }/audioFull.m4a`;
 
     console.log( 'received audio: ', JSON.parse( event.body ).audio.slice( 0, 100 ) )
     const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
-    const decodedPath = '/tmp/decoded.wav';
+    const decodedPath = '/tmp/decoded.weba';
     await fsp.writeFile( decodedPath, decodedAudio );
     const decodedFile = await fsp.readFile( decodedPath );
     console.log( 'received and read audio: ' + decodedFile.toString( 'base64' ).slice( 0, 100 ) )
 
-    uploadParams.Body = decodedFile;
+    const encodedPath = '/tmp/encoded.m4a';
+    const ffmpeg_encode_audio = () => {
+        return new Promise( ( resolve, reject ) => {
+            ffmpeg()
+                .input( decodedPath )
+                .outputOptions( [
+                    //'-f s16le',
+                    '-acodec aac', /// GCP >> pcm_s16le, LINE(m4a) >> libfaac?
+                    '-vn',
+                    '-ac 1',
+                    '-ar 16k', //41k or 16k
+                    '-map_metadata -1',
+                ] )
+                .save( encodedPath )
+                .on( 'end', async () => {
+                    console.log( 'encoding done' );
+                    resolve();
+                } )
+        } )
+    }
+    await ffmpeg_encode_audio()
+    const encodedFile = await fsp.readFile( encodedPath );
+
+    uploadParams.Body = encodedFile;
 
     console.log( '----------- aws upload params -------------', uploadParams );
 

@@ -6,10 +6,11 @@ const client = new line.Client( {
 } );
 
 const fs = require( 'fs' );
+const fsp = fs.promises;
+
 const ffmpegPath = require( '@ffmpeg-installer/ffmpeg' ).path;
 const ffmpeg = require( 'fluent-ffmpeg' );
 ffmpeg.setFfmpegPath( ffmpegPath );
-const fsp = fs.promises;
 
 const AWS = require( 'aws-sdk' );
 
