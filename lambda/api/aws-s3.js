@@ -90,6 +90,7 @@ module.exports.handler = async function ( event, context ) {
     }
     await ffmpeg_encode_audio()
     const encodedFile = await fsp.readFile( encodedPath );
+    console.log( 'converted audio: ' + encodedFile.toString( 'base64' ).slice( 0, 100 ) )
 
     uploadParams.Body = encodedFile;
 
