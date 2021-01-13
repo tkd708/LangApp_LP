@@ -81,30 +81,31 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./speech-to-text-multi.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./aws-s3.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./speech-to-text-multi.js":
-/*!*********************************!*\
-  !*** ./speech-to-text-multi.js ***!
-  \*********************************/
+/***/ "./aws-s3.js":
+/*!*******************!*\
+  !*** ./aws-s3.js ***!
+  \*******************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! dotenv */ "dotenv").config();
 
+const AWS = __webpack_require__(/*! aws-sdk */ "aws-sdk");
+
 const fs = __webpack_require__(/*! fs */ "fs");
+
+const fsp = fs.promises;
 
 const ffmpegPath = __webpack_require__(/*! @ffmpeg-installer/ffmpeg */ "@ffmpeg-installer/ffmpeg").path;
 
 const ffmpeg = __webpack_require__(/*! fluent-ffmpeg */ "fluent-ffmpeg");
 
 ffmpeg.setFfmpegPath(ffmpegPath);
-const fsp = fs.promises;
-
-const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech").v1p1beta1;
 
 module.exports.handler = async function (event, context) {
   // avoid CORS errors
@@ -118,114 +119,106 @@ module.exports.handler = async function (event, context) {
       },
       'body': "Done"
     };
-  } // for actual POST query
+  } //console.log( 'received audio', JSON.parse( event.body ).audio );
+  // initialise AWS
 
 
-  if (event.httpMethod == "POST") {
-    var t = new Date();
-    console.log('API started on: ' + t.toLocaleTimeString({
-      second: '2-digit'
-    })); // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
+  AWS.config = new AWS.Config({
+    accessKeyId: process.env.GATSBY_AWS_accessKey,
+    secretAccessKey: process.env.GATSBY_AWS_secretKey,
+    region: 'us-east-2'
+  }); //console.log( '----------- aws config -------------', AWS.config )
+  // Create S3 service object
 
-    const keys = {
-      type: process.env.GATSBY_type,
-      project_id: process.env.GATSBY_project_id,
-      private_key_id: process.env.GATSBY_private_key_id,
-      private_key: process.env.GATSBY_private_key.replace(/\\n/gm, "\n"),
-      client_email: process.env.GATSBY_client_email,
-      client_id: process.env.GATSBY_client_id,
-      auth_uri: process.env.GATSBY_auth_uri,
-      token_uri: process.env.GATSBY_token_uri,
-      auth_provider_x509_cert_url: process.env.GATSBY_auth_provider_x509_cert_url,
-      client_x509_cert_url: process.env.GATSBY_client_x509_cert_url
-    };
-    const client = new speech.SpeechClient({
-      credentials: keys
+  const s3 = new AWS.S3({
+    apiVersion: '2006-03-01',
+    params: {
+      Bucket: 'langapp-audio-analysis'
+    }
+  }); //console.log( '----------- s3 object -------------', s3 );
+  //const methods1 = Object.getOwnPropertyNames( AWS.S3.prototype )
+  //console.log( '-------------- list of methods AWS S3 ------------------', methods1 )
+  //const methods2 = Object.getOwnPropertyNames( s3 )
+  //console.log( '-------------- list of methods s3 object ------------------', methods2 )
+  //s3.listObjects( ( err, data ) => {
+  //    console.log( 'list object excecuted' );
+  //    if( err ) {
+  //        console.log( "List object Error", err );
+  //    } else {
+  //        console.log( "List object Success", data );
+  //    }
+  //} );
+  ////////////////////////// S3 upload parameters
+
+  const uploadParams = {
+    Bucket: 'langapp-audio-analysis',
+    Key: '',
+    Body: ''
+  }; //const now = new Date();
+  //const dateTimeNow = `${ now.getFullYear() }-${ now.getMonth() + 1 }-${ now.getDate() } ${ now.getHours() }:${ now.getMinutes() }:${ now.getSeconds() }`;
+
+  const date = new Date().toISOString().substr(0, 19).replace('T', ' ').slice(0, 10);
+  uploadParams.Key = `${date}-${JSON.parse(event.body).appID}-${JSON.parse(event.body).recordingID}/audioFull.m4a`;
+  console.log('received audio: ', JSON.parse(event.body).audio.slice(0, 100));
+  const decodedAudio = new Buffer.from(JSON.parse(event.body).audio, 'base64');
+  const decodedPath = '/tmp/decoded.weba';
+  await fsp.writeFile(decodedPath, decodedAudio);
+  const decodedFile = await fsp.readFile(decodedPath);
+  console.log('received and read audio: ' + decodedFile.toString('base64').slice(0, 100));
+  const encodedPath = '/tmp/encoded.m4a';
+
+  const ffmpeg_encode_audio = () => {
+    return new Promise((resolve, reject) => {
+      ffmpeg().input(decodedPath).outputOptions([//'-f s16le',
+      '-acodec aac', /// GCP >> pcm_s16le, LINE(m4a) >> aac
+      '-vn', '-ac 1', '-ar 16k', //41k or 16k
+      '-map_metadata -1']).save(encodedPath).on('end', async () => {
+        console.log('encoding done');
+        resolve();
+      });
     });
-    const decodedAudio = new Buffer.from(JSON.parse(event.body).audio, 'base64');
-    const decodedPath = '/tmp/decoded.wav';
-    await fsp.writeFile(decodedPath, decodedAudio);
-    fs.writeFileSync(decodedPath, decodedAudio);
-    const decodedFile = await fsp.readFile(decodedPath);
-    console.log('received and read audio: ' + decodedFile.toString('base64').slice(0, 100));
-    const encodedPath = '/tmp/encoded.wav';
+  };
 
-    const getTranscript = async () => {
-      var t = new Date();
-      console.log('Encoding started on: ' + t.toLocaleTimeString({
-        second: '2-digit'
-      }));
+  await ffmpeg_encode_audio();
+  const encodedFile = await fsp.readFile(encodedPath);
+  console.log('converted audio: ' + encodedFile.toString('base64').slice(0, 100));
+  uploadParams.Body = encodedFile;
+  console.log('----------- aws upload params -------------', uploadParams); ////////////////////////////// call S3 to retrieve upload file to specified bucket
 
-      const ffmpeg_encode_audio = () => {
-        return new Promise((resolve, reject) => {
-          ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 16k', //41k or 16k
-          '-map_metadata -1']).save(encodedPath).on('end', async () => {
-            console.log('encoding done');
-            resolve();
-          });
-        });
-      };
+  await s3.upload(uploadParams).promise().then(data => {
+    console.log("Full audio successfully uploaded to S3", data);
+  }).catch(err => {
+    console.error("Full audio upload to S3 error", err);
+  }); // Create a promise on S3 service object
+  //const uploadPromise = new AWS.S3( {
+  //    apiVersion: '2006-03-01',
+  //    params: { Bucket: 'langapp-audio-analysis' }
+  //} ).upload( uploadParams ).promise();
+  //console.log( "-------------------- Upload promise object ------------------", uploadPromise );
+  // Handle promise fulfilled/rejected states
+  //await uploadPromise.then( ( data ) => {
+  //    console.log( "Successfully uploaded", data )
+  //} )
+  //    .catch(
+  //        ( err ) => {
+  //            console.error( "Upload error", err );
+  //        } );
+  //const [ response ] = await uploadPromise.then();
+  //console.log( "---------------- promise response --------------------", response );
 
-      await ffmpeg_encode_audio();
-      var t = new Date();
-      console.log('Encoding done: ' + t.toLocaleTimeString({
-        second: '2-digit'
-      }));
-      const audio_encoded = await fsp.readFile(encodedPath); //console.log('encoded audio: ' + audio_encoded.toString('base64').slice(0,100));
+  console.log('----------- end aws upload -------------'); //////////////// Finish the api
 
-      const audio = {
-        content: audio_encoded.toString('base64')
-      };
-      const sttConfig = {
-        encoding: 'LINEAR16',
-        sampleRateHertz: 16000,
-        //41000 or 16000?
-        languageCode: JSON.parse(event.body).lang,
-        // ja-JP, en-US, es-CO, fr-FR
-        model: 'default',
-        // default, phone_call
-        enableAutomaticPunctuation: true,
-        audioChannelCount: 2,
-        enableSeparateRecognitionPerChannel: true
-      };
-      const request = {
-        audio: audio,
-        config: sttConfig
-      };
-      console.log('---------------------------------------------------------');
-      var t = new Date();
-      console.log('Transcription started on: ' + t.toLocaleTimeString({
-        second: '2-digit'
-      }));
-      const [response] = await client.recognize(request);
-      console.log(response);
-      const transcription = response.results.map(result => ` Channel Tag: ${result.channelTag} ${result.alternatives[0].transcript}`).join('\n');
-      console.log(`Transcription: \n${transcription}`); //console.log(`Transcription: ${transcription}`);
-
-      var t = new Date();
-      console.log('Transcription done: ' + t.toLocaleTimeString({
-        second: '2-digit'
-      }));
-      return transcription;
-    };
-
-    const transcript = await getTranscript(); //console.log(`Transcription out of the scope: ${transcript}`);
-    //await fsp.unlink(decodedPath)
-    //await fsp.unlink(encodedPath)    
-
-    return {
-      statusCode: 200,
-      // http status code
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type"
-      },
-      body: JSON.stringify({
-        request: event.body,
-        transcript: transcript
-      })
-    };
-  }
+  return {
+    statusCode: 200,
+    // http status code
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "Content-Type"
+    },
+    body: JSON.stringify({
+      status: 'file uploaded'
+    })
+  };
 };
 
 /***/ }),
@@ -241,14 +234,14 @@ module.exports = require("@ffmpeg-installer/ffmpeg");
 
 /***/ }),
 
-/***/ "@google-cloud/speech":
-/*!***************************************!*\
-  !*** external "@google-cloud/speech" ***!
-  \***************************************/
+/***/ "aws-sdk":
+/*!**************************!*\
+  !*** external "aws-sdk" ***!
+  \**************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("@google-cloud/speech");
+module.exports = require("aws-sdk");
 
 /***/ }),
 

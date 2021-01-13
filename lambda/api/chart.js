@@ -17,7 +17,7 @@ const s3 = new AWS.S3( {
 } );
 //console.log( '----------- s3 object -------------', s3 );
 
-module.exports.handler = async function ( event, context, callback ) {
+module.exports.handler = async function ( event, context ) {
 
     // avoid CORS errors
     if( event.httpMethod == "OPTIONS" ) {
@@ -93,12 +93,14 @@ module.exports.handler = async function ( event, context, callback ) {
                 console.error( "Full graph upload to S3 error", err );
             } );
 
+    //////////////// Finish the api
+    return {
+        statusCode: 200, // http status code
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type",
+        },
+        body: JSON.stringify( { url: data.Location } )
+    }
 
-    //////////// Finish the api
-    let lambdaResponse = {
-        statusCode: 200,
-        headers: { "X-Line-Status": "OK" },
-        body: JSON.stringify( { url: data.Location } ),
-    };
-    context.succeed( lambdaResponse );
 }

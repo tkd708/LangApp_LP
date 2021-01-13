@@ -81,30 +81,38 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./speech-to-text-multi.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./LineBotTranscript.js");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ "./speech-to-text-multi.js":
-/*!*********************************!*\
-  !*** ./speech-to-text-multi.js ***!
-  \*********************************/
+/***/ "./LineBotTranscript.js":
+/*!******************************!*\
+  !*** ./LineBotTranscript.js ***!
+  \******************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! dotenv */ "dotenv").config();
 
+const line = __webpack_require__(/*! @line/bot-sdk */ "@line/bot-sdk");
+
+const client = new line.Client({
+  channelAccessToken: process.env.GATSBY_LINE_accesstoken,
+  channelSecret: process.env.GATSBY_LINE_channelsecret
+});
+
 const fs = __webpack_require__(/*! fs */ "fs");
+
+const fsp = fs.promises;
 
 const ffmpegPath = __webpack_require__(/*! @ffmpeg-installer/ffmpeg */ "@ffmpeg-installer/ffmpeg").path;
 
 const ffmpeg = __webpack_require__(/*! fluent-ffmpeg */ "fluent-ffmpeg");
 
 ffmpeg.setFfmpegPath(ffmpegPath);
-const fsp = fs.promises;
 
-const speech = __webpack_require__(/*! @google-cloud/speech */ "@google-cloud/speech").v1p1beta1;
+const AWS = __webpack_require__(/*! aws-sdk */ "aws-sdk");
 
 module.exports.handler = async function (event, context) {
   // avoid CORS errors
@@ -118,114 +126,113 @@ module.exports.handler = async function (event, context) {
       },
       'body': "Done"
     };
-  } // for actual POST query
-
-
-  if (event.httpMethod == "POST") {
-    var t = new Date();
-    console.log('API started on: ' + t.toLocaleTimeString({
-      second: '2-digit'
-    })); // in env settings of Netlify UI line breaks are forced to become \\n... converting them back by .replace(s)
-
-    const keys = {
-      type: process.env.GATSBY_type,
-      project_id: process.env.GATSBY_project_id,
-      private_key_id: process.env.GATSBY_private_key_id,
-      private_key: process.env.GATSBY_private_key.replace(/\\n/gm, "\n"),
-      client_email: process.env.GATSBY_client_email,
-      client_id: process.env.GATSBY_client_id,
-      auth_uri: process.env.GATSBY_auth_uri,
-      token_uri: process.env.GATSBY_token_uri,
-      auth_provider_x509_cert_url: process.env.GATSBY_auth_provider_x509_cert_url,
-      client_x509_cert_url: process.env.GATSBY_client_x509_cert_url
-    };
-    const client = new speech.SpeechClient({
-      credentials: keys
-    });
-    const decodedAudio = new Buffer.from(JSON.parse(event.body).audio, 'base64');
-    const decodedPath = '/tmp/decoded.wav';
-    await fsp.writeFile(decodedPath, decodedAudio);
-    fs.writeFileSync(decodedPath, decodedAudio);
-    const decodedFile = await fsp.readFile(decodedPath);
-    console.log('received and read audio: ' + decodedFile.toString('base64').slice(0, 100));
-    const encodedPath = '/tmp/encoded.wav';
-
-    const getTranscript = async () => {
-      var t = new Date();
-      console.log('Encoding started on: ' + t.toLocaleTimeString({
-        second: '2-digit'
-      }));
-
-      const ffmpeg_encode_audio = () => {
-        return new Promise((resolve, reject) => {
-          ffmpeg().input(decodedPath).outputOptions(['-f s16le', '-acodec pcm_s16le', '-vn', '-ac 1', '-ar 16k', //41k or 16k
-          '-map_metadata -1']).save(encodedPath).on('end', async () => {
-            console.log('encoding done');
-            resolve();
-          });
-        });
-      };
-
-      await ffmpeg_encode_audio();
-      var t = new Date();
-      console.log('Encoding done: ' + t.toLocaleTimeString({
-        second: '2-digit'
-      }));
-      const audio_encoded = await fsp.readFile(encodedPath); //console.log('encoded audio: ' + audio_encoded.toString('base64').slice(0,100));
-
-      const audio = {
-        content: audio_encoded.toString('base64')
-      };
-      const sttConfig = {
-        encoding: 'LINEAR16',
-        sampleRateHertz: 16000,
-        //41000 or 16000?
-        languageCode: JSON.parse(event.body).lang,
-        // ja-JP, en-US, es-CO, fr-FR
-        model: 'default',
-        // default, phone_call
-        enableAutomaticPunctuation: true,
-        audioChannelCount: 2,
-        enableSeparateRecognitionPerChannel: true
-      };
-      const request = {
-        audio: audio,
-        config: sttConfig
-      };
-      console.log('---------------------------------------------------------');
-      var t = new Date();
-      console.log('Transcription started on: ' + t.toLocaleTimeString({
-        second: '2-digit'
-      }));
-      const [response] = await client.recognize(request);
-      console.log(response);
-      const transcription = response.results.map(result => ` Channel Tag: ${result.channelTag} ${result.alternatives[0].transcript}`).join('\n');
-      console.log(`Transcription: \n${transcription}`); //console.log(`Transcription: ${transcription}`);
-
-      var t = new Date();
-      console.log('Transcription done: ' + t.toLocaleTimeString({
-        second: '2-digit'
-      }));
-      return transcription;
-    };
-
-    const transcript = await getTranscript(); //console.log(`Transcription out of the scope: ${transcript}`);
-    //await fsp.unlink(decodedPath)
-    //await fsp.unlink(encodedPath)    
-
-    return {
-      statusCode: 200,
-      // http status code
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type"
-      },
-      body: JSON.stringify({
-        request: event.body,
-        transcript: transcript
-      })
-    };
   }
+
+  const body = JSON.parse(event.body);
+  console.log('app ID...', body.appID);
+  console.log('recording ID...', body.recordingID);
+  console.log('received audio...', body.audioString); // Encoding wav audio to m4a... maybe not necessary
+
+  const decodedAudio = new Buffer.from(body.audioString, 'base64');
+  const decodedPath = '/tmp/decoded.wav';
+  await fsp.writeFile(decodedPath, decodedAudio);
+  const encodedPath = '/tmp/encoded.m4a';
+
+  const ffmpeg_encode_audio = () => {
+    return new Promise((resolve, reject) => {
+      ffmpeg().input(decodedPath).outputOptions([//'-f s16le',
+      '-acodec aac', /// GCP >> pcm_s16le, LINE(m4a) >> aac
+      '-vn', '-ac 1', '-ar 16k', //41k or 16k
+      '-map_metadata -1']).save(encodedPath).on('end', async () => {
+        console.log('encoding done');
+        resolve();
+      });
+    });
+  };
+
+  await ffmpeg_encode_audio();
+  const encodedFile = await fsp.readFile(encodedPath);
+  console.log('converted audio: ' + encodedFile.toString('base64').slice(0, 100)); // initialise AWS
+
+  AWS.config = new AWS.Config({
+    accessKeyId: process.env.GATSBY_AWS_accessKey,
+    secretAccessKey: process.env.GATSBY_AWS_secretKey,
+    region: 'us-east-2'
+  }); // Create S3 service object
+
+  const s3 = new AWS.S3({
+    apiVersion: '2006-03-01',
+    params: {
+      Bucket: 'langapp-audio-analysis'
+    }
+  }); // S3 Upload parameters
+
+  const uploadParams = {
+    Bucket: 'langapp-audio-analysis',
+    Key: '',
+    Body: ''
+  };
+  const date = new Date().toISOString().substr(0, 19).replace('T', ' ').slice(0, 10);
+  const time = new Date().toISOString().substr(0, 19).replace('T', ' ').slice(-8);
+  uploadParams.Key = `${date}-${body.appID}-${body.recordingID}/audio-${time}.m4a`;
+  uploadParams.Body = encodedFile; // call S3 to retrieve upload file to specified bucket and obtain the file url
+
+  const fileURL = await s3.upload(uploadParams).promise().then(data => {
+    console.log("Audio chunk successfully uploaded to S3", data);
+    return data.Location;
+  }).catch(err => {
+    console.error("Audio chunk upload to S3 error", err);
+  });
+  console.log('s3 file url...', fileURL); ///////////////// Get LINE user ID from dynamoDB corresponding to the user name (appID) input by the user on LP
+
+  const docClient = new AWS.DynamoDB.DocumentClient();
+  const params = {
+    TableName: 'LangAppUsers',
+    KeyConditionExpression: 'UserName = :UserName ',
+    ExpressionAttributeValues: {
+      ':UserName': body.appID
+    }
+  };
+  const userLineId = await docClient.query(params).promise().then(data => {
+    console.log('LINE user ID fetch from dynamoDB was successful...', data);
+    return data.Items[0].UserLineId;
+  }).catch(err => {
+    console.log('LINE user ID fetch from dynamoDB failed...', err);
+  });
+  console.log('fetched line id...', userLineId); ///////////////// push message of audio.... tentatively omitted, need to work on ffmpeg first to convert the audio into m4a
+
+  const audio = {
+    'type': 'audio',
+    'originalContentUrl': fileURL,
+    'duration': 30000
+  };
+  const audioPushRes = await client.pushMessage(userLineId, audio, notificationDisabled = true).then(res => {
+    console.log('audio push message successful...', res);
+    return res;
+  }).catch(err => {
+    console.log('error in audio push message...', err);
+    return err;
+  });
+  console.log('audio push message event executed...', audioPushRes); /////////////// push message of transcript
+
+  console.log('received transcript...', body.transcript);
+  const message = {
+    'type': 'text',
+    'text': body.transcript
+  };
+  await client.pushMessage(userLineId, message, notificationDisabled = true).then(response => {
+    console.log('transcript push message successful...', response);
+  }).catch(err => console.log('error in transcript push message...', err));
+  console.log('transcript push message event executed'); // success of API
+
+  let lambdaResponse = {
+    statusCode: 200,
+    headers: {
+      "X-Line-Status": "OK"
+    },
+    body: '{"result":"completed"}'
+  };
+  context.succeed(lambdaResponse);
 };
 
 /***/ }),
@@ -241,14 +248,25 @@ module.exports = require("@ffmpeg-installer/ffmpeg");
 
 /***/ }),
 
-/***/ "@google-cloud/speech":
-/*!***************************************!*\
-  !*** external "@google-cloud/speech" ***!
-  \***************************************/
+/***/ "@line/bot-sdk":
+/*!********************************!*\
+  !*** external "@line/bot-sdk" ***!
+  \********************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
-module.exports = require("@google-cloud/speech");
+module.exports = require("@line/bot-sdk");
+
+/***/ }),
+
+/***/ "aws-sdk":
+/*!**************************!*\
+  !*** external "aws-sdk" ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("aws-sdk");
 
 /***/ }),
 
