@@ -17,7 +17,7 @@ const s3 = new AWS.S3( {
 } );
 //console.log( '----------- s3 object -------------', s3 );
 
-exports.handler = async function ( event, context, callback ) {
+module.exports.handler = async function ( event, context, callback ) {
 
     // avoid CORS errors
     if( event.httpMethod == "OPTIONS" ) {
