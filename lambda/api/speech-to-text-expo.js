@@ -108,7 +108,7 @@ module.exports.handler = async function ( event, context ) {
 
             const transcription = response.results
                 .map( ( result ) => result.alternatives[ 0 ].transcript )
-                .join( ' ' ); // \n
+                .join( '' ); // \n
 
             //console.log(`Transcription: ${transcription}`);
             var t = new Date
