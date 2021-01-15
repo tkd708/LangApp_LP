@@ -72,7 +72,7 @@ module.exports.handler = async function ( event, context ) {
             WordsTotal: body.wordsTotal,
             WordsPerMinute: body.wordsPerMinute,
             VocabSize: body.vocab,
-            Transcript: body.transcript,
+            Transcript: body.transcript.replace( '\n', '' ),
         }
     };
     await docClient.put( paramsReport )
