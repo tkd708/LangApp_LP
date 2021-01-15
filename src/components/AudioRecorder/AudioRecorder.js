@@ -395,7 +395,7 @@ const AudioRecorder = () => {
             const audioString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
             console.log( 'sent audio to AWS as string of', audioString.slice( -100 ) )
 
-            const url = 'https://langapp.netlify.app/.netlify/functions/aws-s3-fullAudio-background';
+            const url = 'https://langapp.netlify.app/.netlify/functions/aws-s3';
 
             axios
                 .request( {
