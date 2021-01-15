@@ -73,10 +73,10 @@ module.exports.handler = async function ( event, context ) {
                     UserLineId: body.events[ 0 ].source.userId,
                 }
             };
-            docClient.put( params, ( err, data ) => {
-                if( err ) console.log( 'Adding the user name and id on dynamoDB failed...', err )
-                else console.log( 'Adding the user name and id on dynamoDB was successful...', data )
-            } );
+            await docClient.put( params )
+                .promise()
+                .then( res => console.log( 'Adding the user name and id on dynamoDB was successful...', res ) )
+                .catch( err => console.log( 'Adding the user name and id on dynamoDB failed...', err ) );
 
             // Notify the user that the ID is registered
             const message = {

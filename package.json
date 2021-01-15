@@ -1,7 +1,7 @@
 {
-  "name": "startup",
+  "name": "langapp",
   "private": false,
-  "description": "A startup template perfect for brochure sites and small businesses",
+  "description": "This web application records your English conversation and transcribes it. This app then analyses the conversation to provide advice and visualise your progress, supporting your English conversation practice! The app is currently under development and being tested by volunteer users.",
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
@@ -49,7 +49,10 @@
     "gatsby-transformer-sharp": "^2.5.13",
     "kuromoji": "^0.1.2",
     "netlify-lambda": "^2.0.1",
+    "nodeplotlib": "^0.7.1",
     "normalize.css": "^8.0.1",
+    "plotlychartexport": "^1.0.5",
+    "quickchart-js": "^1.0.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-helmet": "^6.1.0",

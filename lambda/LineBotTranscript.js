@@ -180,9 +180,7 @@ module.exports.handler = async function (event, context) {
   const fileURL = await s3.upload(uploadParams).promise().then(data => {
     console.log("Audio chunk successfully uploaded to S3", data);
     return data.Location;
-  }).catch(err => {
-    console.error("Audio chunk upload to S3 error", err);
-  });
+  }).catch(err => console.log("Audio chunk upload to S3 error", err));
   console.log('s3 file url...', fileURL); ///////////////// Get LINE user ID from dynamoDB corresponding to the user name (appID) input by the user on LP
 
   const docClient = new AWS.DynamoDB.DocumentClient();
@@ -196,9 +194,7 @@ module.exports.handler = async function (event, context) {
   const userLineId = await docClient.query(params).promise().then(data => {
     console.log('LINE user ID fetch from dynamoDB was successful...', data);
     return data.Items[0].UserLineId;
-  }).catch(err => {
-    console.log('LINE user ID fetch from dynamoDB failed...', err);
-  });
+  }).catch(err => console.log('LINE user ID fetch from dynamoDB failed...', err));
   console.log('fetched line id...', userLineId); ///////////////// push message of audio.... tentatively omitted, need to work on ffmpeg first to convert the audio into m4a
 
   const audio = {
@@ -206,24 +202,14 @@ module.exports.handler = async function (event, context) {
     'originalContentUrl': fileURL,
     'duration': 30000
   };
-  const audioPushRes = await client.pushMessage(userLineId, audio, notificationDisabled = true).then(res => {
-    console.log('audio push message successful...', res);
-    return res;
-  }).catch(err => {
-    console.log('error in audio push message...', err);
-    return err;
-  });
-  console.log('audio push message event executed...', audioPushRes); /////////////// push message of transcript
+  await client.pushMessage(userLineId, audio, notificationDisabled = true).then(res => console.log('audio push message successful...', res)).catch(err => console.log('error in audio push message...', err)); /////////////// push message of transcript
 
   console.log('received transcript...', body.transcript);
   const message = {
     'type': 'text',
     'text': body.transcript
   };
-  await client.pushMessage(userLineId, message, notificationDisabled = true).then(response => {
-    console.log('transcript push message successful...', response);
-  }).catch(err => console.log('error in transcript push message...', err));
-  console.log('transcript push message event executed'); // success of API
+  await client.pushMessage(userLineId, message, notificationDisabled = true).then(res => console.log('transcript push message successful...', res)).catch(err => console.log('error in transcript push message...', err)); // success of API
 
   let lambdaResponse = {
     statusCode: 200,
