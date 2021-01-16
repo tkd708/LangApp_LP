@@ -196,7 +196,8 @@ module.exports.handler = async function (event, context) {
       }));
       const [response] = await client.recognize(request);
       console.log(response);
-      const transcription = response.results.map(result => result.alternatives[0].transcript).join('\n'); //console.log(`Transcription: ${transcription}`);
+      const transcription = response.results.map(result => result.alternatives[0].transcript).join(''); // \n
+      //console.log(`Transcription: ${transcription}`);
 
       var t = new Date();
       console.log('Transcription done: ' + t.toLocaleTimeString({
