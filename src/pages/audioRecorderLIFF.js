@@ -13,11 +13,14 @@ import TranscribeLangs from '../constants/transcribeLangs.json';
 
 import { v4 as uuidv4 } from 'uuid';
 
-const AudioRecorder = typeof window !== `undefined` ? require( "audio-recorder-polyfill" ).default : '' //"window" is not available during server side rendering.
+//const AudioRecorder = typeof window !== `undefined` ? require( "audio-recorder-polyfill" ).default : '' //"window" is not available during server side rendering.
 //import AudioRecorder from "audio-recorder-polyfill"
 if( typeof window !== `undefined` ) {
     const ua = window.navigator.userAgent.toLowerCase();
-    if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) { window.MediaRecorder = AudioRecorder }
+    if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
+        const AudioRecorder = require( "audio-recorder-polyfill" ).default;
+        window.MediaRecorder = AudioRecorder
+    }
 }
 
 const COMMON_WORDS = [
@@ -86,34 +89,27 @@ const AudioRecorderLIFF = () => {
 
     //////////////// Construct a media recorder for mic to be repeated for transcription
 
-    const streamMic = await navigator.mediaDevices.getUserMedia( {
+    let recorder
+
+    navigator.mediaDevices.getUserMedia( {
         audio: true,
         video: false
     } ).then( stream => {
+        recorder = new MediaRecorder( stream, {
+            mimeType: 'audio/webm;codecs=opus',
+            audioBitsPerSecond: 16 * 1000
+        } );
+        recorder.addEventListener( 'dataavailable', ( e ) => {
+            if( e.data.size > 0 ) {
+                const speaker = 'you'
+                blobToBase64( e.data, speaker );
+                // const base64Audio = await blobToBase64( blob );
+                // sendGoogle(base64Audio)
+            }
+        } );
         //console.log( 'mic stream', stream );
-        return ( stream )
-    } ).catch( error => {
-        console.log( error );
-    } )
-
-    const recorder = new MediaRecorder( streamMic, {
-        mimeType: 'audio/webm;codecs=opus',
-        audioBitsPerSecond: 16 * 1000
-    } );
-    recorder.addEventListener( 'dataavailable', ( e ) => {
-        if( e.data.size > 0 ) {
-            const speaker = 'you'
-            blobToBase64( e.data, speaker );
-            // const base64Audio = await blobToBase64( blob );
-            // sendGoogle(base64Audio)
-        }
-    } );
-
-
-    // initialise recorders
-    useEffect( () => {
-        constructMediaRecorderMic()
-    }, [] )
+        //return ( stream )
+    } ).catch( error => console.log( error ) )
 
 
     /////////////// Audio recorder operation ////////////////
