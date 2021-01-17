@@ -359,6 +359,14 @@ module.exports.handler = async function ( event, context ) {
         .catch( err => console.log( 'error in image 3 push message...', err ) );
 
 
+    // A messege prompting review
+    const messagePromptReview = {
+        'type': 'text',
+        'text': `書き起こしを見ながら、気になった部分の録音を確認してみましょう！使い方がよくわからなかった単語や類義語を知りたい単語を送信していただければ、その例文や関連語をお届けします！`
+    };
+    await client.pushMessage( userLineId, messagePromptReview )
+        .then( res => console.log( 'reviw prompt message successful...', res ) )
+        .catch( ( err ) => console.log( 'error in reviw prompt message...', err ) );
 
     //////////// Finish the api
     let lambdaResponse = {
