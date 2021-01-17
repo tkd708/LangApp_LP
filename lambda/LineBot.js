@@ -97,92 +97,47 @@ __webpack_require__(/*! dotenv */ "dotenv").config();
 
 const line = __webpack_require__(/*! @line/bot-sdk */ "@line/bot-sdk");
 
-const crypto = __webpack_require__(/*! crypto */ "crypto");
-
 const client = new line.Client({
   channelAccessToken: process.env.GATSBY_LINE_accesstoken,
   channelSecret: process.env.GATSBY_LINE_channelsecret
-});
+}); /////////////// initialise AWS
 
 const AWS = __webpack_require__(/*! aws-sdk */ "aws-sdk");
 
+AWS.config = new AWS.Config({
+  accessKeyId: process.env.GATSBY_AWS_accessKey,
+  secretAccessKey: process.env.GATSBY_AWS_secretKey,
+  region: 'us-east-2'
+});
+const docClient = new AWS.DynamoDB.DocumentClient();
+
 module.exports.handler = async function (event, context) {
-  //const methods = Object.getOwnPropertyNames( client )
-  //console.log( '-------------- list of methods line client object ------------------', methods )
-  //let signature = crypto.createHmac( 'sha256', process.env.GATSBY_LINE_channelsecret ).update( event.body ).digest( 'base64' );
-  //let checkHeader = ( event.headers || {} )[ 'X-Line-Signature' ];
-  let body = JSON.parse(event.body);
-  console.log(event); /////////////// initialise AWS
+  console.log(event);
+  const body = JSON.parse(event.body); //////////////////////////// Registration
 
-  AWS.config = new AWS.Config({
-    accessKeyId: process.env.GATSBY_AWS_accessKey,
-    secretAccessKey: process.env.GATSBY_AWS_secretKey,
-    region: 'us-east-2'
-  });
-  const docClient = new AWS.DynamoDB.DocumentClient(); //if( signature === checkHeader ) {
+  if (body.events[0].message.text == '登録') {
+    console.log('the user to be registered...', body.events[0].source.userId); // Get the user profile
 
-  if (body.events[0].replyToken === '00000000000000000000000000000000') {
-    //接続確認エラー回避
-    let lambdaResponse = {
-      statusCode: 200,
-      headers: {
-        "X-Line-Status": "OK"
-      },
-      body: '{"result":"connect check"}'
+    const userProfile = await client.getProfile(body.events[0].source.userId).then(res => {
+      console.log('get profile attempted...', res);
+      return res;
+    }).catch(err => console.log('get profile failed...', err));
+    console.log('get profile event executed'); // Store the user name and ID in the dynamoDB
+
+    const params = {
+      TableName: 'LangAppUsers',
+      Item: {
+        UserName: userProfile.displayName,
+        UserLineId: body.events[0].source.userId
+      }
     };
-    context.succeed(lambdaResponse);
-    return;
-  } else {
-    let text = body.events[0].message.text;
-    console.log('received text...', text); ////////////////////////////// Reply messages below /////////////////////////////////////
-    //////////////////////////// Registration
+    await docClient.put(params).promise().then(res => console.log('Adding the user name and id on dynamoDB was successful...', res)).catch(err => console.log('Adding the user name and id on dynamoDB failed...', err)); // Notify the user that the ID is registered
 
-    if (text == '登録') {
-      console.log('the user to be registered...', body.events[0].source.userId); // Get the user profile
-
-      const userProfile = await client.getProfile(body.events[0].source.userId).then(res => {
-        console.log('get profile attempted...', res);
-        return res;
-      }).catch(err => console.log('get profile failed...', err));
-      console.log('get profile event executed'); // Store the user name and ID in the dynamoDB
-
-      const params = {
-        TableName: 'LangAppUsers',
-        Item: {
-          UserName: userProfile.displayName,
-          UserLineId: body.events[0].source.userId
-        }
-      };
-      await docClient.put(params).promise().then(res => console.log('Adding the user name and id on dynamoDB was successful...', res)).catch(err => console.log('Adding the user name and id on dynamoDB failed...', err)); // Notify the user that the ID is registered
-
-      const message = {
-        'type': 'text',
-        'text': `ご登録どうもありがとうございます！LangAppのウェブサイトで英会話を録音される際に、「お名前」の項目にLINEの表示名「 ${userProfile.displayName}」をご入力ください。音声とその書き起こし、英会話の分析結果をLangAppBotよりお届けいたします！`
-      };
-      await client.replyMessage(body.events[0].replyToken, message).then(res => {
-        console.log('user id for registration reply attempted...', res);
-      }).catch(err => console.log('error in user id for registration reply...', err));
-      console.log('user id for registration reply event executed');
-    } //////// Reply the same message
-    //const message = {
-    //    'type': 'text',
-    //    'text': text
-    //};
-    //await client.replyMessage( body.events[ 0 ].replyToken, message )
-    //    .then( ( response ) => {
-    //        console.log( 'reply attempted...', response );
-    //    } )
-    //    .catch( ( err ) => console.log( 'error in reply...', err ) );
-    //console.log( 'reply event executed' );
-    ////// Transfer the message to me
-    //await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", message )
-    //    .then( ( response ) => {
-    //        console.log( 'additional push message attempted...', response );
-    //    } )
-    //    .catch( ( err ) => console.log( 'error in additional push message...', err ) );
-    //console.log( 'additional push message event executed' );
-    ///// Finish the api
-
+    const message = {
+      'type': 'text',
+      'text': `ご登録どうもありがとうございます！LangAppのウェブサイトで英会話を録音される際に、「お名前」の項目にLINEの表示名「 ${userProfile.displayName}」をご入力ください。音声とその書き起こし、英会話の分析結果をLangAppBotよりお届けいたします！`
+    };
+    await client.replyMessage(body.events[0].replyToken, message).then(res => console.log('user id for registration reply attempted...', res)).catch(err => console.log('error in user id for registration reply...', err)); ///// Finish the api
 
     let lambdaResponse = {
       statusCode: 200,
@@ -191,23 +146,101 @@ module.exports.handler = async function (event, context) {
       },
       body: '{"result":"completed"}'
     };
-    context.succeed(lambdaResponse); // trying a promise object
-    // const replyPromise = client.replyMessage( body.events[ 0 ].replyToken, message ).promise();
-    // const [ response ] = await replyPromise
-    //     .then( ( response ) => {
-    //       console.log( 'reply attempted by the promise object...', response );
-    //        let lambdaResponse = {
-    //            statusCode: 200,
-    //            headers: { "X-Line-Status": "OK" },
-    //            body: '{"result":"completed"}'
-    //        };
-    //        context.succeed( lambdaResponse );
-    //    } )
-    //    .catch( ( err ) => console.log( 'error in the promise object...', err ) );
-  } //} else {
-  //    console.log( '署名認証エラー' );
-  //}
+    context.succeed(lambdaResponse);
+  } ///////////////////////////// LINE ID check >> Prompt to registration
 
+
+  const paramsIdCheck = {
+    TableName: 'LangAppUsers',
+    IndexName: 'UserLineId-index',
+    KeyConditionExpression: 'UserLineId = :UserLineId ',
+    ExpressionAttributeValues: {
+      ':UserLineId': body.events[0].source.userId
+    } //
+
+  };
+  const userLineIdCheck = await docClient.query(paramsIdCheck).promise().then(data => {
+    console.log('LINE user ID fetch from dynamoDB was successful...', data);
+    return data.Count;
+  }).catch(err => console.log('LINE user ID fetch from dynamoDB failed...', err));
+  console.log("LINE ID registered?... YES: 1, NO: 0", userLineIdCheck);
+  userLineIdCheck === 0 && (await client.replyMessage(body.events[0].replyToken, {
+    'type': 'text',
+    'text': `ウェブサイトとの連動のため、下記に「登録」という言葉を送信してください！`
+  }).then(res => console.log('registration prompt message sent...', res)).catch(err => console.log('error in registration prompt message...', err))); //////////////////////////////// LINE ID confirmed >> Twinword API
+
+  if (userLineIdCheck === 1) {
+    ///////////////////////////// // Twinword api
+    const urlAssociation = 'https://api.twinword.com/api/word/association/latest/';
+    const urlExamples = 'https://api.twinword.com/api/word/example/latest/';
+    const word = body.events[0].message.text;
+    const headers = {
+      'Content-Type': 'application/json',
+      'Host': 'api.twinword.com',
+      'X-Twaip-Key': process.env.GATSBY_Twinword_API_KEY
+    };
+    const twinwordAssociation = await axios.request({
+      url: urlAssociation,
+      method: 'GET',
+      params: {
+        entry: word
+      },
+      headers: headers //data: { entry: word }
+
+    }).then(res => {
+      //console.log( 'Twinword success...', res )
+      return res.data;
+    }).catch(err => console.log('ERROR in Twinword api...', err)); //console.log( twinword.data );
+
+    const twinwordExamples = await axios.request({
+      url: urlExamples,
+      method: 'GET',
+      params: {
+        entry: word
+      },
+      headers: headers //data: { entry: word }
+
+    }).then(res => {
+      //console.log( 'Twinword success...', res )
+      return res.data;
+    }).catch(err => console.log('ERROR in Twinword api...', err)); //console.log( twinword.data );
+    // LINE reply message
+
+    const message = {
+      'type': 'text',
+      'text': `"${word}" は "${twinwordExamples.example[0]}" や "${twinwordExamples.example[1]}" などの使い方ができます。関連語として、${twinwordAssociation.assoc_word[0]}、${twinwordAssociation.assoc_word[1]}、${twinwordAssociation.assoc_word[2]}などがあります！` //data.example[], data.assoc_word[]
+
+    };
+    await client.replyMessage(body.events[0].replyToken, message).then(res => console.log('Twinword reply message successful...', res)).catch(err => console.log('Error in Twinword reply message...', err));
+  } //////// Reply the same message
+  //const message = {
+  //    'type': 'text',
+  //    'text': text
+  //};
+  //await client.replyMessage( body.events[ 0 ].replyToken, message )
+  //    .then( ( response ) => {
+  //        console.log( 'reply attempted...', response );
+  //    } )
+  //    .catch( ( err ) => console.log( 'error in reply...', err ) );
+  //console.log( 'reply event executed' );
+  ////// Transfer the message to me
+  //await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", message )
+  //    .then( ( response ) => {
+  //        console.log( 'additional push message attempted...', response );
+  //    } )
+  //    .catch( ( err ) => console.log( 'error in additional push message...', err ) );
+  //console.log( 'additional push message event executed' );
+  ///// Finish the api
+
+
+  let lambdaResponse = {
+    statusCode: 200,
+    headers: {
+      "X-Line-Status": "OK"
+    },
+    body: '{"result":"completed"}'
+  };
+  context.succeed(lambdaResponse);
 };
 
 /***/ }),
@@ -231,17 +264,6 @@ module.exports = require("@line/bot-sdk");
 /***/ (function(module, exports) {
 
 module.exports = require("aws-sdk");
-
-/***/ }),
-
-/***/ "crypto":
-/*!*************************!*\
-  !*** external "crypto" ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports) {
-
-module.exports = require("crypto");
 
 /***/ }),
 

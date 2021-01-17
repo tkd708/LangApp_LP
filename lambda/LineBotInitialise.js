@@ -124,10 +124,8 @@ module.exports.handler = async function (event, context) {
       },
       'body': "Done"
     };
-  }
+  } ///////////// Fetch the LINE user id from dynamoDB
 
-  const body = JSON.parse(event.body);
-  console.log('received report...', body); ///////////// Fetch the LINE user id from dynamoDB
 
   const params = {
     TableName: 'LangAppUsers',
@@ -143,7 +141,29 @@ module.exports.handler = async function (event, context) {
     console.log('LINE user ID fetch from dynamoDB failed...', err);
     return null;
   });
-  console.log('fetched line id...', userLineId); ///////////////// Push message to LINE bot to confirm the ID
+  console.log('fetched line id...', userLineId); ////////////////////////////// Prompt to registration
+
+  const paramsIdCheck = {
+    TableName: 'LangAppUsers',
+    KeyConditionExpression: 'UserLineId = :UserLineId ',
+    ExpressionAttributeValues: {
+      ':UserLineId': body.events[0].source.userId
+    } //
+
+  };
+  const userLineIdBoolean = await docClient.query(paramsIdCheck).promise().then(data => {
+    console.log('LINE user ID fetch from dynamoDB was successful...', data);
+    return true;
+  }).catch(err => {
+    console.log('LINE user ID fetch from dynamoDB failed...', err);
+    return false;
+  });
+  !userLineIdBoolean && (await client.replyMessage(body.events[0].replyToken, {
+    'type': 'text',
+    'text': `ウェブサイトとの連動のため、下記に「登録」という言葉を送信してください！`
+  }).then(res => {
+    console.log('user id for registration reply attempted...', res);
+  }).catch(err => console.log('error in user id for registration reply...', err))); ///////////////// Push message to LINE bot to confirm the ID
 
   const message = {
     'type': 'text',
@@ -164,16 +184,7 @@ module.exports.handler = async function (event, context) {
     body: JSON.stringify({
       status: 'file uploaded'
     })
-  }; //////////// Finish the api
-
-  let lambdaResponse = {
-    statusCode: 200,
-    headers: {
-      "X-Line-Status": "OK"
-    },
-    body: '{"result":"completed"}'
   };
-  context.succeed(lambdaResponse);
 };
 
 /***/ }),

@@ -41,82 +41,47 @@ module.exports.handler = async function ( event, context ) {
         }
     }
 
-    ///////////// Fetch the records from dynamoDB by UserName
-    const paramsDynamo = {
-        TableName: 'LangAppData',
-        KeyConditionExpression: 'UserName = :UserName ',
-        ExpressionAttributeValues: { ':UserName': "Naoya Takeda", } // body.appID
-    };
-    const userRecords = await docClient.query( paramsDynamo )
-        .promise()
-        .then( ( data ) => {
-            //console.log( 'Fetch records from dynamoDB was successful...', data );
-            return ( data.Items );
-        } )
-        .catch( err => console.log( 'Fetch records from dynamoDB failed...', err ) );
-    userRecords.sort( function ( a, b ) {
-        return a.Date < b.Date ? -1 : 1;
-    } );
-
-
-    // axios config
-    const axiosBase = axios.create( {
-        baseURL: 'https://api.twinword.com/api/word',
-        headers: {
-            'Content-Type': 'application/json',
-            //'X-Requested-With': 'XMLHttpRequest',
-            'Host': 'api.twinword.com',
-            'X-Twaip-Key': 'BqSLVGtlCsC1lkeF+8ky3AD5n80MbvoNvkR8Py8xLtS2ZJ82WFYqOuacLeWNroBOsDP6mylYisaPaLIHIsKGfw=='
-        },
-        responseType: 'json'
-    } );
-
+    ///////////////////////////// // Twinword api
+    const urlAssociation = 'https://api.twinword.com/api/word/association/latest/';
     const urlExamples = 'https://api.twinword.com/api/word/example/latest/';
-
-    // Twinword api
-    const word = 'test'
-    const url = 'https://api.twinword.com/api/word/example/latest/' + `entry=${ word }/`
+    const word = 'doubt' //
     const headers = {
         'Content-Type': 'application/json',
         'Host': 'api.twinword.com',
-        'X-Twaip-Key': 'BqSLVGtlCsC1lkeF+8ky3AD5n80MbvoNvkR8Py8xLtS2ZJ82WFYqOuacLeWNroBOsDP6mylYisaPaLIHIsKGfw==',
-        //'X-Requested-With': 'XMLHttpRequest',
-
-        //'accept-encoding': 'gzip, deflate, br',
-        //'accept-language': 'ja,en-GB;q=0.9,en;q=0.8,en-US;q=0.7,es;q=0.6',
-        //'content-length': '14',
-        //'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        //'origin': 'https://www.twinword.com',
-        //'referer': 'https://www.twinword.com/api/word-dictionary.php',
-        //'sec-fetch-dest': 'empty',
-        //'sec-fetch-mode': 'cors',
-        //'sec-fetch-site': 'same-origin',
-        //'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36',
-        //'x-requested-with': 'XMLHttpRequest'
+        'X-Twaip-Key': process.env.GATSBY_Twinword_API_KEY,
     }
 
-    const twinword =
+    const twinwordAssociation =
+        await axios
+            .request( {
+                url: urlAssociation,
+                method: 'GET',
+                params: { entry: word },
+                headers: headers,
+                //data: { entry: word }
+            } )
+            .then( res => {
+                //console.log( 'Twinword success...', res )
+                return ( res.data )
+            } )
+            .catch( err => console.log( 'ERROR in Twinword api...', err ) );
+    //console.log( twinword.data );
+
+    const twinwordExamples =
         await axios
             .request( {
                 url: urlExamples,
-                method: 'POST',
+                method: 'GET',
+                params: { entry: word },
                 headers: headers,
-                data: { entry: word }
+                //data: { entry: word }
             } )
-            .then( res => res.data )
+            .then( res => {
+                //console.log( 'Twinword success...', res )
+                return ( res.data )
+            } )
             .catch( err => console.log( 'ERROR in Twinword api...', err ) );
-    console.log( twinword );
-
-    //////////////////////////////// LINE push messages
-    const message = {
-        'type': 'text',
-        'text': twinword
-    };
-    //await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", message, notificationDisabled = true ) //userLineId
-    //    .then( res => console.log( 'push message successful...', res ) )
-    //    .catch( err => console.log( 'error in push message...', err ) );
-
-
+    //console.log( twinword.data );
 
 
     //////////////// Finish the api
@@ -127,7 +92,8 @@ module.exports.handler = async function ( event, context ) {
             "Access-Control-Allow-Headers": "Content-Type",
         },
         body: JSON.stringify( {
-            res: twinword
+            resExample: twinwordExamples,
+            resAssociation: twinwordAssociation,
         } )
     }
 
