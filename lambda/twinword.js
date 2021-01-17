@@ -139,7 +139,7 @@ module.exports.handler = async function (event, context) {
 
   const urlAssociation = 'https://api.twinword.com/api/word/association/latest/';
   const urlExamples = 'https://api.twinword.com/api/word/example/latest/';
-  const word = 'doubt'; //
+  const word = 'Awesome'; //
 
   const headers = {
     'Content-Type': 'application/json',
@@ -157,8 +157,8 @@ module.exports.handler = async function (event, context) {
   }).then(res => {
     //console.log( 'Twinword success...', res )
     return res.data;
-  }).catch(err => console.log('ERROR in Twinword api...', err)); //console.log( twinword.data );
-
+  }).catch(err => console.log('ERROR in Twinword api...', err));
+  console.log(twinwordAssociation);
   const twinwordExamples = await axios.request({
     url: urlExamples,
     method: 'GET',
@@ -170,8 +170,9 @@ module.exports.handler = async function (event, context) {
   }).then(res => {
     //console.log( 'Twinword success...', res )
     return res.data;
-  }).catch(err => console.log('ERROR in Twinword api...', err)); //console.log( twinword.data );
-  //////////////// Finish the api
+  }).catch(err => console.log('ERROR in Twinword api...', err));
+  console.log(twinwordExamples);
+  !(twinwordAssociation.result_code === "200" && twinwordExamples.result_code === "200") && console.log('cannot find the word'); //////////////// Finish the api
 
   return {
     statusCode: 200,

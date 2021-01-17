@@ -142,12 +142,24 @@ module.exports.handler = async function ( event, context ) {
                 .catch( err => console.log( 'ERROR in Twinword api...', err ) );
         //console.log( twinword.data );
 
-        // LINE reply message
-        const message = {
+
+        ///////////// LINE reply message
+
+        // Word not found
+        const messageTwinwordNotFound = {
+            'type': 'text',
+            'text': `"${ word }" は見つかりませんでした。動詞は原型に、名詞は単数形にして検索してみてください！`
+        };
+        !( twinwordAssociation.result_code === "200" && twinwordExamples.result_code === "200" ) && await client.replyMessage( body.events[ 0 ].replyToken, messageTwinwordNotFound )
+            .then( res => console.log( 'Twinword reply message successful...', res ) )
+            .catch( err => console.log( 'Error in Twinword reply message...', err ) );
+
+        // Word found    
+        const messageTwinword = {
             'type': 'text',
             'text': `"${ word }" は "${ twinwordExamples.example[ 0 ] }" や "${ twinwordExamples.example[ 1 ] }" などの使い方ができます。関連語として、${ twinwordAssociation.assoc_word[ 0 ] }、${ twinwordAssociation.assoc_word[ 1 ] }、${ twinwordAssociation.assoc_word[ 2 ] }などがあります！` //data.example[], data.assoc_word[]
         };
-        await client.replyMessage( body.events[ 0 ].replyToken, message )
+        ( twinwordAssociation.result_code === "200" && twinwordExamples.result_code === "200" ) && await client.replyMessage( body.events[ 0 ].replyToken, messageTwinword )
             .then( res => console.log( 'Twinword reply message successful...', res ) )
             .catch( err => console.log( 'Error in Twinword reply message...', err ) );
 
