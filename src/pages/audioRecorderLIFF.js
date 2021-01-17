@@ -14,8 +14,10 @@ import TranscribeLangs from '../constants/transcribeLangs.json';
 import { v4 as uuidv4 } from 'uuid';
 
 import AudioRecorder from "audio-recorder-polyfill"
-if( typeof window !== `undefined` ) { const ua = window.navigator.userAgent.toLowerCase(); }
-if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) { window.MediaRecorder = AudioRecorder }
+if( typeof window !== `undefined` ) {
+    const ua = window.navigator.userAgent.toLowerCase();
+    if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) { window.MediaRecorder = AudioRecorder }
+}
 //window.MediaRecorder = AudioRecorder
 
 const COMMON_WORDS = [
@@ -170,10 +172,10 @@ const AudioRecorderLIFF = () => {
         reader.onloadend = function () {
             //console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
             //const recordString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' ); 
-            //const recordString = reader.result.toString().replace( 'data:audio/wav;base64,', '' );
-            const recordString = ( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) ?
-                reader.result.toString().replace( 'data:audio/wav;base64,', '' ) : // with polyfill
-                reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
+            const recordString = reader.result.toString().replace( 'data:audio/wav;base64,', '' );
+            //const recordString = ( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) ?
+            //    reader.result.toString().replace( 'data:audio/wav;base64,', '' ) : // with polyfill
+            //    reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
             console.log( 'sent audio from ', speaker, 'as string of', recordString.slice( -100 ) )
             sendGoogle( recordString, speaker )
         }
