@@ -41,6 +41,7 @@ module.exports.handler = async function ( event, context ) {
         }
     }
 
+
     ///////////////////////////// // Twinword api
     const urlAssociation = 'https://api.twinword.com/api/word/association/latest/';
     const urlExamples = 'https://api.twinword.com/api/word/example/latest/';

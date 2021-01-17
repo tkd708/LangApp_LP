@@ -6,23 +6,17 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 //import Button from '@material-ui/core/Button';
-import Button from "../Button/button";
 
-import instructionImg from "../../images/line-bot-instruction.png";
+import Button from "../components/Button/button";
 
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import PauseIcon from '@material-ui/icons/Pause';
-import StopIcon from '@material-ui/icons/Stop';
-import GetAppIcon from '@material-ui/icons/GetApp';
-
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-
-import TranscribeLangs from './transcribeLangs.json';
+import TranscribeLangs from '../constants/transcribeLangs.json';
 
 import { v4 as uuidv4 } from 'uuid';
 
+import AudioRecorder from "audio-recorder-polyfill"
+const ua = window.navigator.userAgent.toLowerCase();
+if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) { window.MediaRecorder = AudioRecorder }
+//window.MediaRecorder = AudioRecorder
 
 const COMMON_WORDS = [
     'yes', 'no', 'yeah', 'ok', 'okay',
@@ -37,7 +31,7 @@ const COMMON_WORDS = [
 ]
 
 
-const AudioRecorder = () => {
+const AudioRecorderLIFF = () => {
 
     const [ appID, setAppID ] = useState( '' );
     const appIDRef = useRef( appID )
@@ -51,7 +45,6 @@ const AudioRecorder = () => {
     }, [ recordingID ] )
 
     const [ mediaRecorderMic, setMediaRecorderMic ] = useState( null ); //
-    const [ mediaRecorderMicLong, setMediaRecorderMicLong ] = useState( null ); //
     const [ isRecording, setIsRecording ] = useState( false );
     const isRecordingRef = useRef( isRecording )
     useEffect( () => {
@@ -65,10 +58,6 @@ const AudioRecorder = () => {
     }, [ startTime ] )
     const [ endTime, setEndTime ] = useState( '' ); // milliseconds
 
-    const [ blobAppendedLong, setBlobAppendedLong ] = useState( null );
-    const [ downloadUrl, setDownloadUrl ] = useState( null );
-    const [ audioPlayer, setAudioPlayer ] = useState( null );
-
     const [ transcribeErrorArrray, setTranscribeErrorArray ] = useState( [] );
     const transcribeErrorArrrayRef = useRef( transcribeErrorArrray )
     useEffect( () => {
@@ -80,7 +69,6 @@ const AudioRecorder = () => {
     useEffect( () => {
         transcriptArrayYouRef.current = transcriptArrayYou
     }, [ transcriptArrayYou ] )
-    const [ transcriptArrayMinYou, setTranscriptArrayMinYou ] = useState( [] );
 
     const [ transcript, setTranscript ] = useState( null );
 
@@ -121,39 +109,13 @@ const AudioRecorder = () => {
             }
         } );
         setMediaRecorderMic( recorder );
-        //console.log( 'mic recorder set...', recorder );
-    }
-
-    //////////////// Construct a media recorder for mic long
-    const constructMediaRecorderMicLong = async () => {
-        const streamMic = await navigator.mediaDevices.getUserMedia( {
-            audio: true,
-            video: false
-        } ).then( stream => {
-            //console.log( 'mic stream', stream );
-            return ( stream )
-        } ).catch( error => {
-            console.log( error );
-        } )
-
-        const recorderLong = new MediaRecorder( streamMic, {
-            mimeType: 'audio/webm;codecs=opus',
-            audioBitsPerSecond: 16 * 1000
-        } );
-        recorderLong.addEventListener( 'dataavailable', ( e ) => {
-            if( e.data.size > 0 ) {
-                setBlobAppendedLong( e.data )
-            }
-        } );
-        setMediaRecorderMicLong( recorderLong );
-        //console.log( 'mic recorder long set...', recorderLong );
+        console.log( 'mic recorder set...', recorder );
     }
 
 
     // initialise recorders
     useEffect( () => {
         constructMediaRecorderMic()
-        constructMediaRecorderMicLong();
     }, [] )
 
 
@@ -164,17 +126,11 @@ const AudioRecorder = () => {
 
         // delete previous records if exist
         setTranscriptArrayYou( [] )
-        setTranscriptArrayMinYou( [] )
         setTranscript( null )
 
-        // stop and remove audio player
-        audioRecordStop()
-        setAudioPlayer( null )
-        setDownloadUrl( null )
 
         setIsRecording( true );
         startMediaRecorders();
-        mediaRecorderMicLong.start()
 
         const startTime = new Date();
         setStartTime( startTime.getTime() );
@@ -199,39 +155,10 @@ const AudioRecorder = () => {
     const stopRecording = () => {
         setIsRecording( false );
         //mediaRecorderMic.stop()
-        mediaRecorderMicLong.stop()
 
         const endTime = new Date();
         setEndTime( endTime.getTime() );
         console.log( 'recoding ended, it took', ( endTime.getTime() - startTime ) / 1000, 'seconds' );
-    }
-
-
-    ///////////////// Recording is done >> generate download link and audio player as well as send the full audio to AWS S3
-    useEffect( () => {
-        if( !blobAppendedLong ) return
-        const blobURL = myURL.createObjectURL( blobAppendedLong );
-        setDownloadUrl( blobURL );
-        sendAWS( blobAppendedLong );
-
-        const tmp = new Audio( blobURL );
-        setAudioPlayer( tmp );
-        //console.log( 'audioPlayer...', tmp )
-    }, [ blobAppendedLong ] )
-
-    /////// Operate audio palyer
-    const audioRecordPlay = () => {
-        if( !audioPlayer ) return
-        audioPlayer.play()
-    }
-    const audioRecordPause = () => {
-        if( !audioPlayer ) return
-        audioPlayer.pause()
-    }
-    const audioRecordStop = () => {
-        if( !audioPlayer ) return
-        audioPlayer.currentTime = 0;
-        audioPlayer.pause()
     }
 
 
@@ -241,8 +168,12 @@ const AudioRecorder = () => {
         const reader = new FileReader();
         reader.readAsDataURL( newBlob );
         reader.onloadend = function () {
-            console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
-            const recordString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
+            //console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
+            //const recordString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' ); 
+            //const recordString = reader.result.toString().replace( 'data:audio/wav;base64,', '' );
+            const recordString = ( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) ?
+                reader.result.toString().replace( 'data:audio/wav;base64,', '' ) : // with polyfill
+                reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
             console.log( 'sent audio from ', speaker, 'as string of', recordString.slice( -100 ) )
             sendGoogle( recordString, speaker )
         }
@@ -299,22 +230,6 @@ const AudioRecorder = () => {
             .then( ( res ) => { console.log( 'transcript to LINE bot success...', res ) } )
             .catch( ( err ) => { console.log( 'transcript to LINE bot error...', err ) } )
     }
-
-
-
-    ///////////// Make transcript array into another array per minute
-    useEffect( () => {
-        // Active only for the last chunk of transcription and then finalise the transcript... n = 60 / interval seconds
-        if( transcriptArrayYou.length === 0 ) return
-        const transcriptArrayMinAppended = [];
-        const n = 60 / intervalSeconds; // how many transcript chunks in the array per minute
-        for( let i = 0; i < transcriptArrayYou.length / n; i++ ) {
-            const transcriptArrayMin = transcriptArrayYou.slice( 0 + i * n, n + i * n ).join( ' ' )
-            transcriptArrayMinAppended.push( transcriptArrayMin )
-        }
-        setTranscriptArrayMinYou( transcriptArrayMinAppended );
-    }, [ transcriptArrayYou ] )
-
 
 
     ///////////////// The whole transcript of YOU after finishing the recording... after the length of the transcript chunk array reaches that derived from the length and interval
@@ -387,36 +302,7 @@ const AudioRecorder = () => {
     }, [ transcript ] )
 
 
-    /////////////// send the full audio file to AWS
-    const sendAWS = ( blob ) => {
 
-        const reader = new FileReader();
-        reader.readAsDataURL( blob );
-        reader.onloadend = function () {
-            console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
-            const audioString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
-            console.log( 'sent audio to AWS as string of', audioString.slice( -100 ) )
-
-            const url = 'https://langapp.netlify.app/.netlify/functions/aws-s3';
-
-            axios
-                .request( {
-                    url,
-                    method: 'POST',
-                    data: {
-                        appID: appID,
-                        recordingID: recordingID,
-                        audio: audioString,
-                    },
-                } )
-                .then( ( res ) => {
-                    console.log( 'AWS by netlify functions success', res );
-                } )
-                .catch( ( err ) => {
-                    console.log( 'AWS by netlify functions error', err );
-                } );
-        }
-    }
 
 
     /////////////// UI //////////////////////
@@ -440,11 +326,6 @@ const AudioRecorder = () => {
                 </Select>
             </div>
 
-            <h2>英会話分析デモ</h2>
-            <p>実際にオンライン英会話を録音してみましょう！(マイク付きイヤホン推奨)</p>
-            <p>*LINE Bot「LangApp」と連動して記録・分析できるようになりました！</p>
-            <img src={ instructionImg } style={ { width: '80vw', margin: '20px' } } />
-            <p>Botから登録後、お名前を下記に入力してから録音を開始してください。</p>
             <TextField
                 required
                 id="filled-required"
@@ -464,48 +345,9 @@ const AudioRecorder = () => {
                 onClick={ () => { isRecording ? stopRecording() : startRecording() } }
             >
             </Button>
-            { ( !isRecording && blobAppendedLong !== null ) &&
-                // ( transcript !== null ) &&
-                <div>
-                    {/*<p>いかがでしたでしょうか？5分間の会話の書き起こしだけでも、多くの気づきや学びがあるのではないでしょうか。録音された会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>*/ }
-                    <PlayArrowIcon style={ { fontSize: 40 } } onClick={ () => { audioRecordPlay(); } }></PlayArrowIcon>
-                    <PauseIcon style={ { fontSize: 40 } } onClick={ () => { audioRecordPause(); } }></PauseIcon>
-                    <StopIcon style={ { fontSize: 40 } } onClick={ () => { audioRecordStop(); } }></StopIcon>
-                    <a href={ downloadUrl } download="recording" id="download"> <GetAppIcon style={ { fontSize: 40, color: "white" } } /></a>
-                </div> }
-            <Card style={ { width: '70vw', margin: '20px' } } >
-                <CardContent>
-                    <Typography color="textSecondary" gutterBottom>書き起こし</Typography>
-                </CardContent>
-                { transcriptArrayMinYou.map( ( object, i ) => {
-                    return (
-                        <CardContent>
-                            <Typography color="textSecondary">{ "--- Time 00:0" + i + ":00 ---" }</Typography>
-                            <Typography key={ i }>{ object }</Typography>
-                        </CardContent>
-                    )
-                } ) }
-            </Card>
-            { ( transcript === null ) &&
-                <p>会話の録音を終了し、分析が完了すると結果が以下に表示されます。</p> }
-
-            { ( transcript !== null ) &&
-                <Card style={ { width: '80vw', marginTop: '20px' } } >
-                    <CardContent>
-                        <Typography color="textSecondary" gutterBottom>今回の"あなた"の会話の分析結果はこちら！</Typography>
-                        <Typography>{ `流暢さ(word per minute): ${ vocab2 } ` }</Typography>
-                        <Typography>{ `使用した単語数: ${ vocab3 } ` }</Typography>
-                        <Typography>{ `使用頻度の高い単語 TOP5` }</Typography>
-                        { vocab4.slice( 0, 5 ).map( ( x ) => {
-                            return ( <Typography>{ `${ x.word }: ${ x.count } 回` }</Typography> )
-                        } ) }
-                    </CardContent>
-                </Card>
-            }
-
         </div >
 
     );
 }
 
-export default AudioRecorder;
+export default AudioRecorderLIFF;

@@ -39,6 +39,49 @@ module.exports.handler = async function ( event, context ) {
     const body = JSON.parse( event.body );
     console.log( 'received report...', body );
 
+    ////////////////////////// Conversation analysis (duplicate from LP atm) /////////////////////////////
+
+    // total words
+    const transcriptWordArray = body.transcript.replace( /[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "" ).split( " " );
+    const wordsTotal = transcriptWordArray.length;
+
+    // words per minute
+    //const conversationLength = ( endTime - startTime ) / 1000 / 60;
+    const wordsPerMinute = ( transcriptWordArray.length / body.lengthMinute ).toFixed( 1 );
+
+    // size of vocab
+    const uniq = [ ...new Set( transcriptWordArray ) ];
+    const vocabSize = uniq.length;
+
+    // vocab counts... removing articles, prepositions and pronouns etc.
+    const WORDS_UNCOUNTED = [
+        'yes', 'no', 'yeah', 'ok', 'okay',
+        '', 'a', 'the',
+        'i', 'my', 'me', 'mine', 'you', 'your', 'yours',
+        'he', 'him', 'his', 'she', 'her', 'hers',
+        'we', 'us', 'our', 'ours', 'they', 'them', 'thier', 'thiers',
+        'it', 'this', 'that', 'there',
+        'and', 'but',
+        'at', 'in', 'on', 'of', 'from', 'for', 'to',
+        'am', 'are', 'is', 'be'
+    ]
+    const vocabCounts = [];
+    transcriptWordArray.forEach( ( word ) => {
+        const lowerWord = word.toLowerCase();
+        if( WORDS_UNCOUNTED.includes( lowerWord ) ) return
+        vocabCounts[ lowerWord ] = ( vocabCounts[ lowerWord ] || 0 ) + 1;
+    } );
+    const vocabCountArray = [];
+    Object.entries( vocabCounts ).forEach( ( [ key, value ] ) => {
+        const wordCount = { word: key, count: value }
+        vocabCountArray.push( wordCount )
+    } );
+    vocabCountArray.sort( function ( a, b ) {
+        return a.count > b.count ? -1 : 1;
+    } );
+
+
+
 
     ///////////// Fetch the LINE user id from dynamoDB for push messages
     const params = {
@@ -59,7 +102,7 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'fetched line id...', userLineId )
 
 
-    ///////////// Store the analysis results to dynamoDB
+    ////////////////////////////// Store the analysis results to dynamoDB (atm from LP but analysis will be moved to this netlify functions)
     const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
 
     const paramsReport = {
@@ -81,7 +124,7 @@ module.exports.handler = async function ( event, context ) {
         .catch( err => console.log( 'Uploading the conversation analysis to dynamoDB failed...', err ) );
 
 
-    /////////////// Fetch the past records from dynamoDB by UserName
+    //////////////////////////////////////// Fetch the past records from dynamoDB by UserName
     const paramsDynamo = {
         TableName: 'LangAppData',
         KeyConditionExpression: 'UserName = :UserName ',
@@ -128,7 +171,7 @@ module.exports.handler = async function ( event, context ) {
 
 
 
-    /////////////////////////////////////QuickChart
+    ////////////////////////////////////////////////////// QuickChart
 
     // Total words
     const chartWordsTotal = new QuickChart();
@@ -318,12 +361,12 @@ module.exports.handler = async function ( event, context ) {
 
 
 
-    ///////////////// Push message to LINE bot the analysis resutls
+    ////////////////////////// Push message to LINE bot the analysis resutls
 
     // Conversation summary
     const message = {
         'type': 'text',
-        'text': `話した単語の総数は${ body.wordsTotal }、流暢さ(words per minute)は${ body.wordsPerMinute }、単語の種類数は${ body.vocab }でした！ 話した回数の多い単語TOP３は、${ body.topWord1.word }が${ body.topWord1.count }回、${ body.topWord2.word }が${ body.topWord2.count }回、${ body.topWord3.word }が${ body.topWord3.count }回でした！`
+        'text': `話した単語の総数は${ body.wordsTotal }、流暢さ(words per minute)は${ body.wordsPerMinute }、単語の種類数は${ body.vocab }でした！`
     };
     await client.pushMessage( userLineId, message )
         .then( res => console.log( 'report push message successful...', res ) )
@@ -359,14 +402,38 @@ module.exports.handler = async function ( event, context ) {
         .catch( err => console.log( 'error in image 3 push message...', err ) );
 
 
+    // vocab counts
+    const message = {
+        'type': 'text',
+        'text': `今回の会話で話した回数の多い単語TOP10は、
+        ${ vocabCountArray[ 0 ].word }が${ vocabCountArray[ 0 ].count }回、
+        ${ vocabCountArray[ 1 ].word }が${ vocabCountArray[ 1 ].count }回、
+        ${ vocabCountArray[ 2 ].word }が${ vocabCountArray[ 2 ].count }回、
+        ${ vocabCountArray[ 3 ].word }が${ vocabCountArray[ 3 ].count }回、
+        ${ vocabCountArray[ 4 ].word }が${ vocabCountArray[ 4 ].count }回、
+        ${ vocabCountArray[ 5 ].word }が${ vocabCountArray[ 5 ].count }回、
+        ${ vocabCountArray[ 6 ].word }が${ vocabCountArray[ 6 ].count }回、
+        ${ vocabCountArray[ 7 ].word }が${ vocabCountArray[ 7 ].count }回、
+        ${ vocabCountArray[ 8 ].word }が${ vocabCountArray[ 8 ].count }回、
+        ${ vocabCountArray[ 9 ].word }が${ vocabCountArray[ 9 ].count }回、
+        でした！`
+    };
+    await client.pushMessage( userLineId, message )
+        .then( res => console.log( 'vocab counts push message successful...', res ) )
+        .catch( ( err ) => console.log( 'error in vocab counts push message...', err ) );
+
+
     // A messege prompting review
     const messagePromptReview = {
         'type': 'text',
-        'text': `書き起こしを見ながら、気になった部分の録音を確認してみましょう！使い方がよくわからなかった単語や類義語を知りたい単語を送信していただければ、その例文や関連語をお届けします！`
+        'text': `書き起こしを見ながら、気になった部分の録音を確認してみましょう！また、単語を送信していただければその単語を使った例文や関連語をお届けします！`
     };
     await client.pushMessage( userLineId, messagePromptReview )
-        .then( res => console.log( 'reviw prompt message successful...', res ) )
-        .catch( ( err ) => console.log( 'error in reviw prompt message...', err ) );
+        .then( res => console.log( 'review prompt message successful...', res ) )
+        .catch( ( err ) => console.log( 'error in review prompt message...', err ) );
+
+
+
 
     //////////// Finish the api
     let lambdaResponse = {
