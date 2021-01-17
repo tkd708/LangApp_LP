@@ -403,7 +403,7 @@ module.exports.handler = async function ( event, context ) {
 
 
     // vocab counts
-    const message = {
+    const messageVocabCount = {
         'type': 'text',
         'text': `今回の会話で話した回数の多い単語TOP10は、
         ${ vocabCountArray[ 0 ].word }が${ vocabCountArray[ 0 ].count }回、
@@ -418,7 +418,7 @@ module.exports.handler = async function ( event, context ) {
         ${ vocabCountArray[ 9 ].word }が${ vocabCountArray[ 9 ].count }回、
         でした！`
     };
-    await client.pushMessage( userLineId, message )
+    await client.pushMessage( userLineId, messageVocabCount )
         .then( res => console.log( 'vocab counts push message successful...', res ) )
         .catch( ( err ) => console.log( 'error in vocab counts push message...', err ) );
 
