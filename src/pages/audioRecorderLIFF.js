@@ -14,7 +14,7 @@ import TranscribeLangs from '../constants/transcribeLangs.json';
 import { v4 as uuidv4 } from 'uuid';
 
 import AudioRecorder from "audio-recorder-polyfill"
-const ua = window.navigator.userAgent.toLowerCase();
+if( typeof window !== `undefined` ) { const ua = window.navigator.userAgent.toLowerCase(); }
 if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) { window.MediaRecorder = AudioRecorder }
 //window.MediaRecorder = AudioRecorder
 
