@@ -13,7 +13,8 @@ import TranscribeLangs from '../constants/transcribeLangs.json';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import AudioRecorder from "audio-recorder-polyfill"
+import AudioRecorder from 'https://cdn.jsdelivr.net/npm/audio-recorder-polyfill/index.js'
+//import AudioRecorder from "audio-recorder-polyfill"
 if( typeof window !== `undefined` ) {
     const ua = window.navigator.userAgent.toLowerCase();
     if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) { window.MediaRecorder = AudioRecorder }
@@ -82,7 +83,6 @@ const AudioRecorderLIFF = () => {
     const [ vocab4, setVocab4 ] = useState( [ "especially", "durable", "collaborate" ] );
     const [ vocab5, setVocab5 ] = useState( [ "affordable", "exclusively", "estimate", "retrieve", "variation" ] );
 
-    const myURL = typeof window !== `undefined` ? window.URL || window.webkitURL : ''
     const intervalSeconds = 30; // interval of the repeating audio recording
 
 
