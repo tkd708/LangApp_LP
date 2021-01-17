@@ -1,4 +1,5 @@
 require( 'dotenv' ).config();
+const axios = require( 'axios' );
 
 const line = require( '@line/bot-sdk' );
 const client = new line.Client( {
