@@ -46,7 +46,6 @@ const AudioRecorderLIFF = () => {
         recordingIDRef.current = recordingID
     }, [ recordingID ] )
 
-    const [ mediaRecorderMic, setMediaRecorderMic ] = useState( null ); //
     const [ isRecording, setIsRecording ] = useState( false );
     const isRecordingRef = useRef( isRecording )
     useEffect( () => {
@@ -86,32 +85,29 @@ const AudioRecorderLIFF = () => {
 
 
     //////////////// Construct a media recorder for mic to be repeated for transcription
-    const constructMediaRecorderMic = async () => {
-        const streamMic = await navigator.mediaDevices.getUserMedia( {
-            audio: true,
-            video: false
-        } ).then( stream => {
-            //console.log( 'mic stream', stream );
-            return ( stream )
-        } ).catch( error => {
-            console.log( error );
-        } )
 
-        const recorder = new MediaRecorder( streamMic, {
-            mimeType: 'audio/webm;codecs=opus',
-            audioBitsPerSecond: 16 * 1000
-        } );
-        recorder.addEventListener( 'dataavailable', ( e ) => {
-            if( e.data.size > 0 ) {
-                const speaker = 'you'
-                blobToBase64( e.data, speaker );
-                // const base64Audio = await blobToBase64( blob );
-                // sendGoogle(base64Audio)
-            }
-        } );
-        setMediaRecorderMic( recorder );
-        console.log( 'mic recorder set...', recorder );
-    }
+    const streamMic = await navigator.mediaDevices.getUserMedia( {
+        audio: true,
+        video: false
+    } ).then( stream => {
+        //console.log( 'mic stream', stream );
+        return ( stream )
+    } ).catch( error => {
+        console.log( error );
+    } )
+
+    const recorder = new MediaRecorder( streamMic, {
+        mimeType: 'audio/webm;codecs=opus',
+        audioBitsPerSecond: 16 * 1000
+    } );
+    recorder.addEventListener( 'dataavailable', ( e ) => {
+        if( e.data.size > 0 ) {
+            const speaker = 'you'
+            blobToBase64( e.data, speaker );
+            // const base64Audio = await blobToBase64( blob );
+            // sendGoogle(base64Audio)
+        }
+    } );
 
 
     // initialise recorders
@@ -140,13 +136,13 @@ const AudioRecorderLIFF = () => {
 
     const startMediaRecorders = () => {
         console.log( 'recorders on' )
-        mediaRecorderMic.start();
+        recorder.start();
         setTimeout( () => { repeatMediaRecorders(); }, intervalSeconds * 1000 );
     }
 
 
     const repeatMediaRecorders = () => {
-        mediaRecorderMic.stop();
+        recorder.stop();
         console.log( 'recorders off' )
         if( !isRecordingRef.current ) return
         //mediaRecorderMic.stop();
