@@ -91,7 +91,7 @@ const AudioRecorderLIFF = () => {
 
     let recorder
 
-    navigator.mediaDevices.getUserMedia( {
+    ( typeof window !== `undefined` ) && navigator.mediaDevices.getUserMedia( {
         audio: true,
         video: false
     } ).then( stream => {
