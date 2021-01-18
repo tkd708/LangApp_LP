@@ -95,7 +95,7 @@ const AudioRecorderLIFF = () => {
     const [ vocab4, setVocab4 ] = useState( [ "especially", "durable", "collaborate" ] );
     const [ vocab5, setVocab5 ] = useState( [ "affordable", "exclusively", "estimate", "retrieve", "variation" ] );
 
-    const intervalSeconds = 10; // interval of the repeating audio recording
+    const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
 
 
     //////////////// Construct a media recorder for mic to be repeated for transcription
@@ -218,6 +218,7 @@ const AudioRecorderLIFF = () => {
                     recordingID: recordingIDRef.current,
                     audioString: recordString,
                     transcript: transcript,
+                    audioInterval: intervalSeconds,
                 },
             } )
             .then( ( res ) => { console.log( 'transcript to LINE bot success...', res ) } )
@@ -333,6 +334,18 @@ const AudioRecorderLIFF = () => {
                     style: { backgroundColor: 'white', marginBottom: '20px' },
                 } }
             />
+            <TextField
+                required
+                id="filled-required"
+                label="書き起こし間隔（秒）" // to be replaced with LangApp ID
+                variant="filled"
+                value={ intervalSeconds }
+                onChange={ ( e ) => { ( !isRecording ) && setIntervalSeconds( e.target.value ); } }
+                inputProps={ {
+                    style: { backgroundColor: 'white', marginBottom: '20px' },
+                } }
+            />
+
             <Button
                 style={ { margin: '20px' } }
                 //variant="contained"
@@ -341,6 +354,11 @@ const AudioRecorderLIFF = () => {
                 onClick={ () => { isRecording ? stopRecording() : startRecording() } }
             >
             </Button>
+
+            < p style={ { color: 'black' } }>Ongoing transcript below</p>
+            <p style={ { color: 'black' } }>{ transcriptArrayYou }</p>
+            <p style={ { color: 'black' } }>Final transcript below</p>
+            <p style={ { color: 'black' } }>{ transcript }</p>
         </div >
 
     );

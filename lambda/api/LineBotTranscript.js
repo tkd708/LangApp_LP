@@ -113,11 +113,11 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'fetched line id...', userLineId )
 
 
-    ///////////////// push message of audio.... tentatively omitted, need to work on ffmpeg first to convert the audio into m4a
+    ///////////////// push message of audio
     const audio = {
         'type': 'audio',
         'originalContentUrl': fileURL,
-        'duration': 30000,
+        'duration': ( body.audioInterval !== undifined ) ? body.audioInterval : 30000,
     };
     await client.pushMessage( userLineId, audio, notificationDisabled = true )
         .then( res => console.log( 'audio push message successful...', res ) )
