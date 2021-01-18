@@ -39,12 +39,15 @@ const COMMON_WORDS = [
 const AudioRecorderLIFF = () => {
 
     const [ isIOS, setIsIOS ] = useState( false );
-    if( typeof window !== `undefined` ) {
-        const ua = window.navigator.userAgent.toLowerCase();
-        if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
-            setIsIOS( true );
+    useEffect( () => {
+        if( typeof window !== `undefined` ) {
+            const ua = window.navigator.userAgent.toLowerCase();
+            if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
+                setIsIOS( true );
+            }
         }
-    }
+    }, [] )
+
 
     const [ appID, setAppID ] = useState( '' );
     const appIDRef = useRef( appID )
@@ -317,6 +320,8 @@ const AudioRecorderLIFF = () => {
             </div>
 
             <h1 style={ { color: 'red' } }>{ "Is this from iOS? ..." + isIOS }</h1>
+            {( typeof window !== `undefined` ) && <p style={ { color: 'red' } }>{ window.navigator.userAgent.toLowerCase() }</p> }
+
             <TextField
                 required
                 id="filled-required"
