@@ -38,6 +38,14 @@ const COMMON_WORDS = [
 
 const AudioRecorderLIFF = () => {
 
+    const [ isIOS, setIsIOS ] = useState( false );
+    if( typeof window !== `undefined` ) {
+        const ua = window.navigator.userAgent.toLowerCase();
+        if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
+            setIsIOS( true );
+        }
+    }
+
     const [ appID, setAppID ] = useState( '' );
     const appIDRef = useRef( appID )
     useEffect( () => {
@@ -84,11 +92,10 @@ const AudioRecorderLIFF = () => {
     const [ vocab4, setVocab4 ] = useState( [ "especially", "durable", "collaborate" ] );
     const [ vocab5, setVocab5 ] = useState( [ "affordable", "exclusively", "estimate", "retrieve", "variation" ] );
 
-    const intervalSeconds = 30; // interval of the repeating audio recording
+    const intervalSeconds = 10; // interval of the repeating audio recording
 
 
     //////////////// Construct a media recorder for mic to be repeated for transcription
-
     let recorder
 
     ( typeof window !== `undefined` ) && navigator.mediaDevices.getUserMedia( {
@@ -99,16 +106,14 @@ const AudioRecorderLIFF = () => {
             mimeType: 'audio/webm;codecs=opus',
             audioBitsPerSecond: 16 * 1000
         } );
-        recorder.addEventListener( 'dataavailable', ( e ) => {
+        recorder.addEventListener( 'dataavailable', async ( e ) => {
             if( e.data.size > 0 ) {
-                const speaker = 'you'
-                blobToBase64( e.data, speaker );
-                // const base64Audio = await blobToBase64( blob );
-                // sendGoogle(base64Audio)
+                const base64Audio = await blobToBase64( e.data );
+                console.log( 'converted audio to be sent...', base64Audio.slice( 0, 100 ) )
+                sendGoogle( base64Audio )
+
             }
         } );
-        //console.log( 'mic stream', stream );
-        //return ( stream )
     } ).catch( error => console.log( error ) )
 
 
@@ -156,25 +161,27 @@ const AudioRecorderLIFF = () => {
 
 
     ///////////////// Functions to convert and send blobs to transcribe //////////////////
-    const blobToBase64 = ( blob, speaker ) => {
-        const newBlob = new Blob( [ blob ], { type: blob.type } )
-        const reader = new FileReader();
-        reader.readAsDataURL( newBlob );
-        reader.onloadend = function () {
-            //console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
-            //const recordString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' ); 
-            const recordString = reader.result.toString().replace( 'data:audio/wav;base64,', '' );
-            //const recordString = ( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) ?
-            //    reader.result.toString().replace( 'data:audio/wav;base64,', '' ) : // with polyfill
-            //    reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
-            console.log( 'sent audio from ', speaker, 'as string of', recordString.slice( -100 ) )
-            sendGoogle( recordString, speaker )
-        }
+    const blobToBase64 = ( blob ) => {
+        return new Promise( ( resolve, reject ) => {
+            const newBlob = new Blob( [ blob ], { type: blob.type } )
+            const reader = new FileReader();
+            reader.readAsDataURL( newBlob );
+
+            reader.onload = res => {
+                console.log( 'audio string head: ' + res.target.result.toString().slice( 0, 100 ) );
+                const recordString = isIOS ?
+                    reader.result.toString().replace( 'data:audio/wav;base64,', '' ) :
+                    reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
+                console.log( 'sent audio as string of', recordString.slice( -100 ) )
+                resolve( recordString );
+            };
+            reader.onerror = err => reject( err );
+        } );
     }
 
 
     ////////////////////////// Send audio strings to Google for transcription //////////////////////
-    const sendGoogle = async ( recordString, speaker ) => {
+    const sendGoogle = async ( recordString ) => {
         const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-expo';
 
         const transcript =
@@ -188,22 +195,12 @@ const AudioRecorderLIFF = () => {
                     },
                 } )
                 .then( ( res ) => {
-                    //console.log(res)
-                    //console.log( 'transcript :', res.data.transcript === '' );
-                    //setTranscriptArrayYou( [ ...transcriptArrayYouRef.current, res.data.transcript ] )
                     const transcribedTime = new Date();
-                    console.log( 'transcribed from', speaker, ( ( transcribedTime.getTime() - startTimeRef.current ) / 1000 ), 'seconds after starting ', res.data.transcript );
+                    console.log( 'transcribed at', ( ( transcribedTime.getTime() - startTimeRef.current ) / 1000 ), 'seconds after starting ', res.data.transcript );
                     return ( res.data.transcript )
                 } )
                 .catch( ( err ) => {
-                    const errorTime = new Date();
-                    const errorStatus = {
-                        errorMessage: err,
-                        errorAt: speaker,
-                        errorTimeFromStartTime: ( ( errorTime.getTime() - startTimeRef.current ) / 1000 ),
-                    }
-                    setTranscribeErrorArray( [ ...transcribeErrorArrrayRef.current, errorStatus ] );
-                    console.log( errorStatus );
+                    console.log( err );
                     return ( 'TRANSCRIPTION ERROR' );
                 } );
         setTranscriptArrayYou( [ ...transcriptArrayYouRef.current, transcript ] )
@@ -319,6 +316,7 @@ const AudioRecorderLIFF = () => {
                 </Select>
             </div>
 
+            <h1 style={ { color: 'red' } }>{ "Is this from iOS? ..." + isIOS }</h1>
             <TextField
                 required
                 id="filled-required"
