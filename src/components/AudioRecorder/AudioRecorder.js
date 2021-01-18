@@ -294,6 +294,7 @@ const AudioRecorder = () => {
                     recordingID: recordingIDRef.current,
                     audioString: recordString,
                     transcript: transcript,
+                    audioInterval: intervalSeconds,
                 },
             } )
             .then( ( res ) => { console.log( 'transcript to LINE bot success...', res ) } )

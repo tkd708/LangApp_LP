@@ -117,7 +117,7 @@ module.exports.handler = async function ( event, context ) {
     const audio = {
         'type': 'audio',
         'originalContentUrl': fileURL,
-        'duration': ( body.audioInterval !== undifined ) ? body.audioInterval : 30000,
+        'duration': body.audioInterval,
     };
     await client.pushMessage( userLineId, audio, notificationDisabled = true )
         .then( res => console.log( 'audio push message successful...', res ) )
