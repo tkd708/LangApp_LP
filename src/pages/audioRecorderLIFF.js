@@ -14,12 +14,11 @@ import TranscribeLangs from '../constants/transcribeLangs.json';
 import { v4 as uuidv4 } from 'uuid';
 
 //import liff from '@line/liff';
+const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '' //"window" is not available during server side rendering.
 
 //const AudioRecorder = typeof window !== `undefined` ? require( "audio-recorder-polyfill" ).default : '' //"window" is not available during server side rendering.
 //import AudioRecorder from "audio-recorder-polyfill"
 if( typeof window !== `undefined` ) {
-    const liff = require( "@line/liff" );
-
     const ua = window.navigator.userAgent.toLowerCase();
     if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
         const AudioRecorder = require( "audio-recorder-polyfill" ).default;
