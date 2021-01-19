@@ -13,6 +13,9 @@ import TranscribeLangs from '../constants/transcribeLangs.json';
 
 import { v4 as uuidv4 } from 'uuid';
 
+import liff from '@line/liff';
+liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } ).then( () => { } )
+
 //const AudioRecorder = typeof window !== `undefined` ? require( "audio-recorder-polyfill" ).default : '' //"window" is not available during server side rendering.
 //import AudioRecorder from "audio-recorder-polyfill"
 if( typeof window !== `undefined` ) {
@@ -22,6 +25,7 @@ if( typeof window !== `undefined` ) {
         window.MediaRecorder = AudioRecorder
     }
 }
+
 
 const COMMON_WORDS = [
     'yes', 'no', 'yeah', 'ok', 'okay',
@@ -96,6 +100,13 @@ const AudioRecorderLIFF = () => {
     const [ vocab5, setVocab5 ] = useState( [ "affordable", "exclusively", "estimate", "retrieve", "variation" ] );
 
     const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
+
+
+    useEffect( () => {
+        liff.getProfile().then( profile => {
+            setAppID( profile.displayName )
+        } )
+    }, [] )
 
 
     //////////////// Construct a media recorder for mic to be repeated for transcription
