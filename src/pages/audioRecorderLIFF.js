@@ -14,7 +14,6 @@ import TranscribeLangs from '../constants/transcribeLangs.json';
 import { v4 as uuidv4 } from 'uuid';
 
 import liff from '@line/liff';
-liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } ).then( () => { } )
 
 //const AudioRecorder = typeof window !== `undefined` ? require( "audio-recorder-polyfill" ).default : '' //"window" is not available during server side rendering.
 //import AudioRecorder from "audio-recorder-polyfill"
@@ -100,7 +99,7 @@ const AudioRecorderLIFF = () => {
 
     const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
 
-
+    liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } ).then( () => { } )
     useEffect( () => {
         liff.getProfile().then( profile => {
             setAppID( profile.displayName )
