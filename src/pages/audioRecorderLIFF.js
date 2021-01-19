@@ -13,17 +13,19 @@ import TranscribeLangs from '../constants/transcribeLangs.json';
 
 import { v4 as uuidv4 } from 'uuid';
 
-import liff from '@line/liff';
+//import liff from '@line/liff';
 
 //const AudioRecorder = typeof window !== `undefined` ? require( "audio-recorder-polyfill" ).default : '' //"window" is not available during server side rendering.
 //import AudioRecorder from "audio-recorder-polyfill"
-//if( typeof window !== `undefined` ) {
-//    const ua = window.navigator.userAgent.toLowerCase();
-//    if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
-//        const AudioRecorder = require( "audio-recorder-polyfill" ).default;
-//        window.MediaRecorder = AudioRecorder
-//    }
-//}
+if( typeof window !== `undefined` ) {
+    const liff = require( "@line/liff" );
+
+    const ua = window.navigator.userAgent.toLowerCase();
+    if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
+        const AudioRecorder = require( "audio-recorder-polyfill" ).default;
+        window.MediaRecorder = AudioRecorder
+    }
+}
 
 
 const COMMON_WORDS = [
