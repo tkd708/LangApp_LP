@@ -17,13 +17,13 @@ import liff from '@line/liff';
 
 //const AudioRecorder = typeof window !== `undefined` ? require( "audio-recorder-polyfill" ).default : '' //"window" is not available during server side rendering.
 //import AudioRecorder from "audio-recorder-polyfill"
-if( typeof window !== `undefined` ) {
-    const ua = window.navigator.userAgent.toLowerCase();
-    if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
-        const AudioRecorder = require( "audio-recorder-polyfill" ).default;
-        window.MediaRecorder = AudioRecorder
-    }
-}
+//if( typeof window !== `undefined` ) {
+//    const ua = window.navigator.userAgent.toLowerCase();
+//    if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
+//        const AudioRecorder = require( "audio-recorder-polyfill" ).default;
+//        window.MediaRecorder = AudioRecorder
+//    }
+//}
 
 
 const COMMON_WORDS = [
@@ -99,12 +99,12 @@ const AudioRecorderLIFF = () => {
 
     const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
 
-    //liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } ).then( () => { } )
-    //useEffect( () => {
-    //    liff.getProfile().then( profile => {
-    //        setAppID( profile.displayName )
-    //    } )
-    //}, [] )
+    liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } ).then( () => { } )
+    useEffect( () => {
+        liff.getProfile().then( profile => {
+            setAppID( profile.displayName )
+        } )
+    }, [] )
 
 
     //////////////// Construct a media recorder for mic to be repeated for transcription
