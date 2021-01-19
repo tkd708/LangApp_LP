@@ -100,7 +100,7 @@ const AudioRecorderLIFF = () => {
 
     const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
 
-    liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } ).then( () => { } )
+    ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } ).then( () => { } )
     useEffect( () => {
         liff.getProfile().then( profile => {
             setAppID( profile.displayName )
