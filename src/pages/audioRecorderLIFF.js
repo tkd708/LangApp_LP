@@ -100,8 +100,8 @@ const AudioRecorderLIFF = () => {
 
     const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
 
-    ( typeof window !== `undefined` ) && alart( 'Check OS before useEffect...', liff.getOS() );
-    ( typeof window !== `undefined` ) && alart( 'Check LIFF before useEffect...', liff.isInClient() );
+    //    ( typeof window !== `undefined` ) && alart( 'Check OS before useEffect...', liff.getOS() );
+    //    ( typeof window !== `undefined` ) && alart( 'Check LIFF before useEffect...', liff.isInClient() );
 
     // LIFF processes
     useEffect( () => {
@@ -111,6 +111,15 @@ const AudioRecorderLIFF = () => {
                 alert( 'LINE login status...', ( liff.isLoggedIn() ) );
                 alart( 'Check OS...', liff.getOS() );
                 alart( 'Check LIFF...', liff.isInClient() );
+
+                if( liff.isInClient() ) { // LIFFので動いているのであれば
+                    liff.sendMessages( [ { // メッセージを送信する
+                        'type': 'text',
+                        'text': "You've successfully sent a message from LIFF! Hooray!"
+                    } ] )
+                        .then( () => window.alert( 'Message sent' ) )
+                        .catch( error => window.alert( 'Error sending message: ' + error ) );
+                }
 
                 !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
 
@@ -123,15 +132,15 @@ const AudioRecorderLIFF = () => {
                         alert( `Name: ${ displayName }, userId: ${ userId }` )
                     } )
                     .catch( err => window.alert( 'Error sending message: ' + err ) );
+
+                liff.sendMessages( [ { // メッセージを送信する
+                    'type': 'text',
+                    'text': "You've successfully sent a message after manual login!"
+                } ] )
+                    .then( () => window.alert( 'Message sent' ) )
+                    .catch( error => window.alert( 'Error sending message: ' + error ) );
+
             } )
-        if( liff.isInClient() ) { // LIFFので動いているのであれば
-            liff.sendMessages( [ { // メッセージを送信する
-                'type': 'text',
-                'text': "You've successfully sent a message! Hooray!"
-            } ] )
-                .then( () => window.alert( 'Message sent' ) )
-                .catch( error => window.alert( 'Error sending message: ' + error ) );
-        }
     }, [] )
 
 
