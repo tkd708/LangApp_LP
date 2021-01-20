@@ -102,17 +102,11 @@ const AudioRecorderLIFF = () => {
 
     // LIFF processes
     useEffect( () => {
-        ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } ).then( () => {
-            window.alert( 'LIFF initialised' );
-            if( !liff.isLoggedIn() ) {
-                liff.login( {} ) // ログインしていなければ最初にログインする
-            } else if( liff.isInClient() ) { // LIFFので動いているのであれば
-                liff.sendMessages( [ { // メッセージを送信する
-                    'type': 'text',
-                    'text': "You've successfully sent a message! Hooray!"
-                } ] )
-                    .then( () => window.alert( 'Message sent' ) )
-                    .catch( error => window.alert( 'Error sending message: ' + error ) );
+        ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
+            .then( () => {
+                window.alert( 'LIFF initialised' );
+                alert( 'LINE login status...', liff.isLoggedIn() );
+                !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
 
                 alert( 'Try get LINE profile' )
                 liff.getProfile()
@@ -122,11 +116,16 @@ const AudioRecorderLIFF = () => {
                         setAppID( profile.displayName )
                         alert( `Name: ${ displayName }, userId: ${ userId }` )
                     } )
-                    .catch( function ( error ) {
-                        window.alert( 'Error sending message: ' + error );
-                    } );
-            }
-        } )
+                    .catch( err => window.alert( 'Error sending message: ' + err ) );
+            } )
+        if( liff.isInClient() ) { // LIFFので動いているのであれば
+            liff.sendMessages( [ { // メッセージを送信する
+                'type': 'text',
+                'text': "You've successfully sent a message! Hooray!"
+            } ] )
+                .then( () => window.alert( 'Message sent' ) )
+                .catch( error => window.alert( 'Error sending message: ' + error ) );
+        }
     }, [] )
 
 
