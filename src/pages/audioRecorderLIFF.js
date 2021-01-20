@@ -100,8 +100,8 @@ const AudioRecorderLIFF = () => {
 
     const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
 
-    alart( 'Check OS before useEffect...', liff.getOS() );
-    alart( 'Check LIFF before useEffect...', liff.isInClient() );
+    ( typeof window !== `undefined` ) && alart( 'Check OS before useEffect...', liff.getOS() );
+    ( typeof window !== `undefined` ) && alart( 'Check LIFF before useEffect...', liff.isInClient() );
 
     // LIFF processes
     useEffect( () => {
