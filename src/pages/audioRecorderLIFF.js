@@ -15,21 +15,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 //import liff from '@line/liff';
 const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '';//"window" is not available during server side rendering.
-( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } ).then( () => {
-    window.alert( 'LIFF initialised' );
-    if( !liff.isLoggedIn() ) {
-        liff.login( {} ) // ログインしていなければ最初にログインする
-    } else if( liff.isInClient() ) { // LIFFので動いているのであれば
-        liff.sendMessages( [ { // メッセージを送信する
-            'type': 'text',
-            'text': "You've successfully sent a message! Hooray!"
-        } ] ).then( function () {
-            window.alert( 'Message sent' );
-        } ).catch( function ( error ) {
-            window.alert( 'Error sending message: ' + error );
-        } );
-    }
-} )
 
 //const AudioRecorder = typeof window !== `undefined` ? require( "audio-recorder-polyfill" ).default : '' //"window" is not available during server side rendering.
 //import AudioRecorder from "audio-recorder-polyfill"
@@ -115,18 +100,33 @@ const AudioRecorderLIFF = () => {
 
     const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
 
+    // LIFF processes
     useEffect( () => {
-        alert( 'Try get LINE profile' )
-        liff.getProfile()
-            .then( profile => {
-                const userId = profile.userId
-                const displayName = profile.displayName
-                setAppID( profile.displayName )
-                alert( `Name: ${ displayName }, userId: ${ userId }` )
-            } )
-            .catch( function ( error ) {
-                window.alert( 'Error sending message: ' + error );
-            } );
+        ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } ).then( () => {
+            window.alert( 'LIFF initialised' );
+            if( !liff.isLoggedIn() ) {
+                liff.login( {} ) // ログインしていなければ最初にログインする
+            } else if( liff.isInClient() ) { // LIFFので動いているのであれば
+                liff.sendMessages( [ { // メッセージを送信する
+                    'type': 'text',
+                    'text': "You've successfully sent a message! Hooray!"
+                } ] )
+                    .then( () => window.alert( 'Message sent' ) )
+                    .catch( error => window.alert( 'Error sending message: ' + error ) );
+
+                alert( 'Try get LINE profile' )
+                liff.getProfile()
+                    .then( profile => {
+                        const userId = profile.userId
+                        const displayName = profile.displayName
+                        setAppID( profile.displayName )
+                        alert( `Name: ${ displayName }, userId: ${ userId }` )
+                    } )
+                    .catch( function ( error ) {
+                        window.alert( 'Error sending message: ' + error );
+                    } );
+            }
+        } )
     }, [] )
 
 
@@ -250,7 +250,7 @@ const AudioRecorderLIFF = () => {
                     recordingID: recordingIDRef.current,
                     audioString: recordString,
                     transcript: transcript,
-                    audioInterval: intervalSeconds,
+                    audioInterval: intervalSeconds * 1000,
                 },
             } )
             .then( ( res ) => { console.log( 'transcript to LINE bot success...', res ) } )
