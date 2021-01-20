@@ -21,8 +21,8 @@ const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '';//"win
 if( typeof window !== `undefined` ) {
     const ua = window.navigator.userAgent.toLowerCase();
     if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
-        const AudioRecorder = require( "audio-recorder-polyfill" ).default;
-        window.MediaRecorder = AudioRecorder
+        //const AudioRecorder = require( "audio-recorder-polyfill" ).default;
+        //window.MediaRecorder = AudioRecorder
     }
 }
 
@@ -132,23 +132,22 @@ const AudioRecorderLIFF = () => {
     //////////////// Construct a media recorder for mic to be repeated for transcription
     let recorder
 
-    ( typeof window !== `undefined` ) && navigator.mediaDevices.getUserMedia( {
-        audio: true,
-        video: false
-    } ).then( stream => {
-        recorder = new MediaRecorder( stream, {
-            mimeType: 'audio/webm;codecs=opus',
-            audioBitsPerSecond: 16 * 1000
-        } );
-        recorder.addEventListener( 'dataavailable', async ( e ) => {
-            if( e.data.size > 0 ) {
-                const base64Audio = await blobToBase64( e.data );
-                console.log( 'converted audio to be sent...', base64Audio.slice( 0, 100 ) )
-                sendGoogle( base64Audio )
-
-            }
-        } );
-    } ).catch( error => console.log( error ) )
+    //( typeof window !== `undefined` ) && navigator.mediaDevices.getUserMedia( {
+    //    audio: true,
+    //    video: false
+    //} ).then( stream => {
+    //    recorder = new MediaRecorder( stream, {
+    //        mimeType: 'audio/webm;codecs=opus',
+    //        audioBitsPerSecond: 16 * 1000
+    //    } );
+    //    recorder.addEventListener( 'dataavailable', async ( e ) => {
+    //        if( e.data.size > 0 ) {
+    //            const base64Audio = await blobToBase64( e.data );
+    //            console.log( 'converted audio to be sent...', base64Audio.slice( 0, 100 ) )
+    //            sendGoogle( base64Audio )
+    //        }
+    //    } );
+    //} ).catch( error => console.log( error ) )
 
 
     /////////////// Audio recorder operation ////////////////
