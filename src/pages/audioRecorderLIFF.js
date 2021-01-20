@@ -100,12 +100,18 @@ const AudioRecorderLIFF = () => {
 
     const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
 
+    alart( 'Check OS before useEffect...', liff.getOS() );
+    alart( 'Check LIFF before useEffect...', liff.isInClient() );
+
     // LIFF processes
     useEffect( () => {
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
             .then( () => {
-                window.alert( 'LIFF initialised' );
-                alert( 'LINE login status...', liff.isLoggedIn() );
+                alert( 'LIFF initialised' );
+                alert( 'LINE login status...', ( liff.isLoggedIn() ) );
+                alart( 'Check OS...', liff.getOS() );
+                alart( 'Check LIFF...', liff.isInClient() );
+
                 !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
 
                 alert( 'Try get LINE profile' )
