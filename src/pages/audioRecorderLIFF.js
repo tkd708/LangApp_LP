@@ -119,14 +119,14 @@ const AudioRecorderLIFF = () => {
         //alert( 'LIFF initialised' );
         //alert( 'LINE login status...' + ( liff.isLoggedIn() ) );
 
-        if( liff.isInClient() ) { // LIFFので動いているのであれば
-            liff.sendMessages( [ { // メッセージを送信する
-                'type': 'text',
-                'text': "You've successfully sent a message from LIFF! Hooray!"
-            } ] )
-                .then( () => window.alert( 'Message sent' ) )
-                .catch( err => window.alert( 'Error sending message: ' + err ) );
-        }
+        //if( liff.isInClient() ) { // LIFFので動いているのであれば
+        //    liff.sendMessages( [ { // メッセージを送信する
+        //        'type': 'text',
+        //        'text': "You've successfully sent a message from LIFF! Hooray!"
+        //    } ] )
+        //        .then( () => window.alert( 'Message sent' ) )
+        //        .catch( err => window.alert( 'Error sending message: ' + err ) );
+        //}
 
         !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
 
@@ -147,7 +147,7 @@ const AudioRecorderLIFF = () => {
             .then( ( res ) => { window.alert( 'Success in getting LINE user info using token...' + res ) } )
             .catch( ( err ) => { window.alert( 'Error in getting LINE user info using token...' + err ) } )
 
-        alert( 'Try get LINE profile' )
+        //alert( 'Try get LINE profile' )
         liff.getProfile()
             .then( profile => {
                 const userId = profile.userId
@@ -157,12 +157,12 @@ const AudioRecorderLIFF = () => {
             } )
             .catch( err => window.alert( 'Error sending message: ' + err ) );
 
-        liff.sendMessages( [ { // メッセージを送信する
-            'type': 'text',
-            'text': "You've successfully sent a message after manual login!"
-        } ] )
-            .then( () => window.alert( 'Message sent' ) )
-            .catch( error => window.alert( 'Error sending message: ' + error ) );
+        //liff.sendMessages( [ { // メッセージを送信する
+        //    'type': 'text',
+        //    'text': "You've successfully sent a message after manual login!"
+        //} ] )
+        //    .then( () => window.alert( 'Message sent' ) )
+        //    .catch( error => window.alert( 'Error sending message: ' + error ) );
     }
 
 
