@@ -145,7 +145,7 @@ const AudioRecorderLIFF = () => {
                 },
                 data: {
                     id_token: idToken,
-                    client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
+                    client_id: process.env.GATSBY_LINE_LIFFID, //process.env.GATSBY_LINE_LIFF_Channel_ID,
                 },
             } )
             .then( ( res ) => { window.alert( 'Success in getting LINE user info using token...' + res ) } )
