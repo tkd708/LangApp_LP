@@ -179,7 +179,7 @@ const AudioRecorderLIFF = () => {
     } ).then( stream => {
         recorder = new MediaRecorder( stream, {
             mimeType: isIOS ? 'audio/wav' : 'audio/webm;codecs=opus',
-            audioBitsPerSecond: 16 * 1000
+            //audioBitsPerSecond: 16 * 1000
         } );
         recorder.addEventListener( 'dataavailable', async ( e ) => {
             if( e.data.size > 0 ) {
