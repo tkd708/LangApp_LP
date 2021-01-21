@@ -143,8 +143,8 @@ const AudioRecorderLIFF = () => {
                     client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
                 },
             } )
-            .then( ( res ) => { window.alert( 'Success in getting LINE user info using token...', res ) } )
-            .catch( ( err ) => { window.alert( 'Error in getting LINE user info using token...', err ) } )
+            .then( ( res ) => { window.alert( 'Success in getting LINE user info using token...' + res ) } )
+            .catch( ( err ) => { window.alert( 'Error in getting LINE user info using token...' + err ) } )
 
         alert( 'Try get LINE profile' )
         liff.getProfile()
