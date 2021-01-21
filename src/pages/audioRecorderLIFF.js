@@ -134,6 +134,17 @@ const AudioRecorderLIFF = () => {
         const accessToken = liff.getAccessToken();
         window.alert( 'LINE ID token: ' + idToken );
 
+        axios
+            .request( {
+                url: 'https://api.line.me/oauth2/v2.1/verify',
+                method: 'POST',
+                data: {
+                    id_token: idToken,
+                    client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
+                },
+            } )
+            .then( ( res ) => { window.alert( 'Success in getting LINE user info using token...', res ) } )
+            .catch( ( err ) => { window.alert( 'Error in getting LINE user info using token...', err ) } )
 
         alert( 'Try get LINE profile' )
         liff.getProfile()
