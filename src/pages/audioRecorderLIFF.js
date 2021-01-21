@@ -130,6 +130,11 @@ const AudioRecorderLIFF = () => {
 
         !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
 
+        const idToken = liff.getIDToken();
+        const accessToken = liff.getAccessToken();
+        window.alert( 'LINE ID token: ' + idToken );
+
+
         alert( 'Try get LINE profile' )
         liff.getProfile()
             .then( profile => {
