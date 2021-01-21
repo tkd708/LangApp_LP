@@ -133,6 +133,7 @@ const AudioRecorderLIFF = () => {
         const idToken = liff.getIDToken();
         const accessToken = liff.getAccessToken();
         window.alert( 'LINE ID token: ' + idToken );
+        window.alert( 'LINE client ID: ' + process.env.GATSBY_LINE_LIFF_Channel_ID );
 
         await axios
             .request( {
