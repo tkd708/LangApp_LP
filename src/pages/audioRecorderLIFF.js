@@ -141,7 +141,7 @@ const AudioRecorderLIFF = () => {
                 url: 'https://api.line.me/oauth2/v2.1/verify',
                 method: 'POST',
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
+                    "Content-Type": "application/json"
                 },
                 data: {
                     id_token: idToken,
@@ -179,7 +179,7 @@ const AudioRecorderLIFF = () => {
     } ).then( stream => {
         recorder = new MediaRecorder( stream, {
             mimeType: isIOS ? 'audio/wav' : 'audio/webm;codecs=opus',
-            //audioBitsPerSecond: 16 * 1000
+            audioBitsPerSecond: 16 * 1000
         } );
         recorder.addEventListener( 'dataavailable', async ( e ) => {
             if( e.data.size > 0 ) {
