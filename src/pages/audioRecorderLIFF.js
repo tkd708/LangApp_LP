@@ -105,16 +105,19 @@ const AudioRecorderLIFF = () => {
 
     // LIFF processes
     useEffect( () => {
-        ( typeof window !== `undefined` ) && alart( 'Check LIFF...' + ( liff.isInClient() ) );
-        ( typeof window !== `undefined` ) && alart( 'Check OS...' + ( liff.getOS() ) );
+        //( typeof window !== `undefined` ) && alart( 'Check LIFF...' + ( liff.isInClient() ) );
+        //( typeof window !== `undefined` ) && alart( 'Check OS...' + liff.getOS() );
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
-            .then( () => initialiseLiffApp() )
+            .then( () => {
+                window.alert( 'Error in LIFF initialisation: ' + err );
+                initialiseLiffApp()
+            } )
             .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
     }, [] )
 
     const initialiseLiffApp = () => {
-        alert( 'LIFF initialised' );
-        alert( 'LINE login status...' + ( liff.isLoggedIn() ) );
+        //alert( 'LIFF initialised' );
+        //alert( 'LINE login status...' + ( liff.isLoggedIn() ) );
 
         if( liff.isInClient() ) { // LIFFので動いているのであれば
             liff.sendMessages( [ { // メッセージを送信する
