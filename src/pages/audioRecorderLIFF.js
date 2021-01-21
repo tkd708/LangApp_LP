@@ -109,8 +109,8 @@ const AudioRecorderLIFF = () => {
             .then( () => {
                 alert( 'LIFF initialised' );
                 alert( 'LINE login status...', ( liff.isLoggedIn() ) );
-                alart( 'Check OS...', liff.getOS() );
-                alart( 'Check LIFF...', liff.isInClient() );
+                alart( 'Check OS...', ( liff.getOS() ) );
+                alart( 'Check LIFF...', ( liff.isInClient() ) );
 
                 if( liff.isInClient() ) { // LIFFので動いているのであれば
                     liff.sendMessages( [ { // メッセージを送信する
