@@ -21,8 +21,8 @@ const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '';//"win
 if( typeof window !== `undefined` ) {
     const ua = window.navigator.userAgent.toLowerCase();
     if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
-        //const AudioRecorder = require( "audio-recorder-polyfill" ).default;
-        //window.MediaRecorder = AudioRecorder
+        const AudioRecorder = require( "audio-recorder-polyfill" ).default;
+        window.MediaRecorder = AudioRecorder
     }
 }
 
@@ -100,13 +100,8 @@ const AudioRecorderLIFF = () => {
 
     const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
 
-    //    ( typeof window !== `undefined` ) && alart( 'Check OS before useEffect...', liff.getOS() );
-    //    ( typeof window !== `undefined` ) && alart( 'Check LIFF before useEffect...', liff.isInClient() );
-
     // LIFF processes
     useEffect( () => {
-        //( typeof window !== `undefined` ) && alart( 'Check LIFF...' + ( liff.isInClient() ) );
-        //( typeof window !== `undefined` ) && alart( 'Check OS...' + liff.getOS() );
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
             .then( () => {
                 window.alert( 'Success in LIFF initialisation' );
@@ -139,6 +134,9 @@ const AudioRecorderLIFF = () => {
             .request( {
                 url: 'https://api.line.me/oauth2/v2.1/verify',
                 method: 'POST',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
                 data: {
                     id_token: idToken,
                     client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
