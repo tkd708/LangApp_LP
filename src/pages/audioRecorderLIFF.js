@@ -105,43 +105,45 @@ const AudioRecorderLIFF = () => {
 
     // LIFF processes
     useEffect( () => {
+        ( typeof window !== `undefined` ) && alart( 'Check LIFF...' + ( liff.isInClient() ) );
+        ( typeof window !== `undefined` ) && alart( 'Check OS...' + ( liff.getOS() ) );
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
-            .then( () => {
-                alart( 'Check LIFF...' + ( liff.isInClient() ) );
-                alert( 'LIFF initialised' );
-                alert( 'LINE login status...' + ( liff.isLoggedIn() ) );
-                alart( 'Check OS...' + ( liff.getOS() ) );
-
-                if( liff.isInClient() ) { // LIFFので動いているのであれば
-                    liff.sendMessages( [ { // メッセージを送信する
-                        'type': 'text',
-                        'text': "You've successfully sent a message from LIFF! Hooray!"
-                    } ] )
-                        .then( () => window.alert( 'Message sent' ) )
-                        .catch( error => window.alert( 'Error sending message: ' + error ) );
-                }
-
-                !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
-
-                alert( 'Try get LINE profile' )
-                liff.getProfile()
-                    .then( profile => {
-                        const userId = profile.userId
-                        const displayName = profile.displayName
-                        setAppID( profile.displayName )
-                        alert( `Name: ${ displayName }, userId: ${ userId }` )
-                    } )
-                    .catch( err => window.alert( 'Error sending message: ' + err ) );
-
-                liff.sendMessages( [ { // メッセージを送信する
-                    'type': 'text',
-                    'text': "You've successfully sent a message after manual login!"
-                } ] )
-                    .then( () => window.alert( 'Message sent' ) )
-                    .catch( error => window.alert( 'Error sending message: ' + error ) );
-
-            } )
+            .then( () => initialiseLiffApp() )
+            .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
     }, [] )
+
+    const initialiseLiffApp = () => {
+        alert( 'LIFF initialised' );
+        alert( 'LINE login status...' + ( liff.isLoggedIn() ) );
+
+        if( liff.isInClient() ) { // LIFFので動いているのであれば
+            liff.sendMessages( [ { // メッセージを送信する
+                'type': 'text',
+                'text': "You've successfully sent a message from LIFF! Hooray!"
+            } ] )
+                .then( () => window.alert( 'Message sent' ) )
+                .catch( error => window.alert( 'Error sending message: ' + error ) );
+        }
+
+        !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
+
+        alert( 'Try get LINE profile' )
+        liff.getProfile()
+            .then( profile => {
+                const userId = profile.userId
+                const displayName = profile.displayName
+                setAppID( profile.displayName )
+                alert( `Name: ${ displayName }, userId: ${ userId }` )
+            } )
+            .catch( err => window.alert( 'Error sending message: ' + err ) );
+
+        liff.sendMessages( [ { // メッセージを送信する
+            'type': 'text',
+            'text': "You've successfully sent a message after manual login!"
+        } ] )
+            .then( () => window.alert( 'Message sent' ) )
+            .catch( error => window.alert( 'Error sending message: ' + error ) );
+    }
 
 
     //////////////// Construct a media recorder for mic to be repeated for transcription
