@@ -104,7 +104,7 @@ const AudioRecorderLIFF = () => {
     useEffect( () => {
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
             .then( () => {
-                window.alert( 'Success in LIFF initialisation' );
+                //window.alert( 'Success in LIFF initialisation' );
                 initialiseLiffApp()
             } )
             .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
@@ -146,14 +146,14 @@ const AudioRecorderLIFF = () => {
         //    .catch( ( err ) => { window.alert( 'Error in getting LINE user info using token...' + err ) } )
 
         //alert( 'Try get LINE profile' )
-        liff.getProfile()
+        ( liff.isLoggedIn() ) && liff.getProfile()
             .then( profile => {
                 const userId = profile.userId
                 const displayName = profile.displayName
                 setAppID( profile.displayName )
                 //alert( `Name: ${ displayName }, userId: ${ userId }` )
             } )
-            .catch( err => window.alert( 'Error sending message: ' + err ) );
+            .catch( err => window.alert( 'Error in fetching user profile: ' + err ) );
 
         //liff.sendMessages( [ { // メッセージを送信する
         //    'type': 'text',
