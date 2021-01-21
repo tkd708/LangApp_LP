@@ -136,30 +136,30 @@ const AudioRecorderLIFF = () => {
         //window.alert( 'LINE ID token: ' + idToken );
         //window.alert( 'LINE client ID: ' + process.env.GATSBY_LINE_LIFF_Channel_ID );
 
-        //await axios
-        //    .request( {
-        //        url: 'https://api.line.me/oauth2/v2.1/verify',
-        //        method: 'POST',
-        //        headers: {
-        //            "Content-Type": "application/x-www-form-urlencoded"
-        //        },
-        //        data: {
-        //            id_token: idToken,
-        //            client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
-        //        },
-        //    } )
-        //    .then( ( res ) => { window.alert( 'Success in getting LINE user info using token...' + res ) } )
-        //    .catch( ( err ) => { window.alert( 'Error in getting LINE user info using token...' + err ) } )
-
-        //alert( 'Try get LINE profile' )
-        ( liff.isLoggedIn() ) && liff.getProfile()
-            .then( profile => {
-                const userId = profile.userId
-                const displayName = profile.displayName
-                setAppID( profile.displayName )
-                //alert( `Name: ${ displayName }, userId: ${ userId }` )
+        await axios
+            .request( {
+                url: 'https://api.line.me/oauth2/v2.1/verify',
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                data: {
+                    id_token: idToken,
+                    client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
+                },
             } )
-            .catch( err => window.alert( 'Error in fetching user profile: ' + err ) );
+            .then( ( res ) => { window.alert( 'Success in getting LINE user info using token...' + res ) } )
+            .catch( ( err ) => { window.alert( 'Error in getting LINE user info using token...' + err ) } )
+
+            //alert( 'Try get LINE profile' )
+            ( liff.isLoggedIn() ) && liff.getProfile()
+                .then( profile => {
+                    const userId = profile.userId
+                    const displayName = profile.displayName
+                    setAppID( profile.displayName )
+                    //alert( `Name: ${ displayName }, userId: ${ userId }` )
+                } )
+                .catch( err => window.alert( 'Error in fetching user profile: ' + err ) );
 
         //liff.sendMessages( [ { // メッセージを送信する
         //    'type': 'text',
