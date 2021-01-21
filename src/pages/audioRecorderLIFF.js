@@ -76,6 +76,12 @@ const AudioRecorderLIFF = () => {
     }, [ startTime ] )
     const [ endTime, setEndTime ] = useState( '' ); // milliseconds
 
+    const [ blobRecorded, setBlobRecorded ] = useState( null );
+    const blobRecordedRef = useRef( blobRecorded )
+    useEffect( () => {
+        blobRecordedRef.current = blobRecorded
+    }, [ blobRecorded ] )
+
     const [ transcribeErrorArrray, setTranscribeErrorArray ] = useState( [] );
     const transcribeErrorArrrayRef = useRef( transcribeErrorArrray )
     useEffect( () => {
@@ -172,17 +178,30 @@ const AudioRecorderLIFF = () => {
         video: false
     } ).then( stream => {
         recorder = new MediaRecorder( stream, {
-            mimeType: 'audio/webm;codecs=opus',
+            mimeType: isIOS ? 'audio/wav' : 'audio/webm;codecs=opus',
             audioBitsPerSecond: 16 * 1000
         } );
         recorder.addEventListener( 'dataavailable', async ( e ) => {
             if( e.data.size > 0 ) {
-                const base64Audio = await blobToBase64( e.data );
-                console.log( 'converted audio to be sent...', base64Audio.slice( 0, 100 ) )
-                sendGoogle( base64Audio )
+                setBlobRecorded( e.data );
+                //const base64Audio = await blobToBase64( e.data );
+                //console.log( 'converted audio to be sent...', base64Audio.slice( 0, 100 ) )
+                //sendGoogle( base64Audio )
             }
         } );
     } ).catch( err => console.log( err ) )
+
+    /// A tentative idea... setBlob and send it to an external function
+    const blobToBase64ToGoogle = async () => {
+        if( blobRecorded === null ) return;
+        const base64Audio = await blobToBase64( blobRecorded );
+        sendGoogle( base64Audio )
+    }
+
+    useEffect( () => {
+        blobToBase64ToGoogle()
+    }, [ blobRecorded ] )
+
 
 
     /////////////// Audio recorder operation ////////////////
