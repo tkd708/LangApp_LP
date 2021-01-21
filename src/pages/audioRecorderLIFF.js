@@ -115,7 +115,7 @@ const AudioRecorderLIFF = () => {
             .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
     }, [] )
 
-    const initialiseLiffApp = () => {
+    const initialiseLiffApp = async () => {
         //alert( 'LIFF initialised' );
         //alert( 'LINE login status...' + ( liff.isLoggedIn() ) );
 
@@ -134,7 +134,7 @@ const AudioRecorderLIFF = () => {
         const accessToken = liff.getAccessToken();
         window.alert( 'LINE ID token: ' + idToken );
 
-        axios
+        await axios
             .request( {
                 url: 'https://api.line.me/oauth2/v2.1/verify',
                 method: 'POST',
