@@ -107,10 +107,10 @@ const AudioRecorderLIFF = () => {
     useEffect( () => {
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
             .then( () => {
+                alart( 'Check LIFF...' + ( liff.isInClient() ) );
                 alert( 'LIFF initialised' );
-                alert( 'LINE login status...', ( liff.isLoggedIn() ) );
-                alart( 'Check OS...', ( liff.getOS() ) );
-                alart( 'Check LIFF...', ( liff.isInClient() ) );
+                alert( 'LINE login status...' + ( liff.isLoggedIn() ) );
+                alart( 'Check OS...' + ( liff.getOS() ) );
 
                 if( liff.isInClient() ) { // LIFFので動いているのであれば
                     liff.sendMessages( [ { // メッセージを送信する
