@@ -118,7 +118,7 @@ const AudioRecorderLIFF = () => {
 
     const initialiseLiffApp = async () => {
         //alert( 'LIFF initialised' );
-        //alert( 'LINE login status...' + ( liff.isLoggedIn() ) );
+        window.alert( 'LINE login status...' + ( liff.isLoggedIn() ) );
 
         //if( liff.isInClient() ) { // LIFFので動いているのであれば
         //    liff.sendMessages( [ { // メッセージを送信する
@@ -131,12 +131,12 @@ const AudioRecorderLIFF = () => {
 
         !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
 
-        const idToken = liff.getIDToken();
+        const idToken = await liff.getIDToken();
         //const accessToken = liff.getAccessToken();
-        //window.alert( 'LINE ID token: ' + idToken );
+        window.alert( 'LINE ID token: ' + idToken );
         //window.alert( 'LINE client ID: ' + process.env.GATSBY_LINE_LIFF_Channel_ID );
 
-        await axios
+        axios
             .request( {
                 url: 'https://api.line.me/oauth2/v2.1/verify',
                 method: 'POST',
