@@ -106,6 +106,17 @@ const AudioRecorderLIFF = () => {
 
     const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
 
+    // LINE login
+    const channelId = process.env.GATSBY_LINE_LIFF_Channel_ID;
+    const callbackUrl = 'http://localhost:8000/audioRecorderLIFF' //'https://langapp.netlify.app/audiorecorderliff/';//;
+    const state = uuidv4();
+    const lineLoginUrl = `https://access.line.me/dialog/oauth/weblogin` +
+        `?response_type=code` +
+        `&client_id=${ channelId }` +
+        `&redirect_uri=${ callbackUrl }` +
+        `&state=${ state }`;
+
+
     // LIFF processes
     useEffect( () => {
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
@@ -117,7 +128,7 @@ const AudioRecorderLIFF = () => {
     }, [] )
 
     const initialiseLiffApp = async () => {
-        //alert( 'LIFF initialised' );
+        alert( 'LIFF initialised' );
         window.alert( 'LINE login status...' + ( liff.isLoggedIn() ) );
 
         //if( liff.isInClient() ) { // LIFFので動いているのであれば
@@ -129,14 +140,16 @@ const AudioRecorderLIFF = () => {
         //        .catch( err => window.alert( 'Error sending message: ' + err ) );
         //}
 
+        //( liff === null ) &&
         !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
 
         const idToken = await liff.getIDToken();
-        //const accessToken = liff.getAccessToken();
+        const accessToken = await liff.getAccessToken();
         window.alert( 'LINE ID token: ' + idToken );
+        window.alert( 'LINE access token: ' + accessToken );
         //window.alert( 'LINE client ID: ' + process.env.GATSBY_LINE_LIFF_Channel_ID );
 
-        axios
+        const lineIdVerify = await axios
             .request( {
                 url: 'https://api.line.me/oauth2/v2.1/verify',
                 method: 'POST',
@@ -145,21 +158,37 @@ const AudioRecorderLIFF = () => {
                 },
                 data: {
                     id_token: idToken,
-                    client_id: process.env.GATSBY_LINE_LIFFID, //process.env.GATSBY_LINE_LIFF_Channel_ID,
+                    client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
                 },
             } )
-            .then( ( res ) => { window.alert( 'Success in getting LINE user info using token...' + res ) } )
-            .catch( ( err ) => { window.alert( 'Error in getting LINE user info using token...' + err ) } )
+            .then( res => res )
+            .catch( err => err );
 
-            //alert( 'Try get LINE profile' )
-            ( liff.isLoggedIn() ) && liff.getProfile()
-                .then( profile => {
-                    const userId = profile.userId
-                    const displayName = profile.displayName
-                    setAppID( profile.displayName )
-                    //alert( `Name: ${ displayName }, userId: ${ userId }` )
-                } )
-                .catch( err => window.alert( 'Error in fetching user profile: ' + err ) );
+        window.alert( 'Trying to get LINE user info using id token...' + lineIdVerify );
+
+        const accessTokenVerify = await axios
+            .request( {
+                url: 'https://api.line.me/oauth2/v2.1/verify',
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                params: { access_token: accessToken },
+            } )
+            .then( res => res )
+            .catch( err => err );
+
+        window.alert( 'Trying to verify the access token...' + accessTokenVerify );
+
+        //alert( 'Try get LINE profile' )
+        ( liff.isLoggedIn() ) && liff.getProfile()
+            .then( profile => {
+                const userId = profile.userId
+                const displayName = profile.displayName
+                setAppID( profile.displayName )
+                //alert( `Name: ${ displayName }, userId: ${ userId }` )
+            } )
+            .catch( err => window.alert( 'Error in fetching user profile: ' + err ) );
 
         //liff.sendMessages( [ { // メッセージを送信する
         //    'type': 'text',
@@ -404,8 +433,13 @@ const AudioRecorderLIFF = () => {
                 </Select>
             </div>
 
+
             <h1 style={ { color: 'red' } }>{ "Is this from iOS? ..." + isIOS }</h1>
             {( typeof window !== `undefined` ) && <p style={ { color: 'red' } }>{ window.navigator.userAgent.toLowerCase() }</p> }
+
+            <a href={ lineLoginUrl } id="lineLogin">
+                { ( <button style={ { marginBottom: '50px' } }>line login</button> ) }
+            </a>
 
             <TextField
                 required
