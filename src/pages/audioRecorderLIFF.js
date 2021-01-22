@@ -146,7 +146,9 @@ const AudioRecorderLIFF = () => {
         const idToken = await liff.getIDToken();
         const accessToken = await liff.getAccessToken();
         window.alert( 'LINE ID token: ' + idToken );
+        console.log( 'LINE ID token: ' + idToken );
         window.alert( 'LINE access token: ' + accessToken );
+        console.log( 'LINE access token: ' + accessToken );
         //window.alert( 'LINE client ID: ' + process.env.GATSBY_LINE_LIFF_Channel_ID );
 
         const lineIdVerify = await axios
@@ -162,9 +164,13 @@ const AudioRecorderLIFF = () => {
                 },
             } )
             .then( res => res )
-            .catch( err => err );
+            .catch( err => {
+                err
+                console.log( 'login id verify...', err )
+            } );
 
         window.alert( 'Trying to get LINE user info using id token...' + lineIdVerify );
+        console.log( 'Trying to get LINE user info using id token...' + lineIdVerify );
 
         const accessTokenVerify = await axios
             .request( {
@@ -176,9 +182,15 @@ const AudioRecorderLIFF = () => {
                 params: { access_token: accessToken },
             } )
             .then( res => res )
-            .catch( err => err );
+            .catch( err => {
+                err
+                console.log( 'access token verify...', err )
+            } );
 
         window.alert( 'Trying to verify the access token...' + accessTokenVerify );
+        console.log( 'Trying to verify the access token...' + accessTokenVerify );
+
+
 
         //alert( 'Try get LINE profile' )
         ( liff.isLoggedIn() ) && liff.getProfile()
