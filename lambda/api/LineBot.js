@@ -50,15 +50,6 @@ module.exports.handler = async function ( event, context ) {
             .then( res => console.log( 'Adding the user name and id on dynamoDB was successful...', res ) )
             .catch( err => console.log( 'Adding the user name and id on dynamoDB failed...', err ) );
 
-        // Notify the user that the ID is registered
-        const message = {
-            'type': 'text',
-            'text': `ご登録どうもありがとうございます！LangAppのウェブサイトで英会話を録音される際に、「お名前」の項目にLINEの表示名「 ${ userProfile.displayName }」をご入力ください。音声とその書き起こし、英会話の分析結果をLangAppBotよりお届けいたします！`,
-        };
-        await client.replyMessage( body.events[ 0 ].replyToken, message )
-            .then( res => console.log( 'user id for registration reply attempted...', res ) )
-            .catch( err => console.log( 'error in user id for registration reply...', err ) );
-
         ///// Finish the api
         let lambdaResponse = {
             statusCode: 200,

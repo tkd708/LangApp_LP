@@ -174,6 +174,7 @@ const AudioRecorder = () => {
     const liffFechID = async () => {
         if( liff.isLoggedIn() ) {
             const idToken = await liff.getIDToken();
+            ( idToken ) && console.log( 'Success in fetching ID token' );
             setLineIdToken( idToken )
             setLineLoginStatus( true )
         }
@@ -470,7 +471,7 @@ const AudioRecorder = () => {
 
             <h2>英会話分析デモ</h2>
             <p>実際にオンライン英会話を録音してみましょう！</p>
-            <p>LINE Bot「LangApp」(QRコードから友達追加)と連動して記録・分析をお届けします！</p>
+            <p>LINE Bot「LangApp」(QRコード下記)と連動して記録・分析をお届けします！</p>
             <img src={ instructionImg } style={ { width: '300px', margin: '20px' } } />
             <p>{ lineLoginStatus ? 'LINEログイン完了です！録音を開始してください' : 'LINEにログインしてから録音を開始してください。' }</p>
             {

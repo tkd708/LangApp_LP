@@ -119,11 +119,11 @@ const AudioRecorderLIFF = () => {
     }, [] )
 
     const initialiseLiffApp = async () => {
+        return
         !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
         const idToken = await liff.getIDToken();
 
         //alert( 'Try get LINE profile' )
-        return
         ( liff.isLoggedIn() ) && liff.getProfile()
             .then( profile => {
                 const userId = profile.userId
