@@ -32,7 +32,7 @@ module.exports.handler = async function ( event, context ) {
 
     const body = JSON.parse( event.body );
 
-    console.log( 'app ID...', body.appID );
+    console.log( 'line id token...', body.lineIdToken );
     console.log( 'recording ID...', body.recordingID );
     console.log( 'received audio...', body.audioString );
 
@@ -49,11 +49,14 @@ module.exports.handler = async function ( event, context ) {
         } )
         .then( res => {
             console.log( 'Trying to get LINE user info using id token...' + res.data )
-            res.data
+            return ( res.data )
         } )
-        .catch( err => console.log( 'login id verify...', err ) );
+        .catch( err => {
+            console.log( 'login id verify...', err )
+            return ( err )
+        } );
     const userLineId = userLineData.sub;
-    const userLineName = userLineData.name || body.appID;
+    const userLineName = userLineData.name;
 
 
     /////////////////////// Encoding wav audio to m4a
@@ -121,12 +124,12 @@ module.exports.handler = async function ( event, context ) {
 
 
     ///////////////// Get LINE user ID from dynamoDB corresponding to the user name (appID) input by the user on LP
-    const docClient = new AWS.DynamoDB.DocumentClient();
-    const params = {
-        TableName: 'LangAppUsers',
-        KeyConditionExpression: 'UserName = :UserName ',
-        ExpressionAttributeValues: { ':UserName': body.appID, }
-    };
+    //const docClient = new AWS.DynamoDB.DocumentClient();
+    //const params = {
+    //    TableName: 'LangAppUsers',
+    //    KeyConditionExpression: 'UserName = :UserName ',
+    //    ExpressionAttributeValues: { ':UserName': body.appID, }
+    //};
     //const userLineId = await docClient.query( params )
     //    .promise()
     //    .then( ( data ) => {

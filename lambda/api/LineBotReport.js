@@ -84,11 +84,11 @@ module.exports.handler = async function ( event, context ) {
 
 
     ///////////// Fetch the LINE user id from dynamoDB for push messages
-    const params = {
-        TableName: 'LangAppUsers',
-        KeyConditionExpression: 'UserName = :UserName ',
-        ExpressionAttributeValues: { ':UserName': body.appID, }
-    };
+    //const params = {
+    //    TableName: 'LangAppUsers',
+    //    KeyConditionExpression: 'UserName = :UserName ',
+    //    ExpressionAttributeValues: { ':UserName': body.appID, }
+    //};
     //const userLineId = await docClient.query( params )
     //    .promise()
     //    .then( ( data ) => {
@@ -116,11 +116,14 @@ module.exports.handler = async function ( event, context ) {
         } )
         .then( res => {
             console.log( 'Trying to get LINE user info using id token...' + res.data )
-            res.data
+            return ( res.data )
         } )
-        .catch( err => console.log( 'login id verify...', err ) );
+        .catch( err => {
+            console.log( 'login id verify...', err )
+            return ( err )
+        } );
     const userLineId = userLineData.sub;
-    const userLineName = userLineData.name || body.appID;
+    const userLineName = userLineData.name;
 
 
 

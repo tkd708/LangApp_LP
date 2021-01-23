@@ -41,11 +41,11 @@ const COMMON_WORDS = [
 const AudioRecorder = () => {
 
     const [ lineIdToken, setLineIdToken ] = useState( '' );
-    const [ appID, setAppID ] = useState( '' );
-    const appIDRef = useRef( appID )
+    const lineIdTokenRef = useRef( lineIdToken )
     useEffect( () => {
-        appIDRef.current = appID
-    }, [ appID ] )
+        lineIdTokenRef.current = lineIdToken
+    }, [ lineIdToken ] )
+
     const [ recordingID, setRecordingID ] = useState( null );
     const recordingIDRef = useRef( recordingID )
     useEffect( () => {
@@ -160,7 +160,7 @@ const AudioRecorder = () => {
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
             .then( () => {
                 console.log( 'Success in LIFF initialisation' );
-                liffFechID()
+                liffFechID();
             } )
             .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
     }, [] )
@@ -168,28 +168,7 @@ const AudioRecorder = () => {
     const liffFechID = async () => {
         if( liff.isLoggedIn() ) {
             const idToken = await liff.getIDToken();
-            console.log( idToken )
             setLineIdToken( idToken )
-            var qs = require( 'qs' );
-            axios
-                .request( {
-                    url: 'https://api.line.me/oauth2/v2.1/verify',
-                    method: 'POST',
-                    data: qs.stringify( {
-                        id_token: idToken,
-                        client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
-                    } ),
-                } )
-                .then( res => console.log( 'Trying to get LINE user info using id token...' + res.data.sub ) )
-                .catch( err => console.log( 'login id verify...', err ) );
-            liff.getProfile()
-                .then( profile => {
-                    const userId = profile.userId
-                    const displayName = profile.displayName
-                    setAppID( profile.displayName )
-                    console.log( `Name: ${ displayName }, userId: ${ userId }` )
-                } )
-                .catch( err => console.log( 'Error in fetching user profile: ' + err ) );
         }
     }
 
@@ -331,8 +310,7 @@ const AudioRecorder = () => {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotTranscript',
                 method: 'POST',
                 data: {
-                    lineIdToken: lineIdToken,
-                    appID: appIDRef.current,
+                    lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
                     audioString: recordString,
                     transcript: transcript,
@@ -412,7 +390,7 @@ const AudioRecorder = () => {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotReport',
                 method: 'POST',
                 data: {
-                    appID: appIDRef.current,
+                    lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
                     lengthMinute: conversationLength.toFixed( 1 ),
                     transcript: transcript,
@@ -488,18 +466,7 @@ const AudioRecorder = () => {
             <p>*LINE Bot「LangApp」と連動して記録・分析できるようになりました！</p>
             <img src={ instructionImg } style={ { width: '80vw', margin: '20px' } } />
             <button style={ { fontSize: 40 } } onClick={ () => { lineLogin(); } }>Line Login</button>
-            <p>Botから登録後、お名前を下記に入力してから録音を開始してください。</p>
-            <TextField
-                required
-                id="filled-required"
-                label="お名前" // to be replaced with LangApp ID
-                variant="filled"
-                value={ appID }
-                onChange={ ( e ) => { ( !isRecording ) && setAppID( e.target.value ); } }
-                inputProps={ {
-                    style: { backgroundColor: 'white', marginBottom: '20px' },
-                } }
-            />
+            <p>Botを友達追加後、LINEにログインしてから録音を開始してください。</p>
             <Button
                 style={ { margin: '20px' } }
                 //variant="contained"
