@@ -1,4 +1,6 @@
 require( 'dotenv' ).config();
+const axios = require( 'axios' );
+
 const line = require( '@line/bot-sdk' );
 const client = new line.Client( {
     channelAccessToken: process.env.GATSBY_LINE_accesstoken,
