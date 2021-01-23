@@ -153,9 +153,11 @@ module.exports.handler = async function ( event, context ) {
     //////////////////////////////////////// Fetch the past records from dynamoDB by UserName
     const paramsDynamo = {
         TableName: 'LangAppData',
-        KeyConditionExpression: 'UserName = :UserName ',
-        ExpressionAttributeValues: { ':UserName': userLineName, }
+        IndexName: 'UserLineId-index',
+        KeyConditionExpression: 'UserLineId = :UserLineId ',
+        ExpressionAttributeValues: { ':UserLineId': userLineId, } //
     };
+
     const userRecords = await docClient.query( paramsDynamo )
         .promise()
         .then( data => data.Items )
