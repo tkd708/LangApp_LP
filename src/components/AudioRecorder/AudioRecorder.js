@@ -8,7 +8,12 @@ import TextField from '@material-ui/core/TextField';
 //import Button from '@material-ui/core/Button';
 import Button from "../Button/button";
 
-import instructionImg from "../../images/line-bot-instruction.png";
+import instructionImg from "../../images/line-bot-qr.png";
+import lineButtonBase from "../../images/btn_login_base.png";
+import lineButtonHover from "../../images/btn_login_hover.png";
+import lineButtonPress from "../../images/btn_login_press.png";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLine } from '@fortawesome/free-brands-svg-icons'
 
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import PauseIcon from '@material-ui/icons/Pause';
@@ -40,6 +45,7 @@ const COMMON_WORDS = [
 
 const AudioRecorder = () => {
 
+    const [ lineLoginStatus, setLineLoginStatus ] = useState( false );
     const [ lineIdToken, setLineIdToken ] = useState( '' );
     const lineIdTokenRef = useRef( lineIdToken )
     useEffect( () => {
@@ -169,6 +175,7 @@ const AudioRecorder = () => {
         if( liff.isLoggedIn() ) {
             const idToken = await liff.getIDToken();
             setLineIdToken( idToken )
+            setLineLoginStatus( true )
         }
     }
 
@@ -425,7 +432,7 @@ const AudioRecorder = () => {
                     url,
                     method: 'POST',
                     data: {
-                        appID: appID,
+                        lineIdToken: lineIdTokenRef.current,
                         recordingID: recordingID,
                         audio: audioString,
                     },
@@ -462,11 +469,23 @@ const AudioRecorder = () => {
             </div>
 
             <h2>英会話分析デモ</h2>
-            <p>実際にオンライン英会話を録音してみましょう！(マイク付きイヤホン推奨)</p>
-            <p>*LINE Bot「LangApp」と連動して記録・分析できるようになりました！</p>
-            <img src={ instructionImg } style={ { width: '80vw', margin: '20px' } } />
-            <button style={ { fontSize: 40 } } onClick={ () => { lineLogin(); } }>Line Login</button>
-            <p>Botを友達追加後、LINEにログインしてから録音を開始してください。</p>
+            <p>実際にオンライン英会話を録音してみましょう！</p>
+            <p>LINE Bot「LangApp」(QRコードから友達追加)と連動して記録・分析をお届けします！</p>
+            <img src={ instructionImg } style={ { width: '300px', margin: '20px' } } />
+            <p>{ lineLoginStatus ? 'LINEログイン完了です！録音を開始してください' : 'LINEにログインしてから録音を開始してください。' }</p>
+            {
+                !lineLoginStatus &&
+                <img src={ lineButtonBase }//"../../images/btn_login_base.png"
+                    style={ { width: '180px', marginBottom: '30px' } }
+                    class="btn btn-block btn-social button"
+                    onClick={ () => { lineLogin(); } } />
+            }
+            {/*<LineButtonWrapper>
+                 <FontAwesomeIcon icon={ faLine } size="3x" class="icon" />
+                <a id="line-button" class="btn btn-block btn-social button">
+                    LINEでログイン
+                </a>
+            </LineButtonWrapper>*/}
             <Button
                 style={ { margin: '20px' } }
                 //variant="contained"
@@ -475,7 +494,8 @@ const AudioRecorder = () => {
                 onClick={ () => { isRecording ? stopRecording() : startRecording() } }
             >
             </Button>
-            { ( !isRecording && blobAppendedLong !== null ) &&
+            {
+                ( !isRecording && blobAppendedLong !== null ) &&
                 // ( transcript !== null ) &&
                 <div>
                     {/*<p>いかがでしたでしょうか？5分間の会話の書き起こしだけでも、多くの気づきや学びがあるのではないでしょうか。録音された会話全体の書き起こしや、さらなる詳細な分析結果を確認してみませんか？</p>*/ }
@@ -483,7 +503,8 @@ const AudioRecorder = () => {
                     <PauseIcon style={ { fontSize: 40 } } onClick={ () => { audioRecordPause(); } }></PauseIcon>
                     <StopIcon style={ { fontSize: 40 } } onClick={ () => { audioRecordStop(); } }></StopIcon>
                     <a href={ downloadUrl } download="recording" id="download"> <GetAppIcon style={ { fontSize: 40, color: "white" } } /></a>
-                </div> }
+                </div>
+            }
             <Card style={ { width: '70vw', margin: '20px' } } >
                 <CardContent>
                     <Typography color="textSecondary" gutterBottom>書き起こし</Typography>
@@ -497,10 +518,13 @@ const AudioRecorder = () => {
                     )
                 } ) }
             </Card>
-            { ( transcript === null ) &&
-                <p>会話の録音を終了し、分析が完了すると結果が以下に表示されます。</p> }
+            {
+                ( transcript === null ) &&
+                <p>会話の録音を終了し、分析が完了すると結果が以下に表示されます。</p>
+            }
 
-            { ( transcript !== null ) &&
+            {
+                ( transcript !== null ) &&
                 <Card style={ { width: '80vw', marginTop: '20px' } } >
                     <CardContent>
                         <Typography color="textSecondary" gutterBottom>今回の"あなた"の会話の分析結果はこちら！</Typography>
@@ -518,5 +542,36 @@ const AudioRecorder = () => {
 
     );
 }
+
+const LineButtonWrapper = styled.section`
+.button { 
+  color: #EEEEE;
+  font-size: 15px;
+  background-color: #00C300;  
+}
+
+.button:hover {
+  color: #EEEEE;
+  background-color: #00E000
+}
+
+.button:active {
+  background-color: #00B300
+}
+
+.icon { 
+  background-color: #EEEEE;
+  color: #00C300;  
+}
+
+.icon:hover {
+  background-color: #EEEEE;
+  color: #00E000
+}
+
+.icon:active {
+  color: #00B300
+}
+`
 
 export default AudioRecorder;
