@@ -239,7 +239,7 @@ const AudioRecorder = () => {
         if( !blobAppendedLong ) return
         const blobURL = myURL.createObjectURL( blobAppendedLong );
         setDownloadUrl( blobURL );
-        sendAWS( blobAppendedLong );
+        //sendAWS( blobAppendedLong );
 
         const tmp = new Audio( blobURL );
         setAudioPlayer( tmp );
@@ -415,7 +415,7 @@ const AudioRecorder = () => {
     }, [ transcript ] )
 
 
-    /////////////// send the full audio file to AWS
+    /////////////// send the full audio file to AWS... not successful if the audio is too long, tentatively withdrawn
     const sendAWS = ( blob ) => {
 
         const reader = new FileReader();
