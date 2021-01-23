@@ -81,6 +81,8 @@ const AudioRecorderLIFF = () => {
     useEffect( () => {
         blobRecordedRef.current = blobRecorded
     }, [ blobRecorded ] )
+    const [ audioPlayer, setAudioPlayer ] = useState( null );
+
 
     const [ transcribeErrorArrray, setTranscribeErrorArray ] = useState( [] );
     const transcribeErrorArrrayRef = useRef( transcribeErrorArrray )
@@ -144,53 +146,28 @@ const AudioRecorderLIFF = () => {
         !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
 
         const idToken = await liff.getIDToken();
-        const accessToken = await liff.getAccessToken();
-        window.alert( 'LINE ID token: ' + idToken );
-        console.log( 'LINE ID token: ' + idToken );
-        window.alert( 'LINE access token: ' + accessToken );
-        console.log( 'LINE access token: ' + accessToken );
-        //window.alert( 'LINE client ID: ' + process.env.GATSBY_LINE_LIFF_Channel_ID );
-
+        var qs = require( 'qs' );
         const lineIdVerify = await axios
+            //.post( 'https://api.line.me/oauth2/v2.1/verify', qs.stringify( {
+            //    id_token: idToken,
+            //    client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
+            //} ) )
             .request( {
                 url: 'https://api.line.me/oauth2/v2.1/verify',
                 method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                data: {
+                data: qs.stringify( {
                     id_token: idToken,
                     client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
-                },
+                } ),
             } )
             .then( res => res )
             .catch( err => {
-                err
                 console.log( 'login id verify...', err )
+                return ( err )
             } );
 
-        window.alert( 'Trying to get LINE user info using id token...' + lineIdVerify );
-        console.log( 'Trying to get LINE user info using id token...' + lineIdVerify );
-
-        const accessTokenVerify = await axios
-            .request( {
-                url: 'https://api.line.me/oauth2/v2.1/verify',
-                method: 'GET',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                params: { access_token: accessToken },
-            } )
-            .then( res => res )
-            .catch( err => {
-                err
-                console.log( 'access token verify...', err )
-            } );
-
-        window.alert( 'Trying to verify the access token...' + accessTokenVerify );
-        console.log( 'Trying to verify the access token...' + accessTokenVerify );
-
-
+        window.alert( 'Trying to get LINE user info using id token...' + lineIdVerify.data.sub );
+        console.log( 'Trying to get LINE user info using id token...' + lineIdVerify.data.sub );
 
         //alert( 'Try get LINE profile' )
         ( liff.isLoggedIn() ) && liff.getProfile()
@@ -210,7 +187,6 @@ const AudioRecorderLIFF = () => {
         //    .catch( error => window.alert( 'Error sending message: ' + error ) );
     }
 
-
     //////////////// Construct a media recorder for mic to be repeated for transcription
     let recorder
 
@@ -219,7 +195,7 @@ const AudioRecorderLIFF = () => {
         video: false
     } ).then( stream => {
         recorder = new MediaRecorder( stream, {
-            mimeType: isIOS ? 'audio/wav' : 'audio/webm;codecs=opus',
+            mimeType: isIOS ? 'audio/mp4' : 'audio/webm;codecs=opus',
             audioBitsPerSecond: 16 * 1000
         } );
         recorder.addEventListener( 'dataavailable', async ( e ) => {
@@ -286,6 +262,31 @@ const AudioRecorderLIFF = () => {
         setEndTime( endTime.getTime() );
         console.log( 'recoding ended, it took', ( endTime.getTime() - startTime ) / 1000, 'seconds' );
     }
+
+    ///////////////// Recording is done >> generate download link and audio player as well as send the full audio to AWS S3
+    const myURL = typeof window !== `undefined` ? window.URL || window.webkitURL : ''
+    useEffect( () => {
+        if( !blobRecorded ) return
+        const blobURL = myURL.createObjectURL( blobRecorded );
+        const tmp = new Audio( blobURL );
+        setAudioPlayer( tmp );
+        //console.log( 'audioPlayer...', tmp )
+    }, [ blobRecorded ] )
+
+    const audioRecordPlay = () => {
+        if( !audioPlayer ) return
+        audioPlayer.play()
+    }
+    const audioRecordPause = () => {
+        if( !audioPlayer ) return
+        audioPlayer.pause()
+    }
+    const audioRecordStop = () => {
+        if( !audioPlayer ) return
+        audioPlayer.currentTime = 0;
+        audioPlayer.pause()
+    }
+
 
 
     ///////////////// Functions to convert and send blobs to transcribe //////////////////
@@ -452,6 +453,9 @@ const AudioRecorderLIFF = () => {
             <a href={ lineLoginUrl } id="lineLogin">
                 { ( <button style={ { marginBottom: '50px' } }>line login</button> ) }
             </a>
+            <button style={ { fontSize: 40 } } onClick={ () => { audioRecordPlay(); } }>Play</button>
+            <button style={ { fontSize: 40 } } onClick={ () => { audioRecordPause(); } }>Pause</button>
+            <button style={ { fontSize: 40 } } onClick={ () => { audioRecordStop(); } }>Stop</button>
 
             <TextField
                 required

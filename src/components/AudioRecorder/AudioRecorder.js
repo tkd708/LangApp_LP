@@ -23,6 +23,7 @@ import TranscribeLangs from './transcribeLangs.json';
 
 import { v4 as uuidv4 } from 'uuid';
 
+const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '';//"window" is not available during server side rendering.
 
 const COMMON_WORDS = [
     'yes', 'no', 'yeah', 'ok', 'okay',
@@ -39,6 +40,7 @@ const COMMON_WORDS = [
 
 const AudioRecorder = () => {
 
+    const [ lineIdToken, setLineIdToken ] = useState( '' );
     const [ appID, setAppID ] = useState( '' );
     const appIDRef = useRef( appID )
     useEffect( () => {
@@ -154,7 +156,46 @@ const AudioRecorder = () => {
     useEffect( () => {
         constructMediaRecorderMic()
         constructMediaRecorderMicLong();
+
+        ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
+            .then( () => {
+                console.log( 'Success in LIFF initialisation' );
+                liffFechID()
+            } )
+            .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
     }, [] )
+
+    const liffFechID = async () => {
+        if( liff.isLoggedIn() ) {
+            const idToken = await liff.getIDToken();
+            console.log( idToken )
+            setLineIdToken( idToken )
+            var qs = require( 'qs' );
+            axios
+                .request( {
+                    url: 'https://api.line.me/oauth2/v2.1/verify',
+                    method: 'POST',
+                    data: qs.stringify( {
+                        id_token: idToken,
+                        client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
+                    } ),
+                } )
+                .then( res => console.log( 'Trying to get LINE user info using id token...' + res.data.sub ) )
+                .catch( err => console.log( 'login id verify...', err ) );
+            liff.getProfile()
+                .then( profile => {
+                    const userId = profile.userId
+                    const displayName = profile.displayName
+                    setAppID( profile.displayName )
+                    console.log( `Name: ${ displayName }, userId: ${ userId }` )
+                } )
+                .catch( err => console.log( 'Error in fetching user profile: ' + err ) );
+        }
+    }
+
+    const lineLogin = () => {
+        !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
+    }
 
 
     /////////////// Audio recorder operation ////////////////
@@ -290,6 +331,7 @@ const AudioRecorder = () => {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotTranscript',
                 method: 'POST',
                 data: {
+                    lineIdToken: lineIdToken,
                     appID: appIDRef.current,
                     recordingID: recordingIDRef.current,
                     audioString: recordString,
@@ -445,6 +487,7 @@ const AudioRecorder = () => {
             <p>実際にオンライン英会話を録音してみましょう！(マイク付きイヤホン推奨)</p>
             <p>*LINE Bot「LangApp」と連動して記録・分析できるようになりました！</p>
             <img src={ instructionImg } style={ { width: '80vw', margin: '20px' } } />
+            <button style={ { fontSize: 40 } } onClick={ () => { lineLogin(); } }>Line Login</button>
             <p>Botから登録後、お名前を下記に入力してから録音を開始してください。</p>
             <TextField
                 required

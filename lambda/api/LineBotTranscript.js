@@ -36,7 +36,27 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'recording ID...', body.recordingID );
     console.log( 'received audio...', body.audioString );
 
-    // Encoding wav audio to m4a... maybe not necessary
+    ///////////////// Get LINE user info using ID token
+    var qs = require( 'qs' );
+    const userLineData = await axios
+        .request( {
+            url: 'https://api.line.me/oauth2/v2.1/verify',
+            method: 'POST',
+            data: qs.stringify( {
+                id_token: body.lineIdToken,
+                client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
+            } ),
+        } )
+        .then( res => {
+            console.log( 'Trying to get LINE user info using id token...' + res.data )
+            res.data
+        } )
+        .catch( err => console.log( 'login id verify...', err ) );
+    const userLineId = userLineData.sub;
+    const userLineName = userLineData.name || body.appID;
+
+
+    /////////////////////// Encoding wav audio to m4a
     const decodedAudio = new Buffer.from( body.audioString, 'base64' );
     const decodedPath = '/tmp/decoded.wav';
     await fsp.writeFile( decodedPath, decodedAudio );
@@ -65,7 +85,9 @@ module.exports.handler = async function ( event, context ) {
     const encodedFile = await fsp.readFile( encodedPath );
     console.log( 'converted audio: ' + encodedFile.toString( 'base64' ).slice( 0, 100 ) )
 
-    // initialise AWS
+
+
+    ////////////////////////// initialise AWS
     AWS.config = new AWS.Config( {
         accessKeyId: process.env.GATSBY_AWS_accessKey,
         secretAccessKey: process.env.GATSBY_AWS_secretKey,
@@ -82,7 +104,7 @@ module.exports.handler = async function ( event, context ) {
     const uploadParams = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
     const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
     const time = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( -8 );
-    uploadParams.Key = `${ date }-${ body.appID }-${ body.recordingID }/audio-${ time }.m4a`;
+    uploadParams.Key = `${ date }-${ userLineName }-${ body.recordingID }/audio-${ time }.m4a`;
     uploadParams.Body = encodedFile;
 
     // call S3 to retrieve upload file to specified bucket and obtain the file url
@@ -96,6 +118,8 @@ module.exports.handler = async function ( event, context ) {
     console.log( 's3 file url...', fileURL );
 
 
+
+
     ///////////////// Get LINE user ID from dynamoDB corresponding to the user name (appID) input by the user on LP
     const docClient = new AWS.DynamoDB.DocumentClient();
     const params = {
@@ -103,14 +127,16 @@ module.exports.handler = async function ( event, context ) {
         KeyConditionExpression: 'UserName = :UserName ',
         ExpressionAttributeValues: { ':UserName': body.appID, }
     };
-    const userLineId = await docClient.query( params )
-        .promise()
-        .then( ( data ) => {
-            console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
-            return ( data.Items[ 0 ].UserLineId );
-        } )
-        .catch( err => console.log( 'LINE user ID fetch from dynamoDB failed...', err ) );
-    console.log( 'fetched line id...', userLineId )
+    //const userLineId = await docClient.query( params )
+    //    .promise()
+    //    .then( ( data ) => {
+    //        console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
+    //        return ( data.Items[ 0 ].UserLineId );
+    //    } )
+    //    .catch( err => console.log( 'LINE user ID fetch from dynamoDB failed...', err ) );
+    //console.log( 'fetched line id...', userLineId )
+
+
 
 
     ///////////////// push message of audio

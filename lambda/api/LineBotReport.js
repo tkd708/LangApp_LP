@@ -89,17 +89,39 @@ module.exports.handler = async function ( event, context ) {
         KeyConditionExpression: 'UserName = :UserName ',
         ExpressionAttributeValues: { ':UserName': body.appID, }
     };
-    const userLineId = await docClient.query( params )
-        .promise()
-        .then( ( data ) => {
-            console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
-            return ( data.Items[ 0 ].UserLineId );
+    //const userLineId = await docClient.query( params )
+    //    .promise()
+    //    .then( ( data ) => {
+    //        console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
+    //        return ( data.Items[ 0 ].UserLineId );
+    //    } )
+    //    .catch(
+    //        ( err ) => {
+    //            console.log( 'LINE user ID fetch from dynamoDB failed...', err );
+    //        } );
+    //console.log( 'fetched line id...', userLineId )
+
+
+
+    ///////////////// Get LINE user info using ID token
+    var qs = require( 'qs' );
+    const userLineData = await axios
+        .request( {
+            url: 'https://api.line.me/oauth2/v2.1/verify',
+            method: 'POST',
+            data: qs.stringify( {
+                id_token: body.lineIdToken,
+                client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
+            } ),
         } )
-        .catch(
-            ( err ) => {
-                console.log( 'LINE user ID fetch from dynamoDB failed...', err );
-            } );
-    console.log( 'fetched line id...', userLineId )
+        .then( res => {
+            console.log( 'Trying to get LINE user info using id token...' + res.data )
+            res.data
+        } )
+        .catch( err => console.log( 'login id verify...', err ) );
+    const userLineId = userLineData.sub;
+    const userLineName = userLineData.name || body.appID;
+
 
 
     ////////////////////////////// Store the analysis results to dynamoDB (atm from LP but analysis will be moved to this netlify functions)
@@ -108,8 +130,9 @@ module.exports.handler = async function ( event, context ) {
     const paramsReport = {
         TableName: 'LangAppData',
         Item: {
-            UserName: body.appID,
+            UserName: userLineName,
             RecordingID: body.recordingID,
+            UserLineID: userLineId,
             Date: date,
             LengthMinute: body.lengthMinute,
             WordsTotal: body.wordsTotal,
@@ -128,7 +151,7 @@ module.exports.handler = async function ( event, context ) {
     const paramsDynamo = {
         TableName: 'LangAppData',
         KeyConditionExpression: 'UserName = :UserName ',
-        ExpressionAttributeValues: { ':UserName': body.appID, }
+        ExpressionAttributeValues: { ':UserName': userLineName, }
     };
     const userRecords = await docClient.query( paramsDynamo )
         .promise()
@@ -314,7 +337,7 @@ module.exports.handler = async function ( event, context ) {
     // Total words
     const paramsS3WordsTotal = {
         Bucket: 'langapp-audio-analysis',
-        Key: `${ date }-${ body.appID }-${ body.recordingID }/wordsTotal.png`,
+        Key: `${ date }-${ userLineName }-${ body.recordingID }/wordsTotal.png`,
         Body: imageWordsTotal, // buffer or base
         ContentType: 'image/png',
         ACL: 'public-read',
@@ -330,7 +353,7 @@ module.exports.handler = async function ( event, context ) {
     // Words per minute
     const paramsS3WordsPerMinute = {
         Bucket: 'langapp-audio-analysis',
-        Key: `${ date }-${ body.appID }-${ body.recordingID }/wordsPerMinute.png`,
+        Key: `${ date }-${ userLineName }-${ body.recordingID }/wordsPerMinute.png`,
         Body: imageWordsPerMinute, // buffer or base
         ContentType: 'image/png',
         ACL: 'public-read',
@@ -346,7 +369,7 @@ module.exports.handler = async function ( event, context ) {
     // Vocab size
     const paramsS3VocabSize = {
         Bucket: 'langapp-audio-analysis',
-        Key: `${ date }-${ body.appID }-${ body.recordingID }/vocabSize.png`,
+        Key: `${ date }-${ userLineName }-${ body.recordingID }/vocabSize.png`,
         Body: imageVocabSize, // buffer or base
         ContentType: 'image/png',
         ACL: 'public-read',
