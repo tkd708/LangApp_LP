@@ -108,17 +108,6 @@ const AudioRecorderLIFF = () => {
 
     const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
 
-    // LINE login
-    const channelId = process.env.GATSBY_LINE_LIFF_Channel_ID;
-    const callbackUrl = 'http://localhost:8000/audioRecorderLIFF' //'https://langapp.netlify.app/audiorecorderliff/';//;
-    const state = uuidv4();
-    const lineLoginUrl = `https://access.line.me/dialog/oauth/weblogin` +
-        `?response_type=code` +
-        `&client_id=${ channelId }` +
-        `&redirect_uri=${ callbackUrl }` +
-        `&state=${ state }`;
-
-
     // LIFF processes
     useEffect( () => {
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
@@ -126,50 +115,15 @@ const AudioRecorderLIFF = () => {
                 //window.alert( 'Success in LIFF initialisation' );
                 initialiseLiffApp()
             } )
-            .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
+            .catch( err => console.log( 'Error in LIFF initialisation: ' + err ) )
     }, [] )
 
     const initialiseLiffApp = async () => {
-        alert( 'LIFF initialised' );
-        window.alert( 'LINE login status...' + ( liff.isLoggedIn() ) );
-
-        //if( liff.isInClient() ) { // LIFFので動いているのであれば
-        //    liff.sendMessages( [ { // メッセージを送信する
-        //        'type': 'text',
-        //        'text': "You've successfully sent a message from LIFF! Hooray!"
-        //    } ] )
-        //        .then( () => window.alert( 'Message sent' ) )
-        //        .catch( err => window.alert( 'Error sending message: ' + err ) );
-        //}
-
-        //( liff === null ) &&
         !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
-
         const idToken = await liff.getIDToken();
-        var qs = require( 'qs' );
-        const lineIdVerify = await axios
-            //.post( 'https://api.line.me/oauth2/v2.1/verify', qs.stringify( {
-            //    id_token: idToken,
-            //    client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
-            //} ) )
-            .request( {
-                url: 'https://api.line.me/oauth2/v2.1/verify',
-                method: 'POST',
-                data: qs.stringify( {
-                    id_token: idToken,
-                    client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
-                } ),
-            } )
-            .then( res => res )
-            .catch( err => {
-                console.log( 'login id verify...', err )
-                return ( err )
-            } );
-
-        window.alert( 'Trying to get LINE user info using id token...' + lineIdVerify.data.sub );
-        console.log( 'Trying to get LINE user info using id token...' + lineIdVerify.data.sub );
 
         //alert( 'Try get LINE profile' )
+        return
         ( liff.isLoggedIn() ) && liff.getProfile()
             .then( profile => {
                 const userId = profile.userId
@@ -178,13 +132,6 @@ const AudioRecorderLIFF = () => {
                 //alert( `Name: ${ displayName }, userId: ${ userId }` )
             } )
             .catch( err => window.alert( 'Error in fetching user profile: ' + err ) );
-
-        //liff.sendMessages( [ { // メッセージを送信する
-        //    'type': 'text',
-        //    'text': "You've successfully sent a message after manual login!"
-        //} ] )
-        //    .then( () => window.alert( 'Message sent' ) )
-        //    .catch( error => window.alert( 'Error sending message: ' + error ) );
     }
 
     //////////////// Construct a media recorder for mic to be repeated for transcription
@@ -450,9 +397,6 @@ const AudioRecorderLIFF = () => {
             <h1 style={ { color: 'red' } }>{ "Is this from iOS? ..." + isIOS }</h1>
             {( typeof window !== `undefined` ) && <p style={ { color: 'red' } }>{ window.navigator.userAgent.toLowerCase() }</p> }
 
-            <a href={ lineLoginUrl } id="lineLogin">
-                { ( <button style={ { marginBottom: '50px' } }>line login</button> ) }
-            </a>
             <button style={ { fontSize: 40 } } onClick={ () => { audioRecordPlay(); } }>Play</button>
             <button style={ { fontSize: 40 } } onClick={ () => { audioRecordPause(); } }>Pause</button>
             <button style={ { fontSize: 40 } } onClick={ () => { audioRecordStop(); } }>Stop</button>
