@@ -24,7 +24,7 @@ module.exports.handler = async function ( event, context ) {
     const body = JSON.parse( event.body );
 
 
-    //////////////////////////// Registration
+    //////////////////////////// Registration.... deprecated, does nothing actually
     if( body.events[ 0 ].message.text == '登録' ) {
         console.log( 'the user to be registered...', body.events[ 0 ].source.userId )
 

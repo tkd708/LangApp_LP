@@ -21,8 +21,8 @@ const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '';//"win
 if( typeof window !== `undefined` ) {
     const ua = window.navigator.userAgent.toLowerCase();
     if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
-        const AudioRecorder = require( "audio-recorder-polyfill" ).default;
-        window.MediaRecorder = AudioRecorder
+        //const AudioRecorder = require( "audio-recorder-polyfill" ).default;
+        //window.MediaRecorder = AudioRecorder
     }
 }
 
@@ -52,16 +52,21 @@ const AudioRecorderLIFF = () => {
         }
     }, [] )
 
-    const [ appID, setAppID ] = useState( '' );
-    const appIDRef = useRef( appID )
+    const [ lineLoginStatus, setLineLoginStatus ] = useState( false );
+    const [ lineIdToken, setLineIdToken ] = useState( '' );
+    const lineIdTokenRef = useRef( lineIdToken )
     useEffect( () => {
-        appIDRef.current = appID
-    }, [ appID ] )
+        lineIdTokenRef.current = lineIdToken
+    }, [ lineIdToken ] )
+
     const [ recordingID, setRecordingID ] = useState( null );
     const recordingIDRef = useRef( recordingID )
     useEffect( () => {
         recordingIDRef.current = recordingID
     }, [ recordingID ] )
+
+
+    const [ recorder, setRecorder ] = useState( false );
 
     const [ isRecording, setIsRecording ] = useState( false );
     const isRecordingRef = useRef( isRecording )
@@ -110,63 +115,65 @@ const AudioRecorderLIFF = () => {
 
     // LIFF processes
     useEffect( () => {
+        constructRecorder();
+
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
             .then( () => {
-                //window.alert( 'Success in LIFF initialisation' );
-                initialiseLiffApp()
+                console.log( 'Success in LIFF initialisation' );
+                liffFechID();
             } )
-            .catch( err => console.log( 'Error in LIFF initialisation: ' + err ) )
+            .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
     }, [] )
 
-    const initialiseLiffApp = async () => {
+    const liffFechID = async () => {
         return
-        !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
-        const idToken = await liff.getIDToken();
-
-        //alert( 'Try get LINE profile' )
-        ( liff.isLoggedIn() ) && liff.getProfile()
-            .then( profile => {
-                const userId = profile.userId
-                const displayName = profile.displayName
-                setAppID( profile.displayName )
-                //alert( `Name: ${ displayName }, userId: ${ userId }` )
-            } )
-            .catch( err => window.alert( 'Error in fetching user profile: ' + err ) );
+        if( liff.isLoggedIn() ) {
+            const idToken = await liff.getIDToken();
+            ( idToken ) && console.log( 'Success in fetching ID token' );
+            setLineIdToken( idToken )
+            setLineLoginStatus( true )
+        }
     }
 
     //////////////// Construct a media recorder for mic to be repeated for transcription
-    let recorder
 
-    ( typeof window !== `undefined` ) && navigator.mediaDevices.getUserMedia( {
-        audio: true,
-        video: false
-    } ).then( stream => {
-        recorder = new MediaRecorder( stream, {
-            mimeType: isIOS ? 'audio/mp4' : 'audio/webm;codecs=opus',
+
+    const constructRecorder = async () => {
+        //alert( MediaRecorder.isTypeSupported( 'audio/mp4' ) )
+
+        const stream = await navigator.mediaDevices.getUserMedia( { audio: true, video: false } );
+        //console.log( stream );
+        //alert( 'media stream id: ' + stream.id );
+        //alert( 'media stream active: ' + stream.active );
+
+        const recorder = new MediaRecorder( stream, {
+            mimeType: 'audio/mp4',
             audioBitsPerSecond: 16 * 1000
+        } );
+
+        recorder.addEventListener( 'start', () => {
+            //alert( "start recording" );
         } );
         recorder.addEventListener( 'dataavailable', async ( e ) => {
             if( e.data.size > 0 ) {
+                //console.log( e.data )
+                //alert( 'blob size: ', e.data.size )
+                //alert( 'blob type: ', e.data.type )
                 setBlobRecorded( e.data );
-                //const base64Audio = await blobToBase64( e.data );
+                const base64Audio = await blobToBase64( e.data );
                 //console.log( 'converted audio to be sent...', base64Audio.slice( 0, 100 ) )
-                //sendGoogle( base64Audio )
+                sendGoogle( base64Audio )
             }
         } );
-    } ).catch( err => console.log( err ) )
+        recorder.addEventListener( 'stop', () => {
+            //alert( "stop recording" );
+        } );
 
-    /// A tentative idea... setBlob and send it to an external function
-    const blobToBase64ToGoogle = async () => {
-        if( blobRecorded === null ) return;
-        const base64Audio = await blobToBase64( blobRecorded );
-        sendGoogle( base64Audio )
+        //alert( recorder.mimeType )
+        //alert( MediaRecorder.isTypeSupported( recorder.mimeType ) )
+        //alert( MediaRecorder.isTypeSupported( 'audio/mp4' ) )
+        setRecorder( recorder )
     }
-
-    useEffect( () => {
-        blobToBase64ToGoogle()
-    }, [ blobRecorded ] )
-
-
 
     /////////////// Audio recorder operation ////////////////
     const startRecording = () => {
@@ -194,16 +201,15 @@ const AudioRecorderLIFF = () => {
 
 
     const repeatMediaRecorders = () => {
+        if( !isRecordingRef.current ) return
         recorder.stop();
         console.log( 'recorders off' )
-        if( !isRecordingRef.current ) return
-        //mediaRecorderMic.stop();
         startMediaRecorders()
     }
 
     const stopRecording = () => {
         setIsRecording( false );
-        //mediaRecorderMic.stop()
+        recorder.stop();
 
         const endTime = new Date();
         setEndTime( endTime.getTime() );
@@ -245,9 +251,7 @@ const AudioRecorderLIFF = () => {
 
             reader.onload = res => {
                 console.log( 'audio string head: ' + res.target.result.toString().slice( 0, 100 ) );
-                const recordString = isIOS ?
-                    reader.result.toString().replace( 'data:audio/wav;base64,', '' ) :
-                    reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
+                const recordString = reader.result.toString().replace( 'data:audio/mp4;base64,', '' );
                 console.log( 'sent audio as string of', recordString.slice( -100 ) )
                 resolve( recordString );
             };
@@ -287,7 +291,7 @@ const AudioRecorderLIFF = () => {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotTranscript',
                 method: 'POST',
                 data: {
-                    appID: appIDRef.current,
+                    lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
                     audioString: recordString,
                     transcript: transcript,
@@ -351,7 +355,7 @@ const AudioRecorderLIFF = () => {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotReport',
                 method: 'POST',
                 data: {
-                    appID: appIDRef.current,
+                    lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
                     lengthMinute: conversationLength.toFixed( 1 ),
                     transcript: transcript,
@@ -397,21 +401,6 @@ const AudioRecorderLIFF = () => {
             <h1 style={ { color: 'red' } }>{ "Is this from iOS? ..." + isIOS }</h1>
             {( typeof window !== `undefined` ) && <p style={ { color: 'red' } }>{ window.navigator.userAgent.toLowerCase() }</p> }
 
-            <button style={ { fontSize: 40 } } onClick={ () => { audioRecordPlay(); } }>Play</button>
-            <button style={ { fontSize: 40 } } onClick={ () => { audioRecordPause(); } }>Pause</button>
-            <button style={ { fontSize: 40 } } onClick={ () => { audioRecordStop(); } }>Stop</button>
-
-            <TextField
-                required
-                id="filled-required"
-                label="お名前" // to be replaced with LangApp ID
-                variant="filled"
-                value={ appID }
-                onChange={ ( e ) => { ( !isRecording ) && setAppID( e.target.value ); } }
-                inputProps={ {
-                    style: { backgroundColor: 'white', marginBottom: '20px' },
-                } }
-            />
             <TextField
                 required
                 id="filled-required"
@@ -424,14 +413,11 @@ const AudioRecorderLIFF = () => {
                 } }
             />
 
-            <Button
-                style={ { margin: '20px' } }
-                //variant="contained"
-                //color="primary"
-                cta={ isRecording ? '録音中...(クリックで終了)' : '会話の録音を開始' } // from the template
-                onClick={ () => { isRecording ? stopRecording() : startRecording() } }
-            >
-            </Button>
+            <button style={ { fontSize: 40 } } onClick={ () => { isRecording ? stopRecording() : startRecording() } }>{ isRecording ? '録音中...(クリックで終了)' : '会話の録音を開始' }</button>
+            <button style={ { fontSize: 40 } } onClick={ () => { audioRecordPlay(); } }>Play</button>
+            <button style={ { fontSize: 40 } } onClick={ () => { audioRecordPause(); } }>Pause</button>
+            <button style={ { fontSize: 40 } } onClick={ () => { audioRecordStop(); } }>Stop</button>
+
 
             < p style={ { color: 'black' } }>Ongoing transcript below</p>
             <p style={ { color: 'black' } }>{ transcriptArrayYou }</p>
