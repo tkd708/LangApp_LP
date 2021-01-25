@@ -157,11 +157,22 @@ const AudioRecorder = () => {
         //console.log( 'mic recorder long set...', recorderLong );
     }
 
+    function getParam( name, url ) {
+        if( !url ) url = window.location.href;
+        name = name.replace( /[\[\]]/g, "\\$&" );
+        var regex = new RegExp( "[?&]" + name + "(=([^&#]*)|&|#|$)" ),
+            results = regex.exec( url );
+        if( !results ) return null;
+        if( !results[ 2 ] ) return '';
+        return decodeURIComponent( results[ 2 ].replace( /\+/g, " " ) );
+    }
 
-    // initialise recorders
+    ///////////////////// initialise recorders and liff
     useEffect( () => {
         constructMediaRecorderMic()
         constructMediaRecorderMicLong();
+
+        console.log( getParam( 'code' ) ); // 「3」を出力
 
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
             .then( () => {
@@ -171,18 +182,58 @@ const AudioRecorder = () => {
             .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
     }, [] )
 
+
     const liffFechID = async () => {
+        var qs = require( 'qs' );
+        const authorisationCode = getParam( 'code' )
+        if( authorisationCode === null ) return
+        const userLineProfile = await axios
+            .request( {
+                url: 'https://api.line.me/oauth2/v2.1/token',
+                method: 'POST',
+                header: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                data: qs.stringify( {
+                    grant_type: 'authorization_code',
+                    code: getParam( 'code' ),
+                    redirect_uri: "https://langapp.netlify.app/",
+                    client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
+                    client_secret: process.env.GATSBY_LINE_LIFF_Channel_Secret,
+                } ),
+            } )
+            .then( res => {
+                console.log( 'Trying to get LINE user profile using access token...' + res.data )
+                return ( res.data )
+            } )
+            .catch( err => {
+                console.log( 'login line profile verify...', err )
+                return ( err )
+            } );
+        console.log( userLineProfile )
+
         if( liff.isLoggedIn() ) {
             const idToken = await liff.getIDToken();
             ( idToken ) && console.log( 'Success in fetching ID token' );
             setLineIdToken( idToken )
             setLineLoginStatus( true )
         }
+
     }
 
+    const lineLoginUrl = 'https://access.line.me/oauth2/v2.1/authorize' +
+        `?response_type=code` +
+        `&client_id=${ process.env.GATSBY_LINE_LIFF_Channel_ID }` +
+        `&redirect_uri=https://langapp.netlify.app/` +
+        `&state=${ uuidv4() }` +
+        `&scope=profile%20openid`
+    //&nonce=09876xyz
+
     const lineLogin = () => {
-        !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
+        !( liff.isLoggedIn() ) && liff.login( { redirectUri: 'https://langapp.netlify.app/' } )
     }
+
+
 
 
     /////////////// Audio recorder operation ////////////////
@@ -489,6 +540,8 @@ const AudioRecorder = () => {
                     LINEでログイン
                 </a>
             </LineButtonWrapper>*/}
+            <a href={ lineLoginUrl } id="lineLogin"> Line login URL</a>
+
             <Button
                 style={ { margin: '20px' } }
                 //variant="contained"

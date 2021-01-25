@@ -134,26 +134,6 @@ const AudioRecorderLIFF = () => {
             setLineIdToken( idToken )
             setLineAccessToken( accessToken )
             setLineLoginStatus( true )
-
-            var qs = require( 'qs' );
-            const userLineProfile = await axios
-                .request( {
-                    url: 'https://api.line.me/v2/profile',
-                    method: 'GET',
-                    header: qs.stringify( {
-                        Authorization: 'Bearer' + { accessToken },
-                    } ),
-                } )
-                .then( res => {
-                    console.log( 'Trying to get LINE user profile using access token...' + res.data )
-                    return ( res.data )
-                } )
-                .catch( err => {
-                    console.log( 'login line profile verify...', err )
-                    return ( err )
-                } );
-            setLineProfile( userLineProfile )
-
         }
     }
 
