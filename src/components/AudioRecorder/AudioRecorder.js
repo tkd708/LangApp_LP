@@ -287,6 +287,7 @@ const AudioRecorder = () => {
                     url,
                     method: 'POST',
                     data: {
+                        source: 'LP',
                         audio: recordString,
                         lang: transcribeLang,
                     },
@@ -318,6 +319,7 @@ const AudioRecorder = () => {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotTranscript',
                 method: 'POST',
                 data: {
+                    source: 'LP',
                     lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
                     audioString: recordString,

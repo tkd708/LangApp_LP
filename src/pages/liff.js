@@ -16,13 +16,10 @@ import { v4 as uuidv4 } from 'uuid';
 //import liff from '@line/liff';
 const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '';//"window" is not available during server side rendering.
 
-//const AudioRecorder = typeof window !== `undefined` ? require( "audio-recorder-polyfill" ).default : '' //"window" is not available during server side rendering.
-//import AudioRecorder from "audio-recorder-polyfill"
 if( typeof window !== `undefined` ) {
     const ua = window.navigator.userAgent.toLowerCase();
     if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
-        //const AudioRecorder = require( "audio-recorder-polyfill" ).default;
-        //window.MediaRecorder = AudioRecorder
+
     }
 }
 
@@ -53,6 +50,8 @@ const AudioRecorderLIFF = () => {
     }, [] )
 
     const [ lineLoginStatus, setLineLoginStatus ] = useState( false );
+    const [ lineProfile, setLineProfile ] = useState( false );
+    const [ lineAccessToken, setLineAccessToken ] = useState( '' );
     const [ lineIdToken, setLineIdToken ] = useState( '' );
     const lineIdTokenRef = useRef( lineIdToken )
     useEffect( () => {
@@ -126,18 +125,43 @@ const AudioRecorderLIFF = () => {
     }, [] )
 
     const liffFechID = async () => {
-        return
+        !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
+
         if( liff.isLoggedIn() ) {
             const idToken = await liff.getIDToken();
+            const accessToken = await liff.getAccessToken();
             ( idToken ) && console.log( 'Success in fetching ID token' );
             setLineIdToken( idToken )
+            setLineAccessToken( accessToken )
             setLineLoginStatus( true )
+
+            var qs = require( 'qs' );
+            const userLineProfile = await axios
+                .request( {
+                    url: 'https://api.line.me/v2/profile',
+                    method: 'GET',
+                    header: qs.stringify( {
+                        Authorization: 'Bearer' + { accessToken },
+                    } ),
+                } )
+                .then( res => {
+                    console.log( 'Trying to get LINE user profile using access token...' + res.data )
+                    return ( res.data )
+                } )
+                .catch( err => {
+                    console.log( 'login line profile verify...', err )
+                    return ( err )
+                } );
+            setLineProfile( userLineProfile )
+
         }
     }
 
+
+
+
+
     //////////////// Construct a media recorder for mic to be repeated for transcription
-
-
     const constructRecorder = async () => {
         //alert( MediaRecorder.isTypeSupported( 'audio/mp4' ) )
 
@@ -270,6 +294,7 @@ const AudioRecorderLIFF = () => {
                     url,
                     method: 'POST',
                     data: {
+                        source: 'LIFF',
                         audio: recordString,
                         lang: transcribeLang,
                     },
@@ -291,6 +316,7 @@ const AudioRecorderLIFF = () => {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotTranscript',
                 method: 'POST',
                 data: {
+                    source: 'LIFF',
                     lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
                     audioString: recordString,
@@ -355,6 +381,7 @@ const AudioRecorderLIFF = () => {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotReport',
                 method: 'POST',
                 data: {
+                    source: 'LIFF',
                     lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
                     lengthMinute: conversationLength.toFixed( 1 ),
@@ -400,6 +427,11 @@ const AudioRecorderLIFF = () => {
 
             <h1 style={ { color: 'red' } }>{ "Is this from iOS? ..." + isIOS }</h1>
             {( typeof window !== `undefined` ) && <p style={ { color: 'red' } }>{ window.navigator.userAgent.toLowerCase() }</p> }
+
+            <p style={ { color: 'black' } }>{ 'Line login ?' + lineLoginStatus }</p>
+            <p style={ { color: 'black' } }>{ lineAccessToken }</p>
+            <p style={ { color: 'black' } }>{ lineIdToken }</p>
+            <p style={ { color: 'black' } }>{ lineProfile }</p>
 
             <TextField
                 required
