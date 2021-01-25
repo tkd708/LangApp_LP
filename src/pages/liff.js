@@ -125,7 +125,7 @@ const AudioRecorderLIFF = () => {
     }, [] )
 
     const liffFechID = async () => {
-        !( liff.isLoggedIn() ) && liff.login( {} ) // ログインしていなければ最初にログインする
+        !( liff.isLoggedIn() ) && liff.login( { redirectUri: 'https://langapp.netlify.app/liff' } ) // ログインしていなければ最初にログインする
 
         if( liff.isLoggedIn() ) {
             const idToken = await liff.getIDToken();
