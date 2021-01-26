@@ -334,6 +334,7 @@ const AudioRecorder = () => {
         reader.readAsDataURL( newBlob );
         reader.onloadend = function () {
             console.log( 'audio string head: ' + reader.result.toString().slice( 0, 100 ) )
+            console.log( 'audio string length: ' + reader.result.toString().length )
             const recordString = reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
             console.log( 'sent audio from ', speaker, 'as string of', recordString.slice( -100 ) )
             sendGoogle( recordString, speaker )
@@ -470,9 +471,7 @@ const AudioRecorder = () => {
                     recordingID: recordingIDRef.current,
                     lengthMinute: conversationLength.toFixed( 1 ),
                     transcript: transcript,
-                    //wordsTotal: transcriptWordArray.length,
-                    //wordsPerMinute: ( transcriptWordArray.length / conversationLength ).toFixed( 1 ),
-                    //vocab: uniq.length,
+                    errors: transcribeErrorArrray,
                 },
             } )
             .then( ( res ) => { console.log( 'report to LINE bot and dynamoDB success...', res ) } )

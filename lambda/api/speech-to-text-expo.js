@@ -24,6 +24,9 @@ module.exports.handler = async function ( event, context ) {
     // for actual POST query
     if( event.httpMethod == "POST" ) {
 
+        console.log( 'received audio...', JSON.parse( event.body ).audio );
+        console.log( 'received audio length...' + JSON.parse( event.body ).audio.length );
+
         var t = new Date
         console.log( 'API started on: ' + t.toLocaleTimeString( { second: '2-digit' } ) )
 

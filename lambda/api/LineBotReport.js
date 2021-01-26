@@ -137,6 +137,8 @@ module.exports.handler = async function ( event, context ) {
     const userLineId = ( body.lineIdToken === undefined ) ? userLineId_dynamo : userLineId_token;
 
 
+
+
     ////////////////////////////// Store the analysis results to dynamoDB (atm from LP but analysis will be moved to this netlify functions)
     const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
 
@@ -152,6 +154,7 @@ module.exports.handler = async function ( event, context ) {
             WordsTotal: wordsTotal,
             WordsPerMinute: wordsPerMinute,
             VocabSize: vocabSize,
+            Errors: body.errors,
         }
     };
     await docClient.put( paramsReport )

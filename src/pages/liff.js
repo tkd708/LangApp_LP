@@ -39,19 +39,21 @@ const COMMON_WORDS = [
 
 const AudioRecorderLIFF = () => {
 
+    const [ mimeType, setMimeType ] = useState( 'audio/webm' );
     const [ isIOS, setIsIOS ] = useState( false );
     useEffect( () => {
         if( typeof window !== `undefined` ) {
             const ua = window.navigator.userAgent.toLowerCase();
             if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
                 setIsIOS( true );
+                setMimeType( 'audio/mp4' );
             }
         }
     }, [] )
+    //const [ lineLoginStatus, setLineLoginStatus ] = useState( false );
+    //const [ lineProfile, setLineProfile ] = useState( false );
+    //const [ lineAccessToken, setLineAccessToken ] = useState( '' );
 
-    const [ lineLoginStatus, setLineLoginStatus ] = useState( false );
-    const [ lineProfile, setLineProfile ] = useState( false );
-    const [ lineAccessToken, setLineAccessToken ] = useState( '' );
     const [ lineIdToken, setLineIdToken ] = useState( '' );
     const lineIdTokenRef = useRef( lineIdToken )
     useEffect( () => {
@@ -119,24 +121,24 @@ const AudioRecorderLIFF = () => {
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
             .then( () => {
                 console.log( 'Success in LIFF initialisation' );
-                liffFechID();
+                //liffFechID();
             } )
             .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
     }, [] )
 
+    const redirectUrl = 'https://langapp.netlify.app/liff';
     const liffFechID = async () => {
-        !( liff.isLoggedIn() ) && liff.login( { redirectUri: 'https://langapp.netlify.app/liff' } ) // ログインしていなければ最初にログインする
+        !( liff.isLoggedIn() ) && liff.login( { redirectUri: redirectUrl } ) // ログインしていなければ最初にログインする
 
         if( liff.isLoggedIn() ) {
             const idToken = await liff.getIDToken();
-            const accessToken = await liff.getAccessToken();
-            ( idToken ) && console.log( 'Success in fetching ID token' );
+            //const accessToken = await liff.getAccessToken();
+            //( idToken ) && console.log( 'Success in fetching ID token' );
             setLineIdToken( idToken )
-            setLineAccessToken( accessToken )
-            setLineLoginStatus( true )
+            //setLineAccessToken( accessToken )
+            //setLineLoginStatus( true )
         }
     }
-
 
 
 
@@ -150,8 +152,10 @@ const AudioRecorderLIFF = () => {
         //alert( 'media stream id: ' + stream.id );
         //alert( 'media stream active: ' + stream.active );
 
+        const os = liff.getOS();
+
         const recorder = new MediaRecorder( stream, {
-            mimeType: 'audio/mp4',
+            mimeType: ( os === 'ios' ) ? 'audio/mp4' : 'audio/webm', // 'audio/mp4',
             audioBitsPerSecond: 16 * 1000
         } );
 
@@ -164,7 +168,7 @@ const AudioRecorderLIFF = () => {
                 //alert( 'blob size: ', e.data.size )
                 //alert( 'blob type: ', e.data.type )
                 setBlobRecorded( e.data );
-                const base64Audio = await blobToBase64( e.data );
+                const base64Audio = await blobToBase64( e.data, os );
                 //console.log( 'converted audio to be sent...', base64Audio.slice( 0, 100 ) )
                 sendGoogle( base64Audio )
             }
@@ -172,15 +176,17 @@ const AudioRecorderLIFF = () => {
         recorder.addEventListener( 'stop', () => {
             //alert( "stop recording" );
         } );
-
         //alert( recorder.mimeType )
         //alert( MediaRecorder.isTypeSupported( recorder.mimeType ) )
         //alert( MediaRecorder.isTypeSupported( 'audio/mp4' ) )
-        setRecorder( recorder )
+        setRecorder( recorder );
     }
 
+
+
     /////////////// Audio recorder operation ////////////////
-    const startRecording = () => {
+    const startRecording = async () => {
+
         const uuid = uuidv4();
         setRecordingID( uuid )
 
@@ -247,15 +253,16 @@ const AudioRecorderLIFF = () => {
 
 
     ///////////////// Functions to convert and send blobs to transcribe //////////////////
-    const blobToBase64 = ( blob ) => {
+    const blobToBase64 = ( blob, os ) => {
         return new Promise( ( resolve, reject ) => {
             const newBlob = new Blob( [ blob ], { type: blob.type } )
             const reader = new FileReader();
             reader.readAsDataURL( newBlob );
-
             reader.onload = res => {
                 console.log( 'audio string head: ' + res.target.result.toString().slice( 0, 100 ) );
-                const recordString = reader.result.toString().replace( 'data:audio/mp4;base64,', '' );
+                const recordString = ( os === 'ios' )
+                    ? reader.result.toString().replace( 'data:audio/mp4;base64,', '' )
+                    : reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
                 console.log( 'sent audio as string of', recordString.slice( -100 ) )
                 resolve( recordString );
             };
@@ -404,15 +411,15 @@ const AudioRecorderLIFF = () => {
                 </Select>
             </div>
 
-
+            {/* 
             <h1 style={ { color: 'red' } }>{ "Is this from iOS? ..." + isIOS }</h1>
             {( typeof window !== `undefined` ) && <p style={ { color: 'red' } }>{ window.navigator.userAgent.toLowerCase() }</p> }
-
+            
             <p style={ { color: 'black' } }>{ 'Line login ?' + lineLoginStatus }</p>
             <p style={ { color: 'black' } }>{ lineAccessToken }</p>
             <p style={ { color: 'black' } }>{ lineIdToken }</p>
             <p style={ { color: 'black' } }>{ lineProfile }</p>
-
+            */}
             <TextField
                 required
                 id="filled-required"
