@@ -134,7 +134,7 @@ module.exports.handler = async function ( event, context ) {
 
 
 
-    const userLineId = ( body.lineIdToken === "" ) ? userLineId_dynamo : userLineId_token;
+    const userLineId = ( body.lineIdToken === undefined ) ? userLineId_dynamo : userLineId_token;
 
 
     ////////////////////////////// Store the analysis results to dynamoDB (atm from LP but analysis will be moved to this netlify functions)

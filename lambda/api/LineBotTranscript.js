@@ -146,7 +146,7 @@ module.exports.handler = async function ( event, context ) {
 
 
 
-    const userLineId = ( body.lineIdToken === "" ) ? userLineId_dynamo : userLineId_token;
+    const userLineId = ( body.lineIdToken === undefined ) ? userLineId_dynamo : userLineId_token;
 
 
     ///////////////// push message of audio
