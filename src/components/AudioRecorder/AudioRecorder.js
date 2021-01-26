@@ -222,6 +222,7 @@ const AudioRecorder = () => {
             .then( res => {
                 //alert( 'Success in fetching access token!' )
                 console.log( 'Success in fetching access token...' + res.data )
+                setLineLoginStatus( true )
                 return ( res.data )
             } )
             .catch( err => {
@@ -544,10 +545,12 @@ const AudioRecorder = () => {
             <p>＊現在LINEログインを試験導入しておりますが、エラーが報告されております。正常にログインできない場合、今まで通りLINEでの表示名を下記空欄に入力して録音を開始してください</p>
             {
                 !lineLoginStatus &&
-                <img src={ lineButtonBase }//"../../images/btn_login_base.png"
-                    style={ { width: '180px', marginBottom: '30px' } }
-                    class="btn btn-block btn-social button"
-                    onClick={ () => { lineLogin(); } } />
+                <a href={ lineLoginUrl } id="lineLogin" style={ { marginBottom: '30px' } }>
+                    <img src={ lineButtonBase }//"../../images/btn_login_base.png"
+                        style={ { width: '180px', marginBottom: '30px' } }
+                        class="btn btn-block btn-social button"
+                        onClick={ () => { lineLogin(); } } />
+                </a>
             }
             {/* <p>{ lineLoginStatus ? 'LINEログイン完了です！録音を開始してください' : 'LINEにログインしてから録音を開始してください。' }</p>
            <LineButtonWrapper>
@@ -556,7 +559,6 @@ const AudioRecorder = () => {
                     LINEでログイン
                 </a>
             </LineButtonWrapper>*/}
-            <a href={ lineLoginUrl } id="lineLogin" style={ { marginBottom: '30px' } }> Line login URL</a>
 
             <TextField
                 required
