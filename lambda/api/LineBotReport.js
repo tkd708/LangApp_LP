@@ -104,11 +104,11 @@ module.exports.handler = async function ( event, context ) {
             } ),
         } )
         .then( res => {
-            console.log( 'Trying to get LINE user info using id token...' + res.data )
+            console.log( 'Success in geting LINE user info using id token...' + res.data )
             return ( res.data )
         } )
         .catch( err => {
-            console.log( 'login id verify...', err )
+            console.log( 'Error in geting LINE user info using id token...', err )
             return ( err )
         } );
     const userLineId_token = userLineData.sub;
@@ -130,7 +130,7 @@ module.exports.handler = async function ( event, context ) {
             console.log( 'LINE user ID fetch from dynamoDB failed...', err )
             return ( err )
         } );
-    console.log( 'fetched line id...', userLineId )
+    //console.log( 'fetched line id...', userLineId )
 
 
 

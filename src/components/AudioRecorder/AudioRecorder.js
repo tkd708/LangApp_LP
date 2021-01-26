@@ -556,17 +556,20 @@ const AudioRecorder = () => {
                 </a>
             </LineButtonWrapper>*/}
 
-            <TextField
-                required
-                id="filled-required"
-                label="お名前" // to be replaced with LangApp ID
-                variant="filled"
-                value={ appID }
-                onChange={ ( e ) => { ( !isRecording ) && setAppID( e.target.value ); } }
-                inputProps={ {
-                    style: { backgroundColor: 'white', marginBottom: '20px' },
-                } }
-            />
+            { !lineLoginStatus
+                ? <TextField
+                    required
+                    id="filled-required"
+                    label="お名前" // to be replaced with LangApp ID
+                    variant="filled"
+                    value={ appID }
+                    onChange={ ( e ) => { ( !isRecording ) && setAppID( e.target.value ); } }
+                    inputProps={ {
+                        style: { backgroundColor: 'white', marginBottom: '20px' },
+                    } }
+                />
+                : <p>LINEログイン完了です！録音を開始してください</p>
+            }
 
             <Button
                 style={ { margin: '20px' } }
