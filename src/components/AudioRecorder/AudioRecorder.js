@@ -282,16 +282,16 @@ const AudioRecorder = () => {
 
 
     const repeatMediaRecorders = () => {
-        mediaRecorderMic.stop();
+        //mediaRecorderMic.stop();
         console.log( 'recorders off' )
         if( !isRecordingRef.current ) return
-        //mediaRecorderMic.stop();
+        mediaRecorderMic.stop();
         startMediaRecorders()
     }
 
     const stopRecording = () => {
         setIsRecording( false );
-        //mediaRecorderMic.stop()
+        mediaRecorderMic.stop()
         mediaRecorderMicLong.stop()
 
         const endTime = new Date();
