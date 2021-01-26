@@ -40,7 +40,7 @@ module.exports.handler = async function ( event, context ) {
 
     ///////////////// Get LINE user info using ID token
     var qs = require( 'qs' );
-    const userLineData = await axios
+    const userLineData = ( body.lineIdToken !== "" ) && await axios
         .request( {
             url: 'https://api.line.me/oauth2/v2.1/verify',
             method: 'POST',
@@ -57,8 +57,8 @@ module.exports.handler = async function ( event, context ) {
             console.log( 'login id verify...', err )
             return ( err )
         } );
-    const userLineId_token = userLineData.sub;
-    const userLineName = userLineData.name;
+    const userLineId = ( body.lineIdToken !== "" ) && userLineData.sub;
+    const userLineName = ( body.lineIdToken !== "" ) && userLineData.name;
 
 
     /////////////////////// Encoding wav audio to m4a
@@ -132,7 +132,7 @@ module.exports.handler = async function ( event, context ) {
         KeyConditionExpression: 'UserName = :UserName ',
         ExpressionAttributeValues: { ':UserName': body.appID, }
     };
-    const userLineId_dynamo = await docClient.query( params )
+    const userLineId = ( body.lineIdToken === "" ) && await docClient.query( params )
         .promise()
         .then( ( data ) => {
             console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
@@ -142,8 +142,6 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'fetched line id...', userLineId )
 
 
-    // swtiching line id fetch methods
-    const userLineId = ( body.lineIdToken === "" ) ? userLineId_dynamo : userLineId_token;
 
 
 

@@ -105,8 +105,7 @@ const AudioRecorder = () => {
     const [ vocab1, setVocab1 ] = useState( '' );
     const [ vocab2, setVocab2 ] = useState( '' );
     const [ vocab3, setVocab3 ] = useState( '' );
-    const [ vocab4, setVocab4 ] = useState( [ "especially", "durable", "collaborate" ] );
-    const [ vocab5, setVocab5 ] = useState( [ "affordable", "exclusively", "estimate", "retrieve", "variation" ] );
+    const [ vocab4, setVocab4 ] = useState( [] );
 
     const myURL = typeof window !== `undefined` ? window.URL || window.webkitURL : ''
     const intervalSeconds = 30; // interval of the repeating audio recording
@@ -471,12 +470,9 @@ const AudioRecorder = () => {
                     recordingID: recordingIDRef.current,
                     lengthMinute: conversationLength.toFixed( 1 ),
                     transcript: transcript,
-                    wordsTotal: transcriptWordArray.length,
-                    wordsPerMinute: ( transcriptWordArray.length / conversationLength ).toFixed( 1 ),
-                    vocab: uniq.length,
-                    topWord1: vocabCountArray[ 0 ],
-                    topWord2: vocabCountArray[ 1 ],
-                    topWord3: vocabCountArray[ 2 ],
+                    //wordsTotal: transcriptWordArray.length,
+                    //wordsPerMinute: ( transcriptWordArray.length / conversationLength ).toFixed( 1 ),
+                    //vocab: uniq.length,
                 },
             } )
             .then( ( res ) => { console.log( 'report to LINE bot and dynamoDB success...', res ) } )
