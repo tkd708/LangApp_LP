@@ -52,6 +52,7 @@ module.exports.handler = async function ( event, context ) {
         fs.writeFileSync( decodedPath, decodedAudio );
         const decodedFile = await fsp.readFile( decodedPath );
         console.log( 'received and read audio: ' + decodedFile.toString( 'base64' ).slice( 0, 100 ) )
+        console.log( 'received and read audio length: ' + decodedFile.toString( 'base64' ).length )
         const encodedPath = '/tmp/encoded.wav';
 
         const getTranscript = async () => {
@@ -84,7 +85,8 @@ module.exports.handler = async function ( event, context ) {
             console.log( 'Encoding done: ' + t.toLocaleTimeString( { second: '2-digit' } ) )
 
             const audio_encoded = await fsp.readFile( encodedPath );
-            //console.log('encoded audio: ' + audio_encoded.toString('base64').slice(0,100));
+            console.log( 'encoded audio: ' + audio_encoded.toString( 'base64' ).slice( 0, 100 ) );
+            console.log( 'encoded audio length: ' + audio_encoded.toString( 'base64' ).length );
 
             const audio = {
                 content: audio_encoded.toString( 'base64' )
