@@ -40,7 +40,7 @@ module.exports.handler = async function ( event, context ) {
 
     ///////////////// Get LINE user info using ID token
     var qs = require( 'qs' );
-    const userLineData = ( body.lineIdToken !== "" ) && await axios
+    const userLineData = await axios
         .request( {
             url: 'https://api.line.me/oauth2/v2.1/verify',
             method: 'POST',
@@ -57,8 +57,8 @@ module.exports.handler = async function ( event, context ) {
             console.log( 'login id verify...', err )
             return ( err )
         } );
-    const userLineId = ( body.lineIdToken !== "" ) && userLineData.sub;
-    const userLineName = ( body.lineIdToken !== "" ) && userLineData.name;
+    let userLineId = userLineData.sub;
+    const userLineName = userLineData.name;
 
 
     /////////////////////// Encoding wav audio to m4a
@@ -132,7 +132,7 @@ module.exports.handler = async function ( event, context ) {
         KeyConditionExpression: 'UserName = :UserName ',
         ExpressionAttributeValues: { ':UserName': body.appID, }
     };
-    const userLineId = ( body.lineIdToken === "" ) && await docClient.query( params )
+    let userLineId = ( body.lineIdToken === "" ) && await docClient.query( params )
         .promise()
         .then( ( data ) => {
             console.log( 'LINE user ID fetch from dynamoDB was successful...', data );

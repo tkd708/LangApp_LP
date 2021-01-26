@@ -111,7 +111,7 @@ module.exports.handler = async function ( event, context ) {
             console.log( 'login id verify...', err )
             return ( err )
         } );
-    const userLineId_token = userLineData.sub;
+    let userLineId = userLineData.sub;
     const userLineName = userLineData.name;
 
     ///////////// Fetch the LINE user id from dynamoDB for push messages
@@ -120,7 +120,7 @@ module.exports.handler = async function ( event, context ) {
         KeyConditionExpression: 'UserName = :UserName ',
         ExpressionAttributeValues: { ':UserName': body.appID, }
     };
-    const userLineId_dynamo = await docClient.query( params )
+    let userLineId = ( body.lineIdToken === "" ) && await docClient.query( params )
         .promise()
         .then( ( data ) => {
             console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
@@ -131,9 +131,6 @@ module.exports.handler = async function ( event, context ) {
                 console.log( 'LINE user ID fetch from dynamoDB failed...', err );
             } );
     console.log( 'fetched line id...', userLineId )
-
-    // swtiching line id fetch methods
-    const userLineId = ( body.lineIdToken === "" ) ? userLineId_dynamo : userLineId_token;
 
 
 
