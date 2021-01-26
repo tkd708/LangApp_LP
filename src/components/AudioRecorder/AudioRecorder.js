@@ -28,7 +28,7 @@ import TranscribeLangs from './transcribeLangs.json';
 
 import { v4 as uuidv4 } from 'uuid';
 
-const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '';//"window" is not available during server side rendering.
+//const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '';//"window" is not available during server side rendering.
 
 const COMMON_WORDS = [
     'yes', 'no', 'yeah', 'ok', 'okay',
@@ -45,6 +45,14 @@ const COMMON_WORDS = [
 
 const AudioRecorder = () => {
 
+    // tentatively using again
+    const [ appID, setAppID ] = useState( '' );
+    const appIDRef = useRef( appID )
+    useEffect( () => {
+        appIDRef.current = appID
+    }, [ appID ] )
+
+    // line login
     const [ lineLoginStatus, setLineLoginStatus ] = useState( false );
     const [ lineIdToken, setLineIdToken ] = useState( '' );
     const lineIdTokenRef = useRef( lineIdToken )
@@ -157,80 +165,85 @@ const AudioRecorder = () => {
         //console.log( 'mic recorder long set...', recorderLong );
     }
 
-    function getParam( name, url ) {
+    const getParam = ( name, url ) => {
         if( !url ) url = window.location.href;
         name = name.replace( /[\[\]]/g, "\\$&" );
         var regex = new RegExp( "[?&]" + name + "(=([^&#]*)|&|#|$)" ),
             results = regex.exec( url );
         if( !results ) return null;
         if( !results[ 2 ] ) return '';
-        return decodeURIComponent( results[ 2 ].replace( /\+/g, " " ) );
+        return decodeURIComponent( results[ 2 ].replace( /\+/g, " " ).replace( " ", "" ) );
     }
 
     ///////////////////// initialise recorders and liff
     useEffect( () => {
         constructMediaRecorderMic()
         constructMediaRecorderMicLong();
+        lineFetchAccessToken();
 
-        console.log( getParam( 'code' ) ); // 「3」を出力
-
-        ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
-            .then( () => {
-                console.log( 'Success in LIFF initialisation' );
-                liffFechID();
-            } )
-            .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
+        //( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
+        //     .then( () => {
+        //         console.log( 'Success in LIFF initialisation' );
+        //         liffFechID();
+        //     } )
+        //     .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
     }, [] )
 
+    const redirectUrl = "https://langapp.netlify.app/"; //"https://f21709857d27.ngrok.io/ " //https://langapp.netlify.app/
+    const lineLoginUrl = 'https://access.line.me/oauth2/v2.1/authorize' +
+        `?response_type=code` +
+        `&client_id=${ process.env.GATSBY_LINE_LIFF_Channel_ID }` +
+        `&redirect_uri=${ redirectUrl }` +
+        `&state=${ uuidv4() }` +
+        `&scope=profile%20openid` //&nonce=09876xyz
 
-    const liffFechID = async () => {
-        var qs = require( 'qs' );
-        const authorisationCode = getParam( 'code' )
+    const lineFetchAccessToken = async () => {
+        const authorisationCode = getParam( 'code' );
+        //alert( `authorisation code: ${ authorisationCode }` );
+        console.log( `authorisation code: ${ authorisationCode }` );
+
         if( authorisationCode === null ) return
-        const userLineProfile = await axios
+        var qs = require( 'qs' );
+        const lineAccessTokenObject = await axios
             .request( {
                 url: 'https://api.line.me/oauth2/v2.1/token',
                 method: 'POST',
-                header: {
+                header: qs.stringify( {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                },
+                } ),
                 data: qs.stringify( {
                     grant_type: 'authorization_code',
-                    code: getParam( 'code' ),
-                    redirect_uri: "https://langapp.netlify.app/",
+                    code: authorisationCode,
+                    redirect_uri: redirectUrl,
                     client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
                     client_secret: process.env.GATSBY_LINE_LIFF_Channel_Secret,
                 } ),
             } )
             .then( res => {
-                console.log( 'Trying to get LINE user profile using access token...' + res.data )
+                //alert( 'Success in fetching access token!' )
+                console.log( 'Success in fetching access token...' + res.data )
                 return ( res.data )
             } )
             .catch( err => {
-                console.log( 'login line profile verify...', err )
+                //alert( 'Error in fetching access token!' )
+                console.log( 'Error in fetching access token...', err )
                 return ( err )
             } );
-        console.log( userLineProfile )
-
-        if( liff.isLoggedIn() ) {
-            const idToken = await liff.getIDToken();
-            ( idToken ) && console.log( 'Success in fetching ID token' );
-            setLineIdToken( idToken )
-            setLineLoginStatus( true )
-        }
-
+        //alert( lineAccessTokenObject.id_token )
+        setLineIdToken( lineAccessTokenObject.id_token )
     }
 
-    const lineLoginUrl = 'https://access.line.me/oauth2/v2.1/authorize' +
-        `?response_type=code` +
-        `&client_id=${ process.env.GATSBY_LINE_LIFF_Channel_ID }` +
-        `&redirect_uri=https://langapp.netlify.app/` +
-        `&state=${ uuidv4() }` +
-        `&scope=profile%20openid`
-    //&nonce=09876xyz
-
+    // liff wont be used on this page
+    const liffFechID = async () => {
+        //if( liff.isLoggedIn() ) {
+        //    const idToken = await liff.getIDToken();
+        //    ( idToken ) && console.log( 'Success in fetching ID token by liff' );
+        //    setLineIdToken( idToken )
+        //    setLineLoginStatus( true )
+        //}
+    }
     const lineLogin = () => {
-        !( liff.isLoggedIn() ) && liff.login( { redirectUri: 'https://langapp.netlify.app/' } )
+        //!( liff.isLoggedIn() ) && liff.login( { redirectUri: redirectUrl } )
     }
 
 
@@ -370,6 +383,7 @@ const AudioRecorder = () => {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotTranscript',
                 method: 'POST',
                 data: {
+                    appID: appIDRef.current, //tentative
                     source: 'LP',
                     lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
@@ -451,6 +465,7 @@ const AudioRecorder = () => {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotReport',
                 method: 'POST',
                 data: {
+                    appID: appIDRef.current, //tentative
                     lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
                     lengthMinute: conversationLength.toFixed( 1 ),
@@ -526,7 +541,7 @@ const AudioRecorder = () => {
             <p>実際にオンライン英会話を録音してみましょう！</p>
             <p>LINE Bot「LangApp」(QRコード下記)と連動して記録・分析をお届けします！</p>
             <img src={ instructionImg } style={ { width: '300px', margin: '20px' } } />
-            <p>{ lineLoginStatus ? 'LINEログイン完了です！録音を開始してください' : 'LINEにログインしてから録音を開始してください。' }</p>
+            <p>＊現在LINEログインを試験導入しておりますが、エラーが報告されております。正常にログインできない場合、今まで通りLINEでの表示名を下記空欄に入力して録音を開始してください</p>
             {
                 !lineLoginStatus &&
                 <img src={ lineButtonBase }//"../../images/btn_login_base.png"
@@ -534,13 +549,26 @@ const AudioRecorder = () => {
                     class="btn btn-block btn-social button"
                     onClick={ () => { lineLogin(); } } />
             }
-            {/*<LineButtonWrapper>
+            {/* <p>{ lineLoginStatus ? 'LINEログイン完了です！録音を開始してください' : 'LINEにログインしてから録音を開始してください。' }</p>
+           <LineButtonWrapper>
                  <FontAwesomeIcon icon={ faLine } size="3x" class="icon" />
                 <a id="line-button" class="btn btn-block btn-social button">
                     LINEでログイン
                 </a>
             </LineButtonWrapper>*/}
-            <a href={ lineLoginUrl } id="lineLogin"> Line login URL</a>
+            <a href={ lineLoginUrl } id="lineLogin" style={ { marginBottom: '30px' } }> Line login URL</a>
+
+            <TextField
+                required
+                id="filled-required"
+                label="お名前" // to be replaced with LangApp ID
+                variant="filled"
+                value={ appID }
+                onChange={ ( e ) => { ( !isRecording ) && setAppID( e.target.value ); } }
+                inputProps={ {
+                    style: { backgroundColor: 'white', marginBottom: '20px' },
+                } }
+            />
 
             <Button
                 style={ { margin: '20px' } }

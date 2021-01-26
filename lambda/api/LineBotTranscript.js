@@ -57,7 +57,7 @@ module.exports.handler = async function ( event, context ) {
             console.log( 'login id verify...', err )
             return ( err )
         } );
-    const userLineId = userLineData.sub;
+    //const userLineId = userLineData.sub;
     const userLineName = userLineData.name;
 
 
@@ -126,20 +126,20 @@ module.exports.handler = async function ( event, context ) {
 
 
     ///////////////// Get LINE user ID from dynamoDB corresponding to the user name (appID) input by the user on LP
-    //const docClient = new AWS.DynamoDB.DocumentClient();
-    //const params = {
-    //    TableName: 'LangAppUsers',
-    //    KeyConditionExpression: 'UserName = :UserName ',
-    //    ExpressionAttributeValues: { ':UserName': body.appID, }
-    //};
-    //const userLineId = await docClient.query( params )
-    //    .promise()
-    //    .then( ( data ) => {
-    //        console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
-    //        return ( data.Items[ 0 ].UserLineId );
-    //    } )
-    //    .catch( err => console.log( 'LINE user ID fetch from dynamoDB failed...', err ) );
-    //console.log( 'fetched line id...', userLineId )
+    const docClient = new AWS.DynamoDB.DocumentClient();
+    const params = {
+        TableName: 'LangAppUsers',
+        KeyConditionExpression: 'UserName = :UserName ',
+        ExpressionAttributeValues: { ':UserName': body.appID, }
+    };
+    const userLineId = await docClient.query( params )
+        .promise()
+        .then( ( data ) => {
+            console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
+            return ( data.Items[ 0 ].UserLineId );
+        } )
+        .catch( err => console.log( 'LINE user ID fetch from dynamoDB failed...', err ) );
+    console.log( 'fetched line id...', userLineId )
 
 
 
