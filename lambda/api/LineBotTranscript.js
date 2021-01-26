@@ -39,28 +39,26 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'received audio...', body.audioString );
 
     ///////////////// Get LINE user info using ID token
-    if( body.lineIdToken !== undefined ) {
-        var qs = require( 'qs' );
-        const userLineData = await axios
-            .request( {
-                url: 'https://api.line.me/oauth2/v2.1/verify',
-                method: 'POST',
-                data: qs.stringify( {
-                    id_token: body.lineIdToken,
-                    client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
-                } ),
-            } )
-            .then( res => {
-                console.log( 'Trying to get LINE user info using id token...' + res.data )
-                return ( res.data )
-            } )
-            .catch( err => {
-                console.log( 'login id verify...', err )
-                return ( err )
-            } );
-        const userLineId = userLineData.sub;
-        const userLineName = userLineData.name;
-    }
+    var qs = require( 'qs' );
+    const userLineData = await axios
+        .request( {
+            url: 'https://api.line.me/oauth2/v2.1/verify',
+            method: 'POST',
+            data: qs.stringify( {
+                id_token: body.lineIdToken,
+                client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
+            } ),
+        } )
+        .then( res => {
+            console.log( 'Trying to get LINE user info using id token...' + res.data )
+            return ( res.data )
+        } )
+        .catch( err => {
+            console.log( 'login id verify...', err )
+            return ( err )
+        } );
+    const userLineId_token = userLineData.sub;
+    const userLineName = userLineData.name;
 
 
     /////////////////////// Encoding wav audio to m4a
@@ -128,23 +126,24 @@ module.exports.handler = async function ( event, context ) {
 
 
     ///////////////// Get LINE user ID from dynamoDB corresponding to the user name (appID) input by the user on LP
-    if( body.lineIdToken === undefined ) {
-        const docClient = new AWS.DynamoDB.DocumentClient();
-        const params = {
-            TableName: 'LangAppUsers',
-            KeyConditionExpression: 'UserName = :UserName ',
-            ExpressionAttributeValues: { ':UserName': body.appID, }
-        };
-        const userLineId = await docClient.query( params )
-            .promise()
-            .then( ( data ) => {
-                console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
-                return ( data.Items[ 0 ].UserLineId );
-            } )
-            .catch( err => console.log( 'LINE user ID fetch from dynamoDB failed...', err ) );
-        console.log( 'fetched line id...', userLineId )
-    }
+    const docClient = new AWS.DynamoDB.DocumentClient();
+    const params = {
+        TableName: 'LangAppUsers',
+        KeyConditionExpression: 'UserName = :UserName ',
+        ExpressionAttributeValues: { ':UserName': body.appID, }
+    };
+    const userLineId_dynamo = await docClient.query( params )
+        .promise()
+        .then( ( data ) => {
+            console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
+            return ( data.Items[ 0 ].UserLineId );
+        } )
+        .catch( err => console.log( 'LINE user ID fetch from dynamoDB failed...', err ) );
+    console.log( 'fetched line id...', userLineId )
 
+
+    // swtiching line id fetch methods
+    const userLineId = ( body.lineIdToken === "" ) ? userLineId_dynamo : userLineId_token;
 
 
 

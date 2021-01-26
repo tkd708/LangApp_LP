@@ -46,14 +46,17 @@ module.exports.handler = async function ( event, context ) {
     // total words
     const transcriptWordArray = body.transcript.replace( /[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "" ).split( " " );
     const wordsTotal = transcriptWordArray.length;
+    console.log( wordsTotal );
 
     // words per minute
     //const conversationLength = ( endTime - startTime ) / 1000 / 60;
     const wordsPerMinute = ( transcriptWordArray.length / body.lengthMinute ).toFixed( 1 );
+    console.log( wordsPerMinute );
 
     // size of vocab
     const uniq = [ ...new Set( transcriptWordArray ) ];
     const vocabSize = uniq.length;
+    console.log( vocabSize );
 
     // vocab counts... removing articles, prepositions and pronouns etc.
     const WORDS_UNCOUNTED = [
@@ -87,49 +90,52 @@ module.exports.handler = async function ( event, context ) {
 
 
 
+
+
     ///////////////// Get LINE user info using ID token
-    if( body.lineIdToken !== undefined ) {
-        var qs = require( 'qs' );
-        const userLineData = await axios
-            .request( {
-                url: 'https://api.line.me/oauth2/v2.1/verify',
-                method: 'POST',
-                data: qs.stringify( {
-                    id_token: body.lineIdToken,
-                    client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
-                } ),
-            } )
-            .then( res => {
-                console.log( 'Trying to get LINE user info using id token...' + res.data )
-                return ( res.data )
-            } )
-            .catch( err => {
-                console.log( 'login id verify...', err )
-                return ( err )
-            } );
-        const userLineId = userLineData.sub;
-        const userLineName = userLineData.name;
-    }
+    var qs = require( 'qs' );
+    const userLineData = await axios
+        .request( {
+            url: 'https://api.line.me/oauth2/v2.1/verify',
+            method: 'POST',
+            data: qs.stringify( {
+                id_token: body.lineIdToken,
+                client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
+            } ),
+        } )
+        .then( res => {
+            console.log( 'Trying to get LINE user info using id token...' + res.data )
+            return ( res.data )
+        } )
+        .catch( err => {
+            console.log( 'login id verify...', err )
+            return ( err )
+        } );
+    const userLineId_token = userLineData.sub;
+    const userLineName = userLineData.name;
 
     ///////////// Fetch the LINE user id from dynamoDB for push messages
-    if( body.lineIdToken === undefined ) {
-        const params = {
-            TableName: 'LangAppUsers',
-            KeyConditionExpression: 'UserName = :UserName ',
-            ExpressionAttributeValues: { ':UserName': body.appID, }
-        };
-        const userLineId = await docClient.query( params )
-            .promise()
-            .then( ( data ) => {
-                console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
-                return ( data.Items[ 0 ].UserLineId );
-            } )
-            .catch(
-                ( err ) => {
-                    console.log( 'LINE user ID fetch from dynamoDB failed...', err );
-                } );
-        console.log( 'fetched line id...', userLineId )
-    }
+    const params = {
+        TableName: 'LangAppUsers',
+        KeyConditionExpression: 'UserName = :UserName ',
+        ExpressionAttributeValues: { ':UserName': body.appID, }
+    };
+    const userLineId_dynamo = await docClient.query( params )
+        .promise()
+        .then( ( data ) => {
+            console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
+            return ( data.Items[ 0 ].UserLineId );
+        } )
+        .catch(
+            ( err ) => {
+                console.log( 'LINE user ID fetch from dynamoDB failed...', err );
+            } );
+    console.log( 'fetched line id...', userLineId )
+
+    // swtiching line id fetch methods
+    const userLineId = ( body.lineIdToken === "" ) ? userLineId_dynamo : userLineId_token;
+
+
 
 
     ////////////////////////////// Store the analysis results to dynamoDB (atm from LP but analysis will be moved to this netlify functions)
@@ -143,10 +149,10 @@ module.exports.handler = async function ( event, context ) {
             UserLineID: userLineId,
             Date: date,
             LengthMinute: body.lengthMinute,
-            WordsTotal: body.wordsTotal,
-            WordsPerMinute: body.wordsPerMinute,
-            VocabSize: body.vocab,
             Transcript: body.transcript,
+            WordsTotal: wordsTotal,
+            WordsPerMinute: wordsPerMinute,
+            VocabSize: vocabSize,
         }
     };
     await docClient.put( paramsReport )
@@ -399,7 +405,7 @@ module.exports.handler = async function ( event, context ) {
     // Conversation summary
     const message = {
         'type': 'text',
-        'text': `話した単語の総数は${ body.wordsTotal }、流暢さ(words per minute)は${ body.wordsPerMinute }、単語の種類数は${ body.vocab }でした！`
+        'text': `話した単語の総数は${ wordsTotal }、流暢さ(words per minute)は${ wordsPerMinute }、単語の種類数は${ vocabSize }でした！`
     };
     await client.pushMessage( userLineId, message )
         .then( res => console.log( 'report push message successful...', res ) )
