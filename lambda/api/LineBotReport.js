@@ -111,7 +111,7 @@ module.exports.handler = async function ( event, context ) {
             console.log( 'login id verify...', err )
             return ( err )
         } );
-    let userLineId = userLineData.sub;
+    const userLineId_token = userLineData.sub;
     const userLineName = userLineData.name;
 
     ///////////// Fetch the LINE user id from dynamoDB for push messages
@@ -120,19 +120,21 @@ module.exports.handler = async function ( event, context ) {
         KeyConditionExpression: 'UserName = :UserName ',
         ExpressionAttributeValues: { ':UserName': body.appID, }
     };
-    let userLineId = ( body.lineIdToken === "" ) && await docClient.query( params )
+    const userLineId_dynamo = await docClient.query( params )
         .promise()
-        .then( ( data ) => {
+        .then( data => {
             console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
             return ( data.Items[ 0 ].UserLineId );
         } )
-        .catch(
-            ( err ) => {
-                console.log( 'LINE user ID fetch from dynamoDB failed...', err );
-            } );
+        .catch( err => {
+            console.log( 'LINE user ID fetch from dynamoDB failed...', err )
+            return ( err )
+        } );
     console.log( 'fetched line id...', userLineId )
 
 
+
+    const userLineId = ( body.lineIdToken === "" ) ? userLineId_dynamo : userLineId_token;
 
 
     ////////////////////////////// Store the analysis results to dynamoDB (atm from LP but analysis will be moved to this netlify functions)
