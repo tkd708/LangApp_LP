@@ -121,7 +121,7 @@ const AudioRecorderLIFF = () => {
         ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
             .then( () => {
                 console.log( 'Success in LIFF initialisation' );
-                //liffFechID();
+                liffFechID();
             } )
             .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
     }, [] )

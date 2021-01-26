@@ -25,7 +25,7 @@ module.exports.handler = async function ( event, context ) {
     if( event.httpMethod == "POST" ) {
 
         console.log( 'received audio...', JSON.parse( event.body ).audio );
-        console.log( 'received audio length...' + JSON.parse( event.body ).audio.length );
+        console.log( 'received audio string length...' + JSON.parse( event.body ).audio.length );
 
         var t = new Date
         console.log( 'API started on: ' + t.toLocaleTimeString( { second: '2-digit' } ) )
@@ -63,6 +63,7 @@ module.exports.handler = async function ( event, context ) {
                 return new Promise( ( resolve, reject ) => {
                     ffmpeg()
                         .input( decodedPath )
+                        .noVideo()
                         .outputOptions( [
                             '-f s16le',
                             '-acodec pcm_s16le',
@@ -86,7 +87,7 @@ module.exports.handler = async function ( event, context ) {
 
             const audio_encoded = await fsp.readFile( encodedPath );
             console.log( 'encoded audio: ' + audio_encoded.toString( 'base64' ).slice( 0, 100 ) );
-            console.log( 'encoded audio length: ' + audio_encoded.toString( 'base64' ).length );
+            console.log( 'encoded audio string length: ' + audio_encoded.toString( 'base64' ).length );
 
             const audio = {
                 content: audio_encoded.toString( 'base64' )
