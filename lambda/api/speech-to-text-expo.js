@@ -6,6 +6,8 @@ ffmpeg.setFfmpegPath( ffmpegPath );
 const fsp = fs.promises;
 const speech = require( '@google-cloud/speech' );
 
+const extractAudio = require( 'ffmpeg-extract-audio' )
+
 module.exports.handler = async function ( event, context ) {
 
     // avoid CORS errors
@@ -46,13 +48,34 @@ module.exports.handler = async function ( event, context ) {
 
         const client = new speech.SpeechClient( { credentials: keys } );
 
-        const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
-        const decodedPath = ( JSON.parse( event.body ).source === 'LIFF' ) ? '/tmp/decoded.mp4' : '/tmp/decoded.wav';
-        await fsp.writeFile( decodedPath, decodedAudio );
-        fs.writeFileSync( decodedPath, decodedAudio );
-        const decodedFile = await fsp.readFile( decodedPath );
-        console.log( 'received and read audio: ' + decodedFile.toString( 'base64' ).slice( 0, 100 ) )
-        console.log( 'received and read audio length: ' + decodedFile.toString( 'base64' ).length )
+
+        //////////////////////////// Extracting audio from LIFF
+        if( JSON.parse( event.body ).source === 'LIFF' ) {
+            const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
+            const decodedPath = '/tmp/decoded.mp4';
+            await fsp.writeFile( decodedPath, decodedAudio );
+
+            const preEncodingPath = '/tmp/decoded.wav';
+
+            await extractAudio( {
+                input: decodedPath,
+                output: preEncodingPath
+            } )
+
+            const preEncodedFile = await fsp.readFile( preEncodingPath );
+            console.log( 'pre-encoded audio: ' + preEncodedFile.toString( 'base64' ).slice( 0, 100 ) )
+            console.log( 'pre-encoded length: ' + preEncodedFile.toString( 'base64' ).length )
+        } else {
+            const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
+            const decodedPath = '/tmp/decoded.wav';
+            await fsp.writeFile( decodedPath, decodedAudio );
+            const decodedFile = await fsp.readFile( decodedPath );
+            console.log( 'received and read audio: ' + decodedFile.toString( 'base64' ).slice( 0, 100 ) )
+            console.log( 'received and read audio length: ' + decodedFile.toString( 'base64' ).length )
+        }
+
+        ///////// Encoding audio with ffmpeg
+        const decodedPath = '/tmp/decoded.wav';
         const encodedPath = '/tmp/encoded.wav';
 
         const getTranscript = async () => {
