@@ -55,7 +55,7 @@ module.exports.handler = async function ( event, context ) {
             const decodedPath = '/tmp/decoded.mp4';
             await fsp.writeFile( decodedPath, decodedAudio );
 
-            const preEncodingPath = '/tmp/decoded.wav';
+            const preEncodingPath = '/tmp/decoded.mp3';
 
             await extractAudio( {
                 input: decodedPath,
@@ -65,6 +65,7 @@ module.exports.handler = async function ( event, context ) {
             const preEncodedFile = await fsp.readFile( preEncodingPath );
             console.log( 'pre-encoded audio: ' + preEncodedFile.toString( 'base64' ).slice( 0, 100 ) )
             console.log( 'pre-encoded length: ' + preEncodedFile.toString( 'base64' ).length )
+
         } else {
             const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
             const decodedPath = '/tmp/decoded.wav';
@@ -75,7 +76,7 @@ module.exports.handler = async function ( event, context ) {
         }
 
         ///////// Encoding audio with ffmpeg
-        const decodedPath = '/tmp/decoded.wav';
+        const decodedPath = ( JSON.parse( event.body ).source === 'LIFF' ) ? '/tmp/decoded.mp3' : '/tmp/decoded.wav';
         const encodedPath = '/tmp/encoded.wav';
 
         const getTranscript = async () => {
