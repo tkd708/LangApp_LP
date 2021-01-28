@@ -47,7 +47,7 @@ module.exports.handler = async function ( event, context ) {
         const client = new speech.SpeechClient( { credentials: keys } );
 
         const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
-        const decodedPath = '/tmp/decoded.wav';
+        const decodedPath = ( JSON.parse( event.body ).source === 'LIFF' ) ? '/tmp/decoded.mp4' : '/tmp/decoded.wav';
         await fsp.writeFile( decodedPath, decodedAudio );
         fs.writeFileSync( decodedPath, decodedAudio );
         const decodedFile = await fsp.readFile( decodedPath );
