@@ -106,12 +106,6 @@ const AudioRecorderLIFF = () => {
 
     const [ transcribeLang, setTranscribeLang ] = useState( 'en-US' );
 
-    const [ vocab1, setVocab1 ] = useState( '' );
-    const [ vocab2, setVocab2 ] = useState( '' );
-    const [ vocab3, setVocab3 ] = useState( '' );
-    const [ vocab4, setVocab4 ] = useState( [ "especially", "durable", "collaborate" ] );
-    const [ vocab5, setVocab5 ] = useState( [ "affordable", "exclusively", "estimate", "retrieve", "variation" ] );
-
     const [ intervalSeconds, setIntervalSeconds ] = useState( 15 );
 
     // LIFF processes
@@ -223,7 +217,10 @@ const AudioRecorderLIFF = () => {
 
         const endTime = new Date();
         setEndTime( endTime.getTime() );
-        console.log( 'recoding ended, it took', ( endTime.getTime() - startTime ) / 1000, 'seconds' );
+        const recordLengthSeconds = ( endTime.getTime() - startTime ) / 1000;
+        console.log( 'recoding ended, it took', recordLengthSeconds, 'seconds' );
+
+        setTimeout( () => { vocabAnalysis( transcriptArrayYouRef.current.join( ' ' ), recordLengthSeconds ); }, 30 * 1000 );
     }
 
     ///////////////// Recording is done >> generate download link and audio player as well as send the full audio to AWS S3
@@ -232,6 +229,7 @@ const AudioRecorderLIFF = () => {
         if( !blobRecorded ) return
         const blobURL = myURL.createObjectURL( blobRecorded );
         const tmp = new Audio( blobURL );
+
         setAudioPlayer( tmp );
         //console.log( 'audioPlayer...', tmp )
     }, [ blobRecorded ] )
@@ -292,7 +290,13 @@ const AudioRecorderLIFF = () => {
                     return ( res.data.transcript )
                 } )
                 .catch( ( err ) => {
-                    console.log( err );
+                    const errorTime = new Date();
+                    const errorStatus = {
+                        errorMessage: err,
+                        errorTimeFromStartTime: ( ( errorTime.getTime() - startTimeRef.current ) / 1000 ),
+                    }
+                    setTranscribeErrorArray( [ ...transcribeErrorArrrayRef.current, errorStatus ] );
+                    console.log( errorStatus );
                     return ( 'TRANSCRIPTION ERROR' );
                 } );
         setTranscriptArrayYou( [ ...transcriptArrayYouRef.current, transcript ] )
@@ -330,37 +334,10 @@ const AudioRecorderLIFF = () => {
 
 
     //////// After transcribing... vocab analysis
-    useEffect( () => {
+    const vocabAnalysis = async ( transcript, recordLengthSeconds ) => {
         if( transcript === null ) return
 
-        const transcriptWordArray = transcript.replace( /[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "" ).split( " " );
-        setVocab1( transcriptWordArray.length );
-
-        // words per minute
-        const conversationLength = ( endTime - startTime ) / 1000 / 60;
-        setVocab2( ( transcriptWordArray.length / conversationLength ).toFixed( 1 ) );
-
-        // size of vocab
-        const uniq = [ ...new Set( transcriptWordArray ) ];
-        setVocab3( uniq.length );
-        //console.log( uniq )
-
-        // vocab counts... removing articles, prepositions and pronouns etc.
-        const vocabCounts = [];
-        transcriptWordArray.forEach( ( word ) => {
-            const lowerWord = word.toLowerCase();
-            if( COMMON_WORDS.includes( lowerWord ) ) return
-            vocabCounts[ lowerWord ] = ( vocabCounts[ lowerWord ] || 0 ) + 1;
-        } );
-        const vocabCountArray = [];
-        Object.entries( vocabCounts ).forEach( ( [ key, value ] ) => {
-            const wordCount = { word: key, count: value }
-            vocabCountArray.push( wordCount )
-        } );
-        vocabCountArray.sort( function ( a, b ) {
-            return a.count > b.count ? -1 : 1;
-        } );
-        setVocab4( vocabCountArray );
+        const conversationLength = recordLengthSeconds / 60;
 
         //////////////// send analysis report to LINE and to dynamoDB
         axios
@@ -373,19 +350,13 @@ const AudioRecorderLIFF = () => {
                     recordingID: recordingIDRef.current,
                     lengthMinute: conversationLength.toFixed( 1 ),
                     transcript: transcript,
-                    wordsTotal: transcriptWordArray.length,
-                    wordsPerMinute: ( transcriptWordArray.length / conversationLength ).toFixed( 1 ),
-                    vocab: uniq.length,
-                    topWord1: vocabCountArray[ 0 ],
-                    topWord2: vocabCountArray[ 1 ],
-                    topWord3: vocabCountArray[ 2 ],
+                    errors: transcribeErrorArrray,
                 },
             } )
             .then( ( res ) => { console.log( 'report to LINE bot and dynamoDB success...', res ) } )
             .catch( ( err ) => { console.log( 'report to LINE bot and dynamoDB error...', err ) } )
 
-    }, [ transcript ] )
-
+    }
 
 
 

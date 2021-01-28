@@ -102,9 +102,9 @@ const AudioRecorder = () => {
 
     const [ transcribeLang, setTranscribeLang ] = useState( 'en-US' );
 
-    const [ vocab1, setVocab1 ] = useState( '' );
-    const [ vocab2, setVocab2 ] = useState( '' );
-    const [ vocab3, setVocab3 ] = useState( '' );
+    const [ vocab1, setVocab1 ] = useState( null );
+    const [ vocab2, setVocab2 ] = useState( null );
+    const [ vocab3, setVocab3 ] = useState( null );
     const [ vocab4, setVocab4 ] = useState( [] );
 
     const myURL = typeof window !== `undefined` ? window.URL || window.webkitURL : ''
@@ -295,7 +295,10 @@ const AudioRecorder = () => {
 
         const endTime = new Date();
         setEndTime( endTime.getTime() );
-        console.log( 'recoding ended, it took', ( endTime.getTime() - startTime ) / 1000, 'seconds' );
+        const recordLengthSeconds = ( endTime.getTime() - startTime ) / 1000;
+        console.log( 'recoding ended, it took', recordLengthSeconds, 'seconds' );
+
+        setTimeout( () => { vocabAnalysis( transcriptArrayYouRef.current.join( ' ' ), recordLengthSeconds ); }, 30 * 1000 );
     }
 
 
@@ -428,14 +431,17 @@ const AudioRecorder = () => {
 
 
     //////// After transcribing... vocab analysis
-    useEffect( () => {
+    const vocabAnalysis = async ( transcript, recordLengthSeconds ) => {
+
         if( transcript === null ) return
 
+        // words total
         const transcriptWordArray = transcript.replace( /[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "" ).split( " " );
         setVocab1( transcriptWordArray.length );
 
         // words per minute
-        const conversationLength = ( endTime - startTime ) / 1000 / 60;
+        //const conversationLength = ( endTime - startTime ) / 1000 / 60;
+        const conversationLength = recordLengthSeconds / 60;
         setVocab2( ( transcriptWordArray.length / conversationLength ).toFixed( 1 ) );
 
         // size of vocab
@@ -476,8 +482,8 @@ const AudioRecorder = () => {
             } )
             .then( ( res ) => { console.log( 'report to LINE bot and dynamoDB success...', res ) } )
             .catch( ( err ) => { console.log( 'report to LINE bot and dynamoDB error...', err ) } )
+    }
 
-    }, [ transcript ] )
 
 
     /////////////// send the full audio file to AWS... not successful if the audio is too long, tentatively withdrawn
@@ -537,23 +543,26 @@ const AudioRecorder = () => {
             <p>実際にオンライン英会話を録音してみましょう！</p>
             <p>LINE Bot「LangApp」(QRコード下記)と連動して記録・分析をお届けします！</p>
             <img src={ instructionImg } style={ { width: '300px', margin: '20px' } } />
-            <p>＊現在LINEログインを試験導入しておりますが、エラーが報告されております。正常にログインできない場合、今まで通りLINEでの表示名を下記空欄に入力して録音を開始してください</p>
             {
-                !lineLoginStatus &&
-                <a href={ lineLoginUrl } id="lineLogin" style={ { marginBottom: '30px' } }>
-                    <img src={ lineButtonBase }//"../../images/btn_login_base.png"
-                        style={ { width: '180px', marginBottom: '30px' } }
-                        class="btn btn-block btn-social button"
-                        onClick={ () => { lineLogin(); } } />
-                </a>
+                !lineLoginStatus
+                    ? <a href={ lineLoginUrl } id="lineLogin" style={ { marginBottom: '30px' } }>
+                        <img src={ lineButtonBase }//"../../images/btn_login_base.png"
+                            style={ { width: '180px', marginBottom: '30px' } }
+                            class="btn btn-block btn-social button"
+                            onClick={ () => { lineLogin(); } } />
+                    </a>
+                    : <p>LINEログイン完了です！録音を開始してください</p>
             }
-            {/* <p>{ lineLoginStatus ? 'LINEログイン完了です！録音を開始してください' : 'LINEにログインしてから録音を開始してください。' }</p>
+            {/* 
+            <p>＊現在LINEログインを試験導入しておりますが、エラーが報告されております。正常にログインできない場合、今まで通りLINEでの表示名を下記空欄に入力して録音を開始してください</p>
+
+            <p>{ lineLoginStatus ? 'LINEログイン完了です！録音を開始してください' : 'LINEにログインしてから録音を開始してください。' }</p>
            <LineButtonWrapper>
                  <FontAwesomeIcon icon={ faLine } size="3x" class="icon" />
                 <a id="line-button" class="btn btn-block btn-social button">
                     LINEでログイン
                 </a>
-            </LineButtonWrapper>*/}
+            </LineButtonWrapper>
 
             { !lineLoginStatus
                 ? <TextField
@@ -569,6 +578,7 @@ const AudioRecorder = () => {
                 />
                 : <p>LINEログイン完了です！録音を開始してください</p>
             }
+            */}
 
             <Button
                 style={ { margin: '20px' } }
@@ -603,15 +613,15 @@ const AudioRecorder = () => {
                 } ) }
             </Card>
             {
-                ( transcript === null ) &&
+                ( vocab1 === null ) &&
                 <p>会話の録音を終了し、分析が完了すると結果が以下に表示されます。</p>
             }
 
             {
-                ( transcript !== null ) &&
+                ( vocab1 !== null ) &&
                 <Card style={ { width: '80vw', marginTop: '20px' } } >
                     <CardContent>
-                        <Typography color="textSecondary" gutterBottom>今回の"あなた"の会話の分析結果はこちら！</Typography>
+                        <Typography color="textSecondary" gutterBottom>今回の会話の分析結果はこちら！</Typography>
                         <Typography>{ `流暢さ(word per minute): ${ vocab2 } ` }</Typography>
                         <Typography>{ `使用した単語数: ${ vocab3 } ` }</Typography>
                         <Typography>{ `使用頻度の高い単語 TOP5` }</Typography>
