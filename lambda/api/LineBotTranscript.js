@@ -126,7 +126,12 @@ module.exports.handler = async function ( event, context ) {
 
 
 
-    ///////////////////////////////////////////// tentatively test no encoding.... just delete the section later
+    ///////////////////////////////////////////// tentatively tests.... just delete the section later
+    //const decodedAudio = new Buffer.from( body.audioString, 'base64' );
+    //const decodedPath = '/tmp/decoded.mp4';
+    //await fsp.writeFile( decodedPath, decodedAudio );
+    //const decodedFile = await fsp.readFile( decodedPath );
+
     const uploadParams2 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
     uploadParams2.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioNoEncode-${ time }.mp4`;
     uploadParams2.Body = decodedFile;
@@ -138,26 +143,6 @@ module.exports.handler = async function ( event, context ) {
         } )
         .catch( err => console.log( "Not encoded Audio chunk upload to S3 error", err ) );
     console.log( 's3 not encoded file url...', fileURL2 );
-    ///////////////////////////////////////////////////////////////////////////////
-
-    ///////////////////////////////////////////////// tentatively test extract audio.... just delete the section later
-    //const decodedAudio = new Buffer.from( body.audioString, 'base64' );
-    //const decodedPath = '/tmp/decoded.mp4';
-    //await fsp.writeFile( decodedPath, decodedAudio );
-    //const decodedFile = await fsp.readFile( decodedPath );
-    const ffmpeg_checkMetaData = () => {
-        return new Promise( ( resolve, reject ) => {
-            ffmpeg()
-                .input( decodedPath )
-                .ffprobe( function ( err, data ) {
-                    console.log( data );
-                    console.dir( data );
-                    resolve( data );
-                } )
-        } )
-    }
-    const metadata = await ffmpeg_checkMetaData();
-    console.log( metadata );
 
     const encodedPath2 = '/tmp/encoded.m4a';
     const ffmpeg_encode_audio2 = () => {
@@ -195,6 +180,21 @@ module.exports.handler = async function ( event, context ) {
         } )
         .catch( err => console.log( "Extracted Audio chunk upload to S3 error", err ) );
     console.log( 's3 audio extracted file url...', fileURL3 );
+
+
+    const ffmpeg_checkMetaData = () => {
+        return new Promise( ( resolve, reject ) => {
+            ffmpeg()
+                .ffprobe( decodedPath, function ( err, data ) {
+                    console.log( data );
+                    console.dir( data );
+                    resolve( data );
+                } )
+        } )
+    }
+    const metadata = await ffmpeg_checkMetaData();
+    console.log( 'ffmpeg metadata...', metadata );
+
     ///////////////////////////////////////////////////////////////////////////////
 
 
