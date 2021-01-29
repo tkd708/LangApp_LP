@@ -13,7 +13,6 @@ const fsp = fs.promises;
 const ffmpegPath = require( '@ffmpeg-installer/ffmpeg' ).path;
 const ffmpeg = require( 'fluent-ffmpeg' );
 ffmpeg.setFfmpegPath( ffmpegPath );
-const extractAudio = require( 'ffmpeg-extract-audio' )
 
 const AWS = require( 'aws-sdk' );
 
@@ -142,22 +141,53 @@ module.exports.handler = async function ( event, context ) {
     ///////////////////////////////////////////////////////////////////////////////
 
     ///////////////////////////////////////////////// tentatively test extract audio.... just delete the section later
-    //const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
+    //const decodedAudio = new Buffer.from( body.audioString, 'base64' );
     //const decodedPath = '/tmp/decoded.mp4';
     //await fsp.writeFile( decodedPath, decodedAudio );
-    const preEncodingPath = '/tmp/decoded.mp3';
-    await extractAudio( {
-        input: decodedPath,
-        output: preEncodingPath
-    } )
+    //const decodedFile = await fsp.readFile( decodedPath );
+    const ffmpeg_checkMetaData = () => {
+        return new Promise( ( resolve, reject ) => {
+            ffmpeg()
+                .input( decodedPath )
+                .ffprobe( function ( err, data ) {
+                    console.log( data );
+                } )
+                .on( 'end', async () => {
+                    console.log( 'metadata check done' );
+                    resolve();
+                } )
+        } )
+    }
+    await ffmpeg_checkMetaData();
 
-    const preEncodedFile = await fsp.readFile( preEncodingPath );
-    console.log( 'pre-encoded audio: ' + preEncodedFile.toString( 'base64' ).slice( 0, 100 ) )
-    console.log( 'pre-encoded length: ' + preEncodedFile.toString( 'base64' ).length )
+    const encodedPath2 = '/tmp/encoded.m4a';
+    const ffmpeg_encode_audio2 = () => {
+        return new Promise( ( resolve, reject ) => {
+            ffmpeg()
+                .input( decodedPath )
+                .inputFormat( 'mp4' )
+                .outputOptions( [
+                    //'-f s16le',
+                    '-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac
+                    '-vn',
+                    //'-ac 1',
+                    //'-ar 16k', //41k or 16k
+                    //'-map_metadata -1',
+                ] )
+                .save( encodedPath2 )
+                .on( 'end', async () => {
+                    console.log( 'encoding done' );
+                    resolve();
+                } )
+        } )
+    }
+    await ffmpeg_encode_audio2()
+    const encodedFile2 = await fsp.readFile( encodedPath2 );
+    console.log( 'converted audio 2: ' + encodedFile2.toString( 'base64' ).slice( 0, 100 ) )
 
     const uploadParams3 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
     uploadParams3.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioExtracted-${ time }.mp3`;
-    uploadParams3.Body = preEncodedFile;
+    uploadParams3.Body = encodedFile2;
     const fileURL3 = await s3.upload( uploadParams3 )
         .promise()
         .then( ( data ) => {
