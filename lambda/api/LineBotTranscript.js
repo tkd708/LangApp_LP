@@ -152,8 +152,7 @@ module.exports.handler = async function ( event, context ) {
                 .ffprobe( function ( err, data ) {
                     console.log( data );
                     console.dir( data );
-                    return ( data )
-                    resolve();
+                    resolve( data );
                 } )
         } )
     }
@@ -168,13 +167,12 @@ module.exports.handler = async function ( event, context ) {
                 .inputFormat( 'mp4' )
                 .outputOptions( [
                     //'-f s16le',
-                    '-acodec aac', /// GCP >> pcm_s16le, LINE(m4a) >> aac, or copy?
+                    '-acodec libmp3lame', /// GCP >> pcm_s16le, LINE(m4a) >> aac, or copy?
                     //'-vn',
                     //'-ac 1',
                     //'-ar 16k', //41k or 16k
                     //'-map_metadata -1',
                 ] )
-                .duration( 15 )
                 .save( encodedPath2 )
                 .on( 'end', async () => {
                     console.log( 'encoding done' );
