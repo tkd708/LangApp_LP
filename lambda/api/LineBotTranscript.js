@@ -151,6 +151,7 @@ module.exports.handler = async function ( event, context ) {
                 .input( decodedPath )
                 .ffprobe( function ( err, data ) {
                     console.log( data );
+                    console.dir( data );
                     resolve();
                 } )
         } )
@@ -183,7 +184,7 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'converted audio 2: ' + encodedFile2.toString( 'base64' ).slice( 0, 100 ) )
 
     const uploadParams3 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
-    uploadParams3.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioExtracted-${ time }.mp3`;
+    uploadParams3.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioExtracted-${ time }.m4a`;
     uploadParams3.Body = encodedFile2;
     const fileURL3 = await s3.upload( uploadParams3 )
         .promise()
@@ -227,7 +228,7 @@ module.exports.handler = async function ( event, context ) {
     ///////////////// push message of audio
     const audio = {
         'type': 'audio',
-        'originalContentUrl': fileURL,
+        'originalContentUrl': fileURL3, //fileURL,
         'duration': body.audioInterval,
     };
     await client.pushMessage( userLineId, audio, notificationDisabled = true )
