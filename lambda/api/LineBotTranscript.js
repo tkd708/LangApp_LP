@@ -65,6 +65,7 @@ module.exports.handler = async function ( event, context ) {
     const decodedAudio = new Buffer.from( body.audioString, 'base64' );
     const decodedPath = '/tmp/decoded.wav';
     await fsp.writeFile( decodedPath, decodedAudio );
+    const decodedFile = await fsp.readFile( decodedPath );
 
     const encodedPath = '/tmp/encoded.m4a';
     const ffmpeg_encode_audio = () => {
@@ -121,6 +122,22 @@ module.exports.handler = async function ( event, context ) {
         } )
         .catch( err => console.log( "Audio chunk upload to S3 error", err ) );
     console.log( 's3 file url...', fileURL );
+
+
+    ///////////// tentatively test no encoding.... just delete the section later
+    const uploadParams2 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
+    uploadParams2.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioNoEncode-${ time }.mp4`;
+    uploadParams2.Body = decodedFile;
+    const fileURL2 = await s3.upload( uploadParams2 )
+        .promise()
+        .then( ( data ) => {
+            console.log( "Not encoded Audio chunk successfully uploaded to S3", data )
+            return ( data.Location );
+        } )
+        .catch( err => console.log( "Not encoded Audio chunk upload to S3 error", err ) );
+    console.log( 's3 not encoded file url...', fileURL2 );
+    ///////////////////////////////////////////////////////////////////////////////
+
 
 
 
