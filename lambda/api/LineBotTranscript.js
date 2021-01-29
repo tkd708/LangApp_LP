@@ -151,9 +151,6 @@ module.exports.handler = async function ( event, context ) {
                 .input( decodedPath )
                 .ffprobe( function ( err, data ) {
                     console.log( data );
-                } )
-                .on( 'end', async () => {
-                    console.log( 'metadata check done' );
                     resolve();
                 } )
         } )
