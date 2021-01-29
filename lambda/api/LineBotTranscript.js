@@ -13,6 +13,7 @@ const fsp = fs.promises;
 const ffmpegPath = require( '@ffmpeg-installer/ffmpeg' ).path;
 const ffmpeg = require( 'fluent-ffmpeg' );
 ffmpeg.setFfmpegPath( ffmpegPath );
+const extractAudio = require( 'ffmpeg-extract-audio' )
 
 const AWS = require( 'aws-sdk' );
 
@@ -124,7 +125,9 @@ module.exports.handler = async function ( event, context ) {
     console.log( 's3 file url...', fileURL );
 
 
-    ///////////// tentatively test no encoding.... just delete the section later
+
+
+    ///////////////////////////////////////////// tentatively test no encoding.... just delete the section later
     const uploadParams2 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
     uploadParams2.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioNoEncode-${ time }.mp4`;
     uploadParams2.Body = decodedFile;
@@ -137,6 +140,34 @@ module.exports.handler = async function ( event, context ) {
         .catch( err => console.log( "Not encoded Audio chunk upload to S3 error", err ) );
     console.log( 's3 not encoded file url...', fileURL2 );
     ///////////////////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////// tentatively test extract audio.... just delete the section later
+    //const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
+    //const decodedPath = '/tmp/decoded.mp4';
+    //await fsp.writeFile( decodedPath, decodedAudio );
+    const preEncodingPath = '/tmp/decoded.mp3';
+    await extractAudio( {
+        input: decodedPath,
+        output: preEncodingPath
+    } )
+
+    const preEncodedFile = await fsp.readFile( preEncodingPath );
+    console.log( 'pre-encoded audio: ' + preEncodedFile.toString( 'base64' ).slice( 0, 100 ) )
+    console.log( 'pre-encoded length: ' + preEncodedFile.toString( 'base64' ).length )
+
+    const uploadParams3 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
+    uploadParams3.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioExtracted-${ time }.mp3`;
+    uploadParams3.Body = preEncodedFile;
+    const fileURL3 = await s3.upload( uploadParams3 )
+        .promise()
+        .then( ( data ) => {
+            console.log( "Extracted Audio chunk successfully uploaded to S3", data )
+            return ( data.Location );
+        } )
+        .catch( err => console.log( "Extracted Audio chunk upload to S3 error", err ) );
+    console.log( 's3 audio extracted file url...', fileURL3 );
+    ///////////////////////////////////////////////////////////////////////////////
+
 
 
 
