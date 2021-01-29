@@ -152,7 +152,7 @@ module.exports.handler = async function ( event, context ) {
                 .inputFormat( 'mp4' )
                 .outputOptions( [
                     //'-f s16le',
-                    '-acodec libmp3lame', /// GCP >> pcm_s16le, LINE(m4a) >> aac, or copy?
+                    '-acodec aac', /// GCP >> pcm_s16le, LINE(m4a) >> aac, or copy?
                     //'-vn',
                     //'-ac 1',
                     //'-ar 16k', //41k or 16k
