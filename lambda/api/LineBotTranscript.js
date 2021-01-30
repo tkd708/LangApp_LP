@@ -13,7 +13,8 @@ const fsp = fs.promises;
 const ffmpegPath = require( '@ffmpeg-installer/ffmpeg' ).path;
 const ffmpeg = require( 'fluent-ffmpeg' );
 ffmpeg.setFfmpegPath( ffmpegPath );
-const probe = require( 'ffmpeg-probe' )
+const ffprobePath = require( '@ffprobe-installer/ffprobe' ).path;
+ffmpeg.setFfprobePath( ffprobePath );
 
 const AWS = require( 'aws-sdk' );
 
