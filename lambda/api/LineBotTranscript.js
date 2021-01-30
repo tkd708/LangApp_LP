@@ -39,6 +39,7 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'line id token...', body.lineIdToken );
     console.log( 'recording ID...', body.recordingID );
     console.log( 'received audio...', body.audioString );
+    console.log( 'received audio string length...' + body.audioString.length );
 
     ///////////////// Get LINE user info using ID token
     var qs = require( 'qs' );
@@ -68,6 +69,8 @@ module.exports.handler = async function ( event, context ) {
     const decodedPath = '/tmp/decoded.wav';
     await fsp.writeFile( decodedPath, decodedAudio );
     const decodedFile = await fsp.readFile( decodedPath );
+    console.log( 'received and read audio: ' + decodedFile.toString( 'base64' ) )
+    console.log( 'received and read audio length: ' + decodedFile.toString( 'base64' ).length )
 
     const encodedPath = '/tmp/encoded.m4a';
     const ffmpeg_encode_audio = () => {
@@ -92,6 +95,7 @@ module.exports.handler = async function ( event, context ) {
     await ffmpeg_encode_audio()
     const encodedFile = await fsp.readFile( encodedPath );
     console.log( 'converted audio: ' + encodedFile.toString( 'base64' ).slice( 0, 100 ) )
+    console.log( 'converted audio length: ' + encodedFile.toString( 'base64' ).length )
 
 
 
@@ -148,6 +152,8 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'ffmpeg metadata...', metadata );
 
     const decodedFile0 = await fsp.readFile( decodedPath0 );
+    console.log( 'received and read mp4 audio: ' + decodedFile0.toString( 'base64' ) )
+    console.log( 'received and read mp4 audio length: ' + decodedFile0.toString( 'base64' ).length )
 
     const uploadParams0 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
     uploadParams0.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioNoEncode-${ time }.mp4`;
@@ -171,12 +177,11 @@ module.exports.handler = async function ( event, context ) {
                     //'-f s16le',
                     '-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac... audio from ios >> copy?
                     //'-vn',
-                    '-print_format json',
                     //'-ac 1',
                     //'-ar 16k', //41k or 16k
                     //'-map_metadata -1',
                 ] )
-                //.duration( 15 )
+                .duration( 15 )
                 .save( encodedPath2 )
                 .on( 'end', async () => {
                     console.log( 'encoding done' );

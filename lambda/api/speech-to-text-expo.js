@@ -6,7 +6,6 @@ ffmpeg.setFfmpegPath( ffmpegPath );
 const fsp = fs.promises;
 const speech = require( '@google-cloud/speech' );
 
-const extractAudio = require( 'ffmpeg-extract-audio' )
 
 module.exports.handler = async function ( event, context ) {
 
@@ -51,21 +50,6 @@ module.exports.handler = async function ( event, context ) {
 
         //////////////////////////// Extracting audio from LIFF
         if( JSON.parse( event.body ).source === 'LIFF' ) {
-            const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
-            const decodedPath = '/tmp/decoded.mp4';
-            await fsp.writeFile( decodedPath, decodedAudio );
-
-            const preEncodingPath = '/tmp/decoded.mp3';
-
-            await extractAudio( {
-                input: decodedPath,
-                output: preEncodingPath
-            } )
-
-            const preEncodedFile = await fsp.readFile( preEncodingPath );
-            console.log( 'pre-encoded audio: ' + preEncodedFile.toString( 'base64' ).slice( 0, 100 ) )
-            console.log( 'pre-encoded length: ' + preEncodedFile.toString( 'base64' ).length )
-
         } else {
             const decodedAudio = new Buffer.from( JSON.parse( event.body ).audio, 'base64' );
             const decodedPath = '/tmp/decoded.wav';
