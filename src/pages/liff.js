@@ -262,7 +262,7 @@ const AudioRecorderLIFF = () => {
                     ? reader.result.toString().replace( 'data:audio/mp4;base64,', '' )
                     : reader.result.toString().replace( 'data:audio/webm;codecs=opus;base64,', '' );
                 console.log( 'sent audio as string of', recordString.slice( -100 ) )
-                console.log( 'this may also be able to convert to base64 regardless of format...' + res.target.result.substr( dataUrl.indexOf( ',' ) + 1 ).slice( 0, 100 ) );
+                console.log( 'this may also be able to convert to base64 regardless of format...' + substr( res.target.result.indexOf( ',' ) + 1 ).slice( 0, 100 ) );
                 resolve( recordString );
             };
             reader.onerror = err => reject( err );
