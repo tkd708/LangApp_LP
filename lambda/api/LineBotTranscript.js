@@ -72,6 +72,20 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'received and read audio: ' + decodedFile.toString( 'base64' ) )
     console.log( 'received and read audio length: ' + decodedFile.toString( 'base64' ).length )
 
+    const ffmpeg_checkMetaData = ( filePath ) => {
+        return new Promise( ( resolve, reject ) => {
+            ffmpeg()
+                .input( filePath )
+                .ffprobe( ( err, data ) => {
+                    if( err ) resolve( err );
+                    //console.log( data );
+                    resolve( data );
+                } )
+        } )
+    }
+    const metadata = await ffmpeg_checkMetaData( decodedPath );
+    console.log( 'ffmpeg metadata of decoded audio...', metadata );
+
     const encodedPath = '/tmp/encoded.m4a';
     const ffmpeg_encode_audio = () => {
         return new Promise( ( resolve, reject ) => {
@@ -97,6 +111,8 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'converted audio: ' + encodedFile.toString( 'base64' ).slice( 0, 100 ) )
     console.log( 'converted audio length: ' + encodedFile.toString( 'base64' ).length )
 
+    const metadata1 = await ffmpeg_checkMetaData( encodedPath );
+    console.log( 'ffmpeg metadata of encoded audio...', metadata1 );
 
 
     ////////////////////////// initialise AWS
@@ -137,19 +153,8 @@ module.exports.handler = async function ( event, context ) {
     const decodedPath0 = '/tmp/decoded.mp4';
     await fsp.writeFile( decodedPath0, decodedAudio0 );
 
-    const ffmpeg_checkMetaData = () => {
-        return new Promise( ( resolve, reject ) => {
-            ffmpeg()
-                .input( decodedPath0 )
-                .ffprobe( ( err, data ) => {
-                    if( err ) resolve( err );
-                    //console.log( data );
-                    resolve( data );
-                } )
-        } )
-    }
-    const metadata = await ffmpeg_checkMetaData();
-    console.log( 'ffmpeg metadata...', metadata );
+    const metadata0 = await ffmpeg_checkMetaData( decodedPath0 );
+    console.log( 'ffmpeg metadata of decoded mp4 audio...', metadata0 );
 
     const decodedFile0 = await fsp.readFile( decodedPath0 );
     console.log( 'received and read mp4 audio: ' + decodedFile0.toString( 'base64' ) )
@@ -167,6 +172,7 @@ module.exports.handler = async function ( event, context ) {
         .catch( err => console.log( "Not encoded Audio chunk upload to S3 error", err ) );
     console.log( 's3 not encoded file url...', fileURL0 );
 
+    /////////////////////////////////////////////////////////
     const encodedPath2 = '/tmp/encoded.m4a';
     const ffmpeg_encode_audio2 = () => {
         return new Promise( ( resolve, reject ) => {
@@ -191,7 +197,11 @@ module.exports.handler = async function ( event, context ) {
     }
     await ffmpeg_encode_audio2()
     const encodedFile2 = await fsp.readFile( encodedPath2 );
-    console.log( 'converted audio 2: ' + encodedFile2.toString( 'base64' ).slice( 0, 100 ) )
+    console.log( 'converted audio set duration: ' + encodedFile2.toString( 'base64' ).slice( 0, 100 ) )
+    console.log( 'converted audio set duration length: ' + encodedFile2.toString( 'base64' ).length )
+
+    const metadata2 = await ffmpeg_checkMetaData( encodedPath2 );
+    console.log( 'ffmpeg metadata of set duration and only extention change to m4a audio...', metadata2 );
 
     const uploadParams2 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
     uploadParams2.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioJustFormat-${ time }.m4a`;
@@ -206,6 +216,48 @@ module.exports.handler = async function ( event, context ) {
     console.log( 's3 audio extracted file url...', fileURL2 );
 
 
+    /////////////////////////////////////////////////////////
+    const encodedPath3 = '/tmp/encodedDurationNA.m4a';
+    const ffmpeg_encode_audio3 = () => {
+        return new Promise( ( resolve, reject ) => {
+            ffmpeg()
+                .input( decodedPath0 )
+                .inputFormat( 'mp4' )
+                .outputOptions( [
+                    //'-f s16le',
+                    //'-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac... audio from ios >> copy?
+                    //'-vn',
+                    //'-ac 1',
+                    //'-ar 16k', //41k or 16k
+                    //'-map_metadata -1',
+                ] )
+                .duration( NA )
+                .save( encodedPath3 )
+                .on( 'end', async () => {
+                    console.log( 'encoding done' );
+                    resolve();
+                } )
+        } )
+    }
+    await ffmpeg_encode_audio3()
+    const encodedFile3 = await fsp.readFile( encodedPath3 );
+    console.log( 'converted audio set duration NA: ' + encodedFile3.toString( 'base64' ).slice( 0, 100 ) )
+    console.log( 'converted audio set duration NA length: ' + encodedFile3.toString( 'base64' ).length )
+
+    const metadata3 = await ffmpeg_checkMetaData( encodedPath3 );
+    console.log( 'ffmpeg metadata of set duration, no codec set, extention change to m4a audio...', metadata3 );
+
+    const uploadParams3 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
+    uploadParams3.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioDurationNA-${ time }.m4a`;
+    uploadParams3.Body = encodedFile3;
+    const fileURL3 = await s3.upload( uploadParams3 )
+        .promise()
+        .then( ( data ) => {
+            console.log( "Duration NA Audio chunk successfully uploaded to S3", data )
+            return ( data.Location );
+        } )
+        .catch( err => console.log( "Duration NA Audio chunk upload to S3 error", err ) );
+    console.log( 's3 audio duration NA file url...', fileURL3 );
 
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -242,7 +294,7 @@ module.exports.handler = async function ( event, context ) {
     ///////////////// push message of audio
     const audio = {
         'type': 'audio',
-        'originalContentUrl': fileURL3, //fileURL,
+        'originalContentUrl': fileURL2, //fileURL,
         'duration': body.audioInterval,
     };
     await client.pushMessage( userLineId, audio, notificationDisabled = true )

@@ -165,6 +165,10 @@ const AudioRecorderLIFF = () => {
                 const base64Audio = await blobToBase64( e.data, os );
                 //console.log( 'converted audio to be sent...', base64Audio.slice( 0, 100 ) )
                 sendGoogle( base64Audio )
+
+                // check the duration
+                //const audioDuration = await audioDurationCheck( e.data );
+                //console.log( audioDuration );
             }
         } );
         recorder.addEventListener( 'stop', () => {
@@ -225,12 +229,13 @@ const AudioRecorderLIFF = () => {
 
     ///////////////// Recording is done >> generate download link and audio player as well as send the full audio to AWS S3
     const myURL = typeof window !== `undefined` ? window.URL || window.webkitURL : ''
+
     useEffect( () => {
         if( !blobRecorded ) return
         const blobURL = myURL.createObjectURL( blobRecorded );
         const tmp = new Audio( blobURL );
-
         setAudioPlayer( tmp );
+
         //console.log( 'audioPlayer...', tmp )
     }, [ blobRecorded ] )
 
@@ -268,6 +273,25 @@ const AudioRecorderLIFF = () => {
         } );
     }
 
+    // a tentative function...not in use now
+    const audioDurationCheck = ( blob ) => {
+        const audioContext = typeof window !== `undefined` ? new ( window.AudioContext || window.webkitAudioContext )() : ''
+        return new Promise( ( resolve, reject ) => {
+            const newBlob = new Blob( [ blob ], { type: blob.type } )
+            const reader = new FileReader();
+            reader.readAsArrayBuffer( newBlob );
+            reader.onload = res => {
+                // Asynchronously decode audio file data contained in an ArrayBuffer.
+                audioContext.decodeAudioData( res.target.result, function ( buffer ) {
+                    // Obtain the duration in seconds of the audio file (with milliseconds as well, a float value)
+                    var duration = buffer.duration;
+                    alert( "The duration of the audio is of: " + duration + " seconds" );
+                    resolve( duration )
+                } );
+            };
+            reader.onerror = err => reject( err );
+        } );
+    }
 
     ////////////////////////// Send audio strings to Google for transcription //////////////////////
     const sendGoogle = async ( recordString ) => {
