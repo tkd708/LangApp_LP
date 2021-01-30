@@ -151,7 +151,8 @@ const AudioRecorderLIFF = () => {
                 setBlobRecorded( e.data );
                 const base64Audio = await blobToBase64( e.data, os );
                 //console.log( 'converted audio to be sent...', base64Audio.slice( 0, 100 ) )
-                const audioBuffer = await audioBuffer( e.data );
+                const audioBuffer = await audioToBuffer( e.data );
+                console.log( audioBuffer );
                 sendGoogle( base64Audio, audioBuffer )
             }
         } );
@@ -242,7 +243,7 @@ const AudioRecorderLIFF = () => {
     ///////////////// Functions to convert and send blobs to transcribe //////////////////
     const blobToBase64 = ( blob, os ) => {
         return new Promise( ( resolve, reject ) => {
-            console.log( blob )
+            //console.log( blob )
             const newBlob = new Blob( [ blob ], { type: blob.type } )
             const reader = new FileReader();
             reader.readAsDataURL( newBlob );
@@ -260,7 +261,7 @@ const AudioRecorderLIFF = () => {
 
 
     //////////////////////////////////////////////////////////////////// tentative functions
-    function arrayBufferToBase64( buffer ) {
+    const arrayBufferToBase64 = ( buffer ) => {
         var binary = '';
         var bytes = new Uint8Array( buffer );
         var len = bytes.byteLength;
@@ -271,16 +272,14 @@ const AudioRecorderLIFF = () => {
         return base64;
     }
 
-    const audioBuffer = ( blob ) => {
+    const audioToBuffer = ( blob ) => {
         const audioContext = typeof window !== `undefined` ? new ( window.AudioContext || window.webkitAudioContext )() : ''
         return new Promise( ( resolve, reject ) => {
             const newBlob = new Blob( [ blob ], { type: blob.type } )
             const reader = new FileReader();
             reader.readAsArrayBuffer( newBlob );
             reader.onload = res => {
-                // Asynchronously decode audio file data contained in an ArrayBuffer.
                 audioContext.decodeAudioData( res.target.result, function ( buffer ) {
-                    // Obtain the duration in seconds of the audio file (with milliseconds as well, a float value)
                     var duration = buffer.duration;
                     console.log( "The duration of the audio is of: " + duration + " seconds" );
                     var base64String = arrayBufferToBase64( buffer ); //btoa( String.fromCharCode.apply( null, new Uint8Array( buffer ) ) ); //btoa( String.fromCharCode( ...new Uint8Array( buffer ) ) );
