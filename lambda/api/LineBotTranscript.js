@@ -129,6 +129,20 @@ module.exports.handler = async function ( event, context ) {
 
 
     ///////////////////////////////////////////// tentatively tests.... just delete the section later
+    const ffmpeg_checkMetaData = () => {
+        return new Promise( ( resolve, reject ) => {
+            ffmpeg()
+                .input( decodedPath )
+                .ffprobe( ( err, data ) => {
+                    if( err ) resolve( err );
+                    //console.log( data );
+                    resolve( data );
+                } )
+        } )
+    }
+    const metadata = await ffmpeg_checkMetaData();
+    console.log( 'ffmpeg metadata...', metadata );
+
     //const decodedAudio = new Buffer.from( body.audioString, 'base64' );
     //const decodedPath = '/tmp/decoded.mp4';
     //await fsp.writeFile( decodedPath, decodedAudio );
@@ -156,10 +170,12 @@ module.exports.handler = async function ( event, context ) {
                     //'-f s16le',
                     '-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac... audio from ios >> copy?
                     //'-vn',
+                    '-of json',
                     //'-ac 1',
                     //'-ar 16k', //41k or 16k
                     //'-map_metadata -1',
                 ] )
+                .duration( 15 )
                 .save( encodedPath2 )
                 .on( 'end', async () => {
                     console.log( 'encoding done' );
@@ -184,23 +200,6 @@ module.exports.handler = async function ( event, context ) {
     console.log( 's3 audio extracted file url...', fileURL2 );
 
 
-    const ffmpeg_checkMetaData = () => {
-        return new Promise( ( resolve, reject ) => {
-            ffmpeg()
-                .input( decodedPath )
-                .ffprobe( ( err, data ) => {
-                    if( err ) resolve( err );
-                    console.log( data );
-                    resolve( data );
-                } )
-        } )
-    }
-    const metadata = await ffmpeg_checkMetaData();
-    console.log( 'ffmpeg metadata...', metadata );
-    const info_path = await probe( decodedPath )
-    console.log( 'ffmpeg metadata using the path...', info_path );
-    const info_file = await probe( decodedFile )
-    console.log( 'ffmpeg metadata using the file...', info_file );
 
 
     ///////////////////////////////////////////////////////////////////////////////
