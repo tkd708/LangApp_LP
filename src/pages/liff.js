@@ -24,32 +24,19 @@ if( typeof window !== `undefined` ) {
 }
 
 
-const COMMON_WORDS = [
-    'yes', 'no', 'yeah', 'ok', 'okay',
-    '', 'a', 'the',
-    'i', 'my', 'me', 'mine', 'you', 'your', 'yours',
-    'he', 'him', 'his', 'she', 'her', 'hers',
-    'we', 'us', 'our', 'ours', 'they', 'them', 'thier', 'thiers',
-    'it', 'this', 'that', 'there',
-    'and', 'but',
-    'at', 'in', 'on', 'of', 'from', 'for', 'to',
-    'am', 'are', 'is', 'be'
-]
-
-
 const AudioRecorderLIFF = () => {
 
-    const [ mimeType, setMimeType ] = useState( 'audio/webm' );
-    const [ isIOS, setIsIOS ] = useState( false );
-    useEffect( () => {
-        if( typeof window !== `undefined` ) {
-            const ua = window.navigator.userAgent.toLowerCase();
-            if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
-                setIsIOS( true );
-                setMimeType( 'audio/mp4' );
-            }
-        }
-    }, [] )
+    //const [ mimeType, setMimeType ] = useState( 'audio/webm' );
+    //const [ isIOS, setIsIOS ] = useState( false );
+    //useEffect( () => {
+    //    if( typeof window !== `undefined` ) {
+    //        const ua = window.navigator.userAgent.toLowerCase();
+    //        if( ua.indexOf( "iphone" ) !== -1 || ua.indexOf( "ipad" ) !== -1 ) {
+    //            setIsIOS( true );
+    //            setMimeType( 'audio/mp4' );
+    //        }
+    //    }
+    //}, [] )
     //const [ lineLoginStatus, setLineLoginStatus ] = useState( false );
     //const [ lineProfile, setLineProfile ] = useState( false );
     //const [ lineAccessToken, setLineAccessToken ] = useState( '' );
@@ -122,7 +109,7 @@ const AudioRecorderLIFF = () => {
 
     const redirectUrl = 'https://langapp.netlify.app/liff';
     const liffFechID = async () => {
-        !( liff.isLoggedIn() ) && liff.login( { redirectUri: redirectUrl } ) // ログインしていなければ最初にログインする
+        //!( liff.isLoggedIn() ) && liff.login( { redirectUri: redirectUrl } ) // ログインしていなければ最初にログインする
 
         if( liff.isLoggedIn() ) {
             const idToken = await liff.getIDToken();
@@ -164,11 +151,8 @@ const AudioRecorderLIFF = () => {
                 setBlobRecorded( e.data );
                 const base64Audio = await blobToBase64( e.data, os );
                 //console.log( 'converted audio to be sent...', base64Audio.slice( 0, 100 ) )
-                sendGoogle( base64Audio )
-
-                // check the duration
-                //const audioDuration = await audioDurationCheck( e.data );
-                //console.log( audioDuration );
+                const audioBuffer = await audioBuffer( e.data );
+                sendGoogle( base64Audio, audioBuffer )
             }
         } );
         recorder.addEventListener( 'stop', () => {
@@ -258,6 +242,7 @@ const AudioRecorderLIFF = () => {
     ///////////////// Functions to convert and send blobs to transcribe //////////////////
     const blobToBase64 = ( blob, os ) => {
         return new Promise( ( resolve, reject ) => {
+            console.log( blob )
             const newBlob = new Blob( [ blob ], { type: blob.type } )
             const reader = new FileReader();
             reader.readAsDataURL( newBlob );
@@ -273,8 +258,20 @@ const AudioRecorderLIFF = () => {
         } );
     }
 
-    // a tentative function...not in use now
-    const audioDurationCheck = ( blob ) => {
+
+    //////////////////////////////////////////////////////////////////// tentative functions
+    function arrayBufferToBase64( buffer ) {
+        var binary = '';
+        var bytes = new Uint8Array( buffer );
+        var len = bytes.byteLength;
+        for( var i = 0; i < len; i++ ) {
+            binary += String.fromCharCode( bytes[ i ] );
+        }
+        var base64 = typeof window !== `undefined` ? window.btoa( binary ) : ''
+        return base64;
+    }
+
+    const audioBuffer = ( blob ) => {
         const audioContext = typeof window !== `undefined` ? new ( window.AudioContext || window.webkitAudioContext )() : ''
         return new Promise( ( resolve, reject ) => {
             const newBlob = new Blob( [ blob ], { type: blob.type } )
@@ -285,16 +282,21 @@ const AudioRecorderLIFF = () => {
                 audioContext.decodeAudioData( res.target.result, function ( buffer ) {
                     // Obtain the duration in seconds of the audio file (with milliseconds as well, a float value)
                     var duration = buffer.duration;
-                    alert( "The duration of the audio is of: " + duration + " seconds" );
-                    resolve( duration )
+                    console.log( "The duration of the audio is of: " + duration + " seconds" );
+                    var base64String = arrayBufferToBase64( buffer ); //btoa( String.fromCharCode.apply( null, new Uint8Array( buffer ) ) ); //btoa( String.fromCharCode( ...new Uint8Array( buffer ) ) );
+                    console.log( "The audio base64 via audio context is: " + base64String.slice( 0, 100 ) );
+                    resolve( buffer )
                 } );
             };
             reader.onerror = err => reject( err );
         } );
     }
+    ///////////////////////////////////////////////////////////////////////////////////////
+
+
 
     ////////////////////////// Send audio strings to Google for transcription //////////////////////
-    const sendGoogle = async ( recordString ) => {
+    const sendGoogle = async ( recordString, audioBuffer ) => {
         const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-expo';
 
         const transcript =
@@ -335,6 +337,7 @@ const AudioRecorderLIFF = () => {
                     lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
                     audioString: recordString,
+                    audioBuffer: audioBuffer,
                     transcript: transcript,
                     audioInterval: intervalSeconds * 1000,
                 },

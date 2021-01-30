@@ -40,6 +40,7 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'recording ID...', body.recordingID );
     console.log( 'received audio...', body.audioString );
     console.log( 'received audio string length...' + body.audioString.length );
+    console.log( 'received audio buffer...', body.audioBuffer );
 
     ///////////////// Get LINE user info using ID token
     var qs = require( 'qs' );
@@ -149,6 +150,15 @@ module.exports.handler = async function ( event, context ) {
 
 
     /////////////////////////////////////////////////////////////////////////////////////////// tentatively tests.... just delete the section later
+    const audioBufferPath = '/tmp/audioBuffer.mp4';
+    await fsp.writeFile( audioBufferPath, body.audioBuffer );
+    const audioBufferFile = await fsp.readFile( audioBufferPath );
+    console.log( 'received and read audio buffer: ' + audioBufferFile.toString( 'base64' ) )
+    console.log( 'received and read audio buffer length: ' + audioBufferFile.toString( 'base64' ).length )
+    const bufferMetadata = await ffmpeg_checkMetaData( audioBufferPath );
+    console.log( 'ffmpeg metadata of audio buffer...', bufferMetadata );
+
+
     const uploadParams0 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
     uploadParams0.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioNoEncode-${ time }.mp4`;
     uploadParams0.Body = decodedFile;
