@@ -158,6 +158,17 @@ module.exports.handler = async function ( event, context ) {
     const bufferMetadata = await ffmpeg_checkMetaData( audioBufferPath );
     console.log( 'ffmpeg metadata of audio buffer...', bufferMetadata );
 
+    const uploadParamsB = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
+    uploadParamsB.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioBuffer-${ time }.mp4`;
+    uploadParamsB.Body = audioBufferFile;
+    const fileURLB = await s3.upload( uploadParamsB )
+        .promise()
+        .then( ( data ) => {
+            console.log( "Audio buffer successfully uploaded to S3", data )
+            return ( data.Location );
+        } )
+        .catch( err => console.log( "Audio buffer upload to S3 error", err ) );
+    console.log( 's3 audio buffer file url...', fileURLB );
 
     const uploadParams0 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
     uploadParams0.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioNoEncode-${ time }.mp4`;
@@ -194,25 +205,25 @@ module.exports.handler = async function ( event, context ) {
                 } )
         } )
     }
-    await ffmpeg_encode_audio2()
-    const encodedFile2 = await fsp.readFile( encodedPath2 );
-    console.log( 'converted audio no codec set just extention set m4a: ' + encodedFile2.toString( 'base64' ).slice( 0, 100 ) )
-    console.log( 'converted audio no codec set just extention set m4a length: ' + encodedFile2.toString( 'base64' ).length )
+    //await ffmpeg_encode_audio2()
+    //const encodedFile2 = await fsp.readFile( encodedPath2 );
+    //console.log( 'converted audio no codec set just extention set m4a: ' + encodedFile2.toString( 'base64' ).slice( 0, 100 ) )
+    //console.log( 'converted audio no codec set just extention set m4a length: ' + encodedFile2.toString( 'base64' ).length )
 
-    const metadata2 = await ffmpeg_checkMetaData( encodedPath2 );
-    console.log( 'ffmpeg metadata of no codec set just extention set m4a audio...', metadata2 );
+    //const metadata2 = await ffmpeg_checkMetaData( encodedPath2 );
+    //console.log( 'ffmpeg metadata of no codec set just extention set m4a audio...', metadata2 );
 
-    const uploadParams2 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
-    uploadParams2.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioJustFormat-${ time }.m4a`;
-    uploadParams2.Body = encodedFile2;
-    const fileURL2 = await s3.upload( uploadParams2 )
-        .promise()
-        .then( ( data ) => {
-            console.log( "Extracted Audio chunk successfully uploaded to S3", data )
-            return ( data.Location );
-        } )
-        .catch( err => console.log( "Extracted Audio chunk upload to S3 error", err ) );
-    console.log( 's3 audio extracted file url...', fileURL2 );
+    //const uploadParams2 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
+    //uploadParams2.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioJustFormat-${ time }.m4a`;
+    //uploadParams2.Body = encodedFile2;
+    //const fileURL2 = await s3.upload( uploadParams2 )
+    //    .promise()
+    //    .then( ( data ) => {
+    //        console.log( "Extracted Audio chunk successfully uploaded to S3", data )
+    //        return ( data.Location );
+    //    } )
+    //    .catch( err => console.log( "Extracted Audio chunk upload to S3 error", err ) );
+    //console.log( 's3 audio extracted file url...', fileURL2 );
 
 
     /////////////////////////////////////////////////////////
@@ -292,7 +303,7 @@ module.exports.handler = async function ( event, context ) {
     ///////////////// push message of audio
     const audio = {
         'type': 'audio',
-        'originalContentUrl': fileURL2, //fileURL,
+        'originalContentUrl': fileURL, //fileURL,
         'duration': body.audioInterval,
     };
     await client.pushMessage( userLineId, audio, notificationDisabled = true )
