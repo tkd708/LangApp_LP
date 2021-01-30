@@ -13,6 +13,7 @@ const fsp = fs.promises;
 const ffmpegPath = require( '@ffmpeg-installer/ffmpeg' ).path;
 const ffmpeg = require( 'fluent-ffmpeg' );
 ffmpeg.setFfmpegPath( ffmpegPath );
+const probe = require( 'ffmpeg-probe' )
 
 const AWS = require( 'aws-sdk' );
 
@@ -195,26 +196,11 @@ module.exports.handler = async function ( event, context ) {
     }
     const metadata = await ffmpeg_checkMetaData();
     console.log( 'ffmpeg metadata...', metadata );
+    const info_path = await probe( decodedPath )
+    console.log( 'ffmpeg metadata using the path...', info_path );
+    const info_file = await probe( decodedFile )
+    console.log( 'ffmpeg metadata using the file...', info_file );
 
-    ffmpeg.getAvailableFormats( function ( err, formats ) {
-        console.log( 'Available formats:' );
-        console.dir( formats );
-    } );
-
-    ffmpeg.getAvailableCodecs( function ( err, codecs ) {
-        console.log( 'Available codecs:' );
-        console.dir( codecs );
-    } );
-
-    ffmpeg.getAvailableEncoders( function ( err, encoders ) {
-        console.log( 'Available encoders:' );
-        console.dir( encoders );
-    } );
-
-    ffmpeg.getAvailableFilters( function ( err, filters ) {
-        console.log( "Available filters:" );
-        console.dir( filters );
-    } );
 
     ///////////////////////////////////////////////////////////////////////////////
 
