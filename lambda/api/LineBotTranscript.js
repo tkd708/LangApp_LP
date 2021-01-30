@@ -129,10 +129,14 @@ module.exports.handler = async function ( event, context ) {
 
 
     ///////////////////////////////////////////// tentatively tests.... just delete the section later
+    const decodedAudio0 = new Buffer.from( body.audioString, 'base64' );
+    const decodedPath0 = '/tmp/decoded.mp4';
+    await fsp.writeFile( decodedPath0, decodedAudio0 );
+
     const ffmpeg_checkMetaData = () => {
         return new Promise( ( resolve, reject ) => {
             ffmpeg()
-                .input( decodedPath )
+                .input( decodedPath0 )
                 .ffprobe( ( err, data ) => {
                     if( err ) resolve( err );
                     //console.log( data );
@@ -143,14 +147,11 @@ module.exports.handler = async function ( event, context ) {
     const metadata = await ffmpeg_checkMetaData();
     console.log( 'ffmpeg metadata...', metadata );
 
-    //const decodedAudio = new Buffer.from( body.audioString, 'base64' );
-    //const decodedPath = '/tmp/decoded.mp4';
-    //await fsp.writeFile( decodedPath, decodedAudio );
-    //const decodedFile = await fsp.readFile( decodedPath );
+    const decodedFile0 = await fsp.readFile( decodedPath0 );
 
     const uploadParams0 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
     uploadParams0.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioNoEncode-${ time }.mp4`;
-    uploadParams0.Body = decodedFile;
+    uploadParams0.Body = decodedFile0;
     const fileURL0 = await s3.upload( uploadParams0 )
         .promise()
         .then( ( data ) => {
@@ -164,18 +165,18 @@ module.exports.handler = async function ( event, context ) {
     const ffmpeg_encode_audio2 = () => {
         return new Promise( ( resolve, reject ) => {
             ffmpeg()
-                .input( decodedPath )
+                .input( decodedPath0 )
                 .inputFormat( 'mp4' )
                 .outputOptions( [
                     //'-f s16le',
                     '-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac... audio from ios >> copy?
                     //'-vn',
-                    '-of json',
+                    '-print_format json',
                     //'-ac 1',
                     //'-ar 16k', //41k or 16k
                     //'-map_metadata -1',
                 ] )
-                .duration( 15 )
+                //.duration( 15 )
                 .save( encodedPath2 )
                 .on( 'end', async () => {
                     console.log( 'encoding done' );
