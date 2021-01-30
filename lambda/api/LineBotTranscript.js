@@ -13,6 +13,8 @@ const fsp = fs.promises;
 const ffmpegPath = require( '@ffmpeg-installer/ffmpeg' ).path;
 const ffmpeg = require( 'fluent-ffmpeg' );
 ffmpeg.setFfmpegPath( ffmpegPath );
+const ffprobe = require( 'ffprobe' ),
+    ffprobeStatic = require( 'ffprobe-static' );
 
 const AWS = require( 'aws-sdk' );
 
@@ -132,17 +134,17 @@ module.exports.handler = async function ( event, context ) {
     //await fsp.writeFile( decodedPath, decodedAudio );
     //const decodedFile = await fsp.readFile( decodedPath );
 
-    const uploadParams2 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
-    uploadParams2.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioNoEncode-${ time }.mp4`;
-    uploadParams2.Body = decodedFile;
-    const fileURL2 = await s3.upload( uploadParams2 )
+    const uploadParams0 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
+    uploadParams0.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioNoEncode-${ time }.mp4`;
+    uploadParams0.Body = decodedFile;
+    const fileURL0 = await s3.upload( uploadParams0 )
         .promise()
         .then( ( data ) => {
             console.log( "Not encoded Audio chunk successfully uploaded to S3", data )
             return ( data.Location );
         } )
         .catch( err => console.log( "Not encoded Audio chunk upload to S3 error", err ) );
-    console.log( 's3 not encoded file url...', fileURL2 );
+    console.log( 's3 not encoded file url...', fileURL0 );
 
     const encodedPath2 = '/tmp/encoded.m4a';
     const ffmpeg_encode_audio2 = () => {
@@ -152,7 +154,7 @@ module.exports.handler = async function ( event, context ) {
                 .inputFormat( 'mp4' )
                 .outputOptions( [
                     //'-f s16le',
-                    '-acodec aac', /// GCP >> pcm_s16le, LINE(m4a) >> aac, or copy?
+                    '-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac... audio from ios >> copy?
                     //'-vn',
                     //'-ac 1',
                     //'-ar 16k', //41k or 16k
@@ -169,26 +171,26 @@ module.exports.handler = async function ( event, context ) {
     const encodedFile2 = await fsp.readFile( encodedPath2 );
     console.log( 'converted audio 2: ' + encodedFile2.toString( 'base64' ).slice( 0, 100 ) )
 
-    const uploadParams3 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
-    uploadParams3.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioExtracted-${ time }.m4a`;
-    uploadParams3.Body = encodedFile2;
-    const fileURL3 = await s3.upload( uploadParams3 )
+    const uploadParams2 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
+    uploadParams2.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioJustFormat-${ time }.m4a`;
+    uploadParams2.Body = encodedFile2;
+    const fileURL2 = await s3.upload( uploadParams2 )
         .promise()
         .then( ( data ) => {
             console.log( "Extracted Audio chunk successfully uploaded to S3", data )
             return ( data.Location );
         } )
         .catch( err => console.log( "Extracted Audio chunk upload to S3 error", err ) );
-    console.log( 's3 audio extracted file url...', fileURL3 );
+    console.log( 's3 audio extracted file url...', fileURL2 );
 
 
     const ffmpeg_checkMetaData = () => {
         return new Promise( ( resolve, reject ) => {
             ffmpeg()
-                .ffprobe( decodedPath, function ( err, data ) {
-                    console.log( data );
-                    console.dir( data );
-                    resolve( data );
+                .ffprobe( decodedPath, { path: ffprobeStatic.path } )
+                .then( ( metadata ) => {
+                    console.log( metadata );
+                    resolve( metadata );
                 } )
         } )
     }
