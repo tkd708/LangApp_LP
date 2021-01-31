@@ -204,7 +204,7 @@ module.exports.handler = async function ( event, context ) {
                 .inputFormat( 'mp4' )
                 .outputOptions( [
                     //'-f s16le',
-                    //'-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac... audio from ios >> copy?
+                    '-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac... audio from ios >> copy?
                     //'-vn',
                     //'-ac 1',
                     //'-ar 16k', //41k or 16k
@@ -217,25 +217,25 @@ module.exports.handler = async function ( event, context ) {
                 } )
         } )
     }
-    //await ffmpeg_encode_audio2()
-    //const encodedFile2 = await fsp.readFile( encodedPath2 );
-    //console.log( 'converted audio no codec set just extention set m4a: ' + encodedFile2.toString( 'base64' ).slice( 0, 100 ) )
-    //console.log( 'converted audio no codec set just extention set m4a length: ' + encodedFile2.toString( 'base64' ).length )
+    await ffmpeg_encode_audio2()
+    const encodedFile2 = await fsp.readFile( encodedPath2 );
+    console.log( 'converted audio acodec copy set just extention set m4a audio: ' + encodedFile2.toString( 'base64' ).slice( 0, 100 ) )
+    console.log( 'converted audio acodec copy set just extention set m4a audio length: ' + encodedFile2.toString( 'base64' ).length )
 
-    //const metadata2 = await ffmpeg_checkMetaData( encodedPath2 );
-    //console.log( 'ffmpeg metadata of no codec set just extention set m4a audio...', metadata2 );
+    const metadata2 = await ffmpeg_checkMetaData( encodedPath2 );
+    console.log( 'ffmpeg metadata of acodec copy set just extention set m4a audio...', metadata2 );
 
-    //const uploadParams2 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
-    //uploadParams2.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioJustFormat-${ time }.m4a`;
-    //uploadParams2.Body = encodedFile2;
-    //const fileURL2 = await s3.upload( uploadParams2 )
-    //    .promise()
-    //    .then( ( data ) => {
-    //        console.log( "Extracted Audio chunk successfully uploaded to S3", data )
-    //        return ( data.Location );
-    //    } )
-    //    .catch( err => console.log( "Extracted Audio chunk upload to S3 error", err ) );
-    //console.log( 's3 audio extracted file url...', fileURL2 );
+    const uploadParams2 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
+    uploadParams2.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioJustFormat-${ time }.m4a`;
+    uploadParams2.Body = encodedFile2;
+    const fileURL2 = await s3.upload( uploadParams2 )
+        .promise()
+        .then( ( data ) => {
+            console.log( "audio acodec copy set just extention set m4a audio chunk successfully uploaded to S3", data )
+            return ( data.Location );
+        } )
+        .catch( err => console.log( "audio acodec copy set just extention set m4a audio chunk upload to S3 error", err ) );
+    console.log( 's3 audio acodec copy set just extention set m4a audio file url...', fileURL2 );
 
 
     /////////////////////////////////////////////////////////
@@ -247,12 +247,13 @@ module.exports.handler = async function ( event, context ) {
                 .inputFormat( 'mp4' )
                 .outputOptions( [
                     //'-f s16le',
-                    //'-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac... audio from ios >> copy?
+                    '-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac... audio from ios >> copy?
                     //'-vn',
                     //'-ac 1',
                     //'-ar 16k', //41k or 16k
                     //'-map_metadata -1',
                 ] )
+                .duration( 'N/A' )
                 .save( encodedPath3 )
                 .on( 'end', async () => {
                     console.log( 'encoding done' );
@@ -260,25 +261,25 @@ module.exports.handler = async function ( event, context ) {
                 } )
         } )
     }
-    //await ffmpeg_encode_audio3()
-    //const encodedFile3 = await fsp.readFile( encodedPath3 );
-    //console.log( 'converted audio set duration NA: ' + encodedFile3.toString( 'base64' ).slice( 0, 100 ) )
-    //console.log( 'converted audio set duration NA length: ' + encodedFile3.toString( 'base64' ).length )
+    await ffmpeg_encode_audio3()
+    const encodedFile3 = await fsp.readFile( encodedPath3 );
+    console.log( 'encoded audio acodec copy set duration NA: ' + encodedFile3.toString( 'base64' ).slice( 0, 100 ) )
+    console.log( 'encoded audio acodec copy set duration NA length: ' + encodedFile3.toString( 'base64' ).length )
 
-    //const metadata3 = await ffmpeg_checkMetaData( encodedPath3 );
-    //console.log( 'ffmpeg metadata of set duration, no codec set, extention change to m4a audio...', metadata3 );
+    const metadata3 = await ffmpeg_checkMetaData( encodedPath3 );
+    console.log( 'ffmpeg metadata of acodec copy set duration NA, extention change to m4a audio...', metadata3 );
 
-    //const uploadParams3 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
-    //uploadParams3.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioDurationNA-${ time }.m4a`;
-    //uploadParams3.Body = encodedFile3;
-    //const fileURL3 = await s3.upload( uploadParams3 )
-    //    .promise()
-    //    .then( ( data ) => {
-    //        console.log( "Duration NA Audio chunk successfully uploaded to S3", data )
-    //        return ( data.Location );
-    //    } )
-    //    .catch( err => console.log( "Duration NA Audio chunk upload to S3 error", err ) );
-    //console.log( 's3 audio duration NA file url...', fileURL3 );
+    const uploadParams3 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
+    uploadParams3.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioDurationNA-${ time }.m4a`;
+    uploadParams3.Body = encodedFile3;
+    const fileURL3 = await s3.upload( uploadParams3 )
+        .promise()
+        .then( ( data ) => {
+            console.log( "Duration NA Audio chunk successfully uploaded to S3", data )
+            return ( data.Location );
+        } )
+        .catch( err => console.log( "Duration NA Audio chunk upload to S3 error", err ) );
+    console.log( 's3 audio duration NA file url...', fileURL3 );
 
 
     ///////////////////////////////////////////////////////////////////////////////
