@@ -205,11 +205,12 @@ module.exports.handler = async function ( event, context ) {
                 .outputOptions( [
                     //'-f s16le',
                     '-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac... audio from ios >> copy?
-                    //'-vn',
+                    '-vn',
                     //'-ac 1',
                     //'-ar 16k', //41k or 16k
                     //'-map_metadata -1',
                 ] )
+                .setDuration( 15 )
                 .save( encodedPath2 )
                 .on( 'end', async () => {
                     console.log( 'encoding done' );
@@ -219,11 +220,11 @@ module.exports.handler = async function ( event, context ) {
     }
     await ffmpeg_encode_audio2()
     const encodedFile2 = await fsp.readFile( encodedPath2 );
-    console.log( 'converted audio acodec copy set just extention set m4a audio: ' + encodedFile2.toString( 'base64' ).slice( 0, 100 ) )
-    console.log( 'converted audio acodec copy set just extention set m4a audio length: ' + encodedFile2.toString( 'base64' ).length )
+    console.log( 'converted audio acodec copy -vn extention set m4a audio: ' + encodedFile2.toString( 'base64' ).slice( 0, 100 ) )
+    console.log( 'converted audio acodec copy -vn extention set m4a audio length: ' + encodedFile2.toString( 'base64' ).length )
 
     const metadata2 = await ffmpeg_checkMetaData( encodedPath2 );
-    console.log( 'ffmpeg metadata of acodec copy set just extention set m4a audio...', metadata2 );
+    console.log( 'ffmpeg metadata of acodec copy -vn extention set m4a audio...', metadata2 );
 
     const uploadParams2 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
     uploadParams2.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioJustFormat-${ time }.m4a`;
@@ -231,11 +232,11 @@ module.exports.handler = async function ( event, context ) {
     const fileURL2 = await s3.upload( uploadParams2 )
         .promise()
         .then( ( data ) => {
-            console.log( "audio acodec copy set just extention set m4a audio chunk successfully uploaded to S3", data )
+            console.log( "audio acodec copy -vn extention set m4a audio chunk successfully uploaded to S3", data )
             return ( data.Location );
         } )
-        .catch( err => console.log( "audio acodec copy set just extention set m4a audio chunk upload to S3 error", err ) );
-    console.log( 's3 audio acodec copy set just extention set m4a audio file url...', fileURL2 );
+        .catch( err => console.log( "audio acodec copy -vn extention set m4a audio chunk upload to S3 error", err ) );
+    console.log( 's3 audio acodec copy -vn extention set m4a audio file url...', fileURL2 );
 
 
     /////////////////////////////////////////////////////////
@@ -253,7 +254,7 @@ module.exports.handler = async function ( event, context ) {
                     //'-ar 16k', //41k or 16k
                     //'-map_metadata -1',
                 ] )
-                .duration( 15 )
+                .withDuration( 15 )
                 .save( encodedPath3 )
                 .on( 'end', async () => {
                     console.log( 'encoding done' );
