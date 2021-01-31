@@ -145,7 +145,7 @@ const AudioRecorderLIFF = () => {
         } );
         recorder.addEventListener( 'dataavailable', async ( e ) => {
             if( e.data.size > 0 ) {
-                //console.log( e.data )
+                console.log( 'blob...', e.data );
                 //alert( 'blob size: ', e.data.size )
                 //alert( 'blob type: ', e.data.type )
                 setBlobRecorded( e.data );
@@ -245,6 +245,7 @@ const AudioRecorderLIFF = () => {
         return new Promise( ( resolve, reject ) => {
             //console.log( blob )
             const newBlob = new Blob( [ blob ], { type: blob.type } )
+            console.log( 'new blob...', newBlob );
             const reader = new FileReader();
             reader.readAsDataURL( newBlob );
             reader.onload = res => {
