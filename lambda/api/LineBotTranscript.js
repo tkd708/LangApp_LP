@@ -40,7 +40,6 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'recording ID...', body.recordingID );
     console.log( 'received audio...', body.audioString );
     console.log( 'received audio string length...' + body.audioString.length );
-    console.log( 'received audio buffer...', body.audioBuffer );
 
     ///////////////// Get LINE user info using ID token
     var qs = require( 'qs' );
@@ -150,6 +149,9 @@ module.exports.handler = async function ( event, context ) {
 
 
     /////////////////////////////////////////////////////////////////////////////////////////// tentatively tests.... just delete the section later
+    console.log( 'received audio buffer...', JSON.stringify( body.audioBuffer ) );
+    console.log( 'received audio buffer in base64: ' + body.audioBuffer.toString( 'base64' ) )
+    console.log( 'received audio buffer in base64 length: ' + body.audioBuffer.toString( 'base64' ).length )
     const audioBufferPath = '/tmp/audioBuffer.mp4';
     await fsp.writeFile( audioBufferPath, body.audioBuffer );
     const audioBufferFile = await fsp.readFile( audioBufferPath );
@@ -157,6 +159,16 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'received and read audio buffer length: ' + audioBufferFile.toString( 'base64' ).length )
     const bufferMetadata = await ffmpeg_checkMetaData( audioBufferPath );
     console.log( 'ffmpeg metadata of audio buffer...', bufferMetadata );
+
+
+    const audioBuffer64Path = '/tmp/audioBuffer64.mp4';
+    await fsp.writeFile( audioBuffer64Path, body.audioBuffer.toString( 'base64' ) );
+    const audioBuffer64File = await fsp.readFile( audioBuffer64Path );
+    console.log( 'received and read audio buffer in base64: ' + audioBuffer64File.toString( 'base64' ) )
+    console.log( 'received and read audio buffer in base64 length: ' + audioBuffer64File.toString( 'base64' ).length )
+    const buffer64Metadata = await ffmpeg_checkMetaData( audioBuffer64Path );
+    console.log( 'ffmpeg metadata of audio buffer in base64...', buffer64Metadata );
+
 
     const uploadParamsB = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
     uploadParamsB.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioBuffer-${ time }.mp4`;
