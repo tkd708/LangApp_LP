@@ -210,7 +210,6 @@ module.exports.handler = async function ( event, context ) {
                     //'-ar 16k', //41k or 16k
                     //'-map_metadata -1',
                 ] )
-                .loop( 15 )
                 .save( encodedPath2 )
                 .on( 'end', async () => {
                     console.log( 'encoding done' );
