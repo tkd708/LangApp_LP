@@ -283,7 +283,7 @@ const AudioRecorderLIFF = () => {
                     var duration = buffer.duration;
                     console.log( "The duration of the audio is of: " + duration + " seconds" );
                     var base64String = arrayBufferToBase64( buffer ); //btoa( String.fromCharCode.apply( null, new Uint8Array( buffer ) ) ); //btoa( String.fromCharCode( ...new Uint8Array( buffer ) ) );
-                    console.log( "The audio base64 via audio context is: " + base64String.slice( 0, 100 ) );
+                    console.log( "The audio base64 via audio context is: " + base64String.slice( 0, 300 ) );
                     resolve( buffer )
                 } );
             };
