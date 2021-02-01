@@ -84,6 +84,8 @@ const Banner = () => {
                         frameborder="0"
                     />
 
+                    <p>現在、こちらのウェブサイト上で録音（PC推奨）した英会話の記録・分析をLINE bot「LangApp」にてお届けする試験運用を実施中です。</p>
+                    {/* 
                     <Link to="demo" smooth={ true } duration={ 500 }>
                         <span className="sr-only">Jump to demo</span>
                         <Button
@@ -93,7 +95,7 @@ const Banner = () => {
                             href="linking"
                         />
                     </Link>
-
+                    */}
                 </div>
             </BackgroundImage>
         </BannerWrapper>

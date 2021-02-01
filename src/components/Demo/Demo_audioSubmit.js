@@ -44,7 +44,6 @@ const Demo = ( id ) => {
                     className="content-container"
                     style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }
                 >
-                    <p>現在、こちらのウェブサイト上で録音（PC推奨）した英会話の記録・分析をLINE bot「LangApp」にてお届けする試験運用を実施中です。</p>
                     <AudioRecorder />
 
                 </div>
