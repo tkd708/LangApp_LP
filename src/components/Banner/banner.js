@@ -83,15 +83,17 @@ const Banner = () => {
                         src="https://www.youtube.com/embed/AVVGrQ4uCHw?autoplay=1&origin=http://langapp.netlify.app"
                         frameborder="0"
                     />
+
                     <Link to="demo" smooth={ true } duration={ 500 }>
                         <span className="sr-only">Jump to demo</span>
                         <Button
-                            cta="英会話分析を試す！"
+                            cta="英会話分析を試す"
                             label="Banner Learn More"
                             anchor={ true }
                             href="linking"
                         />
                     </Link>
+
                 </div>
             </BackgroundImage>
         </BannerWrapper>

@@ -19,21 +19,17 @@ export default () => (
       <TextBlock id="about">
       </TextBlock>
         */}
-            <TextBlockImg2 id="about" title_jp="英会話の効率的な復習をサポート" subtitle="">
-                {/*
-        <Link to="demo" smooth={true} duration={500}>
-            <Button label="Try a demo" cta="Try a demo!" />
-        </Link>
-        */}
-            </TextBlockImg2>
-            <TextBlockImg id="features" title_jp="アプリの特徴" subtitle="">
-                {/*
-        <Link to="demo" smooth={true} duration={500}>
-            <Button label="Try a demo" cta="Try a demo!" />
-        </Link>
-        */}
-            </TextBlockImg>
 
+            <TextBlockImg2 id="about" title_jp="" subtitle="">
+            </TextBlockImg2>
+
+            {/*
+            <TextBlockImg id="features" title_jp="アプリの特徴" subtitle="">
+        <Link to="demo" smooth={true} duration={500}>
+            <Button label="Try a demo" cta="Try a demo!" />
+        </Link>
+            </TextBlockImg>
+            */}
             {/*       
       <Packages
         id="prices"

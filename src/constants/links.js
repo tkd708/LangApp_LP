@@ -4,15 +4,15 @@ export const links = [
         id: "about",
         text: "サービス概要",
     },
-    {
-        path: "/",
-        id: "features",
-        text: "機能・特徴",
-    },
+    //{
+    //    path: "/",
+    //    id: "features",
+    //    text: "機能・特徴",
+    //},
     {
         path: "/",
         id: "demo",
-        text: "英会話分析デモ",
+        text: "英会話分析",
     },
     //  {
     //    path: "/",

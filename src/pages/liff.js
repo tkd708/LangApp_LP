@@ -330,7 +330,7 @@ const AudioRecorderLIFF = () => {
         /////////////////////// Transferring the transcript and the audio to LINE via AWS S3
         axios
             .request( {
-                url: 'https://langapp.netlify.app/.netlify/functions/LineBotTranscript',
+                url: 'https://langapp.netlify.app/.netlify/functions/LineBotTranscriptLiff',
                 method: 'POST',
                 data: {
                     source: 'LIFF',

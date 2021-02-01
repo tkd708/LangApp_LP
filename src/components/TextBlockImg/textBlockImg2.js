@@ -4,6 +4,7 @@ import BackgroundImage from "gatsby-background-image"
 import Perk from "../Perk/perk"
 import styled from "styled-components"
 import Button from "../Button/button"
+import { Link } from "react-scroll"
 
 import cardImg1 from "../../images/chat-laptop.jpg"
 import cardImg2 from "../../images/speech-recognition.jpg"
@@ -16,10 +17,11 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import CardMedia from '@material-ui/core/CardMedia';
 
-const TextBlockImg2 = ({ title_en, title_jp, children, subtitle, id }) => {
-  const data = useStaticQuery(graphql`
+// book-bindings.jpg
+const TextBlockImg2 = ( { title_en, title_jp, children, subtitle, id } ) => {
+    const data = useStaticQuery( graphql`
     query {
-      file(relativePath: { eq: "book-bindings.jpg" }) {
+      file(relativePath: { eq: "language-exchange5.jpg" }) {
         childImageSharp {
           fluid(maxWidth: 2000, quality: 90) {
             ...GatsbyImageSharpFluid_withWebp
@@ -28,78 +30,83 @@ const TextBlockImg2 = ({ title_en, title_jp, children, subtitle, id }) => {
       }
     }
   `)
-  return (
-    <BackgroundImage
-      //className="background-img"
-      id={id}
-      Tag="section"
-      fluid={data.file.childImageSharp.fluid}
-      style={{
-            backgroundAttachment: 'fixed' ,
-           }}
-    >
-      <TextBlockImgWrapper>
-        <div className="content-container">
-          <h2>{title_en}</h2>
-          <h2>{title_jp}</h2>
-          <p>{subtitle}</p>
-          {children}
-        <div className="flex-container trio-block">
-            <Card className='card'>
-                <CardMedia
-                    component="img"
-                    image={cardImg1}
-                    title="analyse conversation"
-                    style={{height: '30vh'}}
-                    />
-                <CardContent>
-                <Typography color="textSecondary" component="h3">STEP 1</Typography>
-                <Typography　 component="h3">{`英会話を録音`}</Typography>
-                <Typography variant="body2" component="p">
-                    {`ウェブ・モバイルアプリであなたの普段の英会話やレッスンを録音しましょう。`}
-                </Typography>
-                </CardContent>
-            </Card>
-            <Card className='card'>
-                <CardMedia
-                    component="img"
-                    image={cardImg2}
-                    title="analyse conversation"
-                    style={{height: '30vh'}}
-                    />
-                <CardContent>
-                <Typography color="textSecondary" component="h3">STEP 2</Typography>
-                <Typography　 component="h3">{`全ての会話を分析`}</Typography>
-                <Typography variant="body2" component="p">
-                    {`AIによる音声認識技術を用いてアプリが会話を書き起こし、内容を分析します。`}
-                </Typography>
-                </CardContent>
-            </Card>
-            <Card className='card' >
-                <CardMedia
-                    component="img"
-                    image={cardImg3}
-                    title="analyse conversation"
-                    style={{height: '30vh'}}
-                    />
-                <CardContent>
-                <Typography color="textSecondary" component="h3">STEP 3</Typography>
-                <Typography　 component="h3">{`課題を報告`}</Typography>
-                <Typography variant="body2" component="p">
-                    {`蓄積された会話の記録からあなたの上達を可視化し次回への課題をまとめます。`}
-                </Typography>
-                </CardContent>
-            </Card>
-        </div>
-       </div>
-      </TextBlockImgWrapper>
-    </BackgroundImage>
-  )
+    return (
+        <BackgroundImage
+            //className="background-img"
+            id={ id }
+            Tag="section"
+            fluid={ data.file.childImageSharp.fluid }
+            style={ {
+                backgroundAttachment: 'fixed',
+            } }
+        >
+            <TextBlockImgWrapper>
+                <div className="content-container">
+                    <h2>{ title_en }</h2>
+                    <h2>{ title_jp }</h2>
+                    <p>{ subtitle }</p>
+                    { children }
+                    <div className="flex-container trio-block">
+                        <Card className='card'>
+                            <CardMedia
+                                component="img"
+                                image={ cardImg1 }
+                                title="analyse conversation"
+                                style={ { height: '30vh' } }
+                            />
+                            <CardContent>
+                                <Typography color="textSecondary" component="h3">STEP 1</Typography>
+                                <Typography component="h3">{ `英会話を録音` }</Typography>
+                                <Typography variant="body2" component="p">
+                                    { `こちらのウェブページでLINEログインをして録音を開始します。その状態でZoomなどでオンライン英会話を行います。` }
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                        <Card className='card'>
+                            <CardMedia
+                                component="img"
+                                image={ cardImg2 }
+                                title="analyse conversation"
+                                style={ { height: '30vh' } }
+                            />
+                            <CardContent>
+                                <Typography color="textSecondary" component="h3">STEP 2</Typography>
+                                <Typography component="h3">{ `会話を記録・分析` }</Typography>
+                                <Typography variant="body2" component="p">
+                                    { `英会話の音声と書き起こしをLINE botが逐次お届けします。録音を終了すると流暢さや語彙力などを数値化して報告します。` }
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                        <Card className='card' >
+                            <CardMedia
+                                component="img"
+                                image={ cardImg3 }
+                                title="analyse conversation"
+                                style={ { height: '30vh' } }
+                            />
+                            <CardContent>
+                                <Typography color="textSecondary" component="h3">STEP 3</Typography>
+                                <Typography component="h3">{ `会話の確認と復習` }</Typography>
+                                <Typography variant="body2" component="p">
+                                    { `蓄積された会話の記録からあなたの上達を可視化します。また次回までに音声や書き起こしを確認して課題を整理しましょう。` }
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </div>
+                    {/* 
+                    <Link to="demo" smooth={ true } duration={ 500 }>
+                        <Button label="" cta="ログインと録音はこちら" />
+                    </Link>
+                    */}
+                </div>
+            </TextBlockImgWrapper>
+        </BackgroundImage>
+    )
 }
 
 const TextBlockImgWrapper = styled.section`
   text-align: center;
-  padding: 100px 30px;
+  padding: 50px 30px;
 
   .background-img {
     filter: grayscale(80%);
@@ -126,6 +133,7 @@ const TextBlockImgWrapper = styled.section`
     -webkit-background-clip: text;
     -webkit-text-fill-color: white; /* need to be 'transparent' to apply the color gradient*/
     font-weight: 700;
+    color: black;
 
     font-size: 2.5rem;
 
