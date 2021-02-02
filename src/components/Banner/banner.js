@@ -84,7 +84,8 @@ const Banner = () => {
                         frameborder="0"
                     />
 
-                    <p>現在、こちらのウェブサイト上で録音（PC推奨）した英会話の記録・分析をLINE bot「LangApp」にてお届けする試験運用を実施中です。</p>
+                    <p>現在、こちらのウェブサイト上で録音した英会話の記録・分析をLINE bot「LangApp」にてお届けする試験運用を実施中です。</p>
+                    <a href="https://lin.ee/5KQntDh"><img src="https://scdn.line-apps.com/n/line_add_friends/btn/en.png" alt="Add friend" height="45" border="0" /></a>
                     {/* 
                     <Link to="demo" smooth={ true } duration={ 500 }>
                         <span className="sr-only">Jump to demo</span>
@@ -96,6 +97,7 @@ const Banner = () => {
                         />
                     </Link>
                     */}
+
                 </div>
             </BackgroundImage>
         </BannerWrapper>

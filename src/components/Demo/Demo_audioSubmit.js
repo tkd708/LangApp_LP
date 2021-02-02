@@ -85,6 +85,20 @@ const DemoWrapper = styled.section`
 
   }
 
+    h3 {
+    font-size: 1.2rem;
+    color: black;
+    
+        @media (min-width: 768px) {
+          font-size: 1.5rem;
+        }
+
+        @media (min-width: 1200px) {
+          font-size: 2.0rem;
+        }
+
+  }
+
   p {
     margin-bottom: 30px;
             color: black;

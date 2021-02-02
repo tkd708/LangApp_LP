@@ -9,6 +9,7 @@ import { Link } from "react-scroll"
 import cardImg1 from "../../images/chat-laptop.jpg"
 import cardImg2 from "../../images/speech-recognition.jpg"
 import cardImg3 from "../../images/dashboard.jpg"
+import cardImg4 from "../../images/line-bot-transcripts.png"
 
 import serviceConceptImg from "../../images/service-concept.jpg"
 
@@ -58,7 +59,7 @@ const TextBlockImg2 = ( { title_en, title_jp, children, subtitle, id } ) => {
                                 <Typography color="textSecondary" component="h3">STEP 1</Typography>
                                 <Typography component="h3">{ `英会話を録音` }</Typography>
                                 <Typography variant="body2" component="p">
-                                    { `こちらのウェブページでLINEログインをして録音を開始します。その状態でZoomなどでオンライン英会話を行います。` }
+                                    { `こちらのウェブページでLINEログインをして録音を開始します。そのまま普段通りオンライン英会話を行います。` }
                                 </Typography>
                             </CardContent>
                         </Card>

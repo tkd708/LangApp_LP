@@ -17,10 +17,8 @@ import lineButtonPress from "../../images/btn_login_press.png";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLine } from '@fortawesome/free-brands-svg-icons'
 
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import PauseIcon from '@material-ui/icons/Pause';
-import StopIcon from '@material-ui/icons/Stop';
-import GetAppIcon from '@material-ui/icons/GetApp';
+import MicNoneTwoToneIcon from '@material-ui/icons/MicNoneTwoTone';
+import StopTwoToneIcon from '@material-ui/icons/StopTwoTone';
 
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
@@ -371,10 +369,11 @@ const AudioRecorder = () => {
                 </Select>
             </div>
 
+            <h3>実際の英会話をこちらで録音し、記録・分析をしてみましょう！</h3>
             {
                 !lineLoginStatus
                     ? <div>
-                        <p>録音を開始する前にLINEログインを行ってください。初回ログインの際に分析をお届けするBotアカウント「LangApp」の友達追加ができます。</p>
+                        <p>下記よりLINEログインを行ってください。</p>
                         <a href={ lineLoginUrl } id="lineLogin" style={ { marginBottom: '30px' } }>
                             <img src={ lineButtonBase }//"../../images/btn_login_base.png"
                                 style={ { width: '180px', marginBottom: '30px' } }
@@ -382,17 +381,27 @@ const AudioRecorder = () => {
                             />
                         </a>
                     </div>
-                    : <p>LINEログイン完了です！下記ボタンより録音を開始してください。</p>
+                    : <p>LINEログイン完了です！録音を開始してください。</p>
             }
-
-            <Button
+            {/* <Button
                 style={ { margin: '20px' } }
                 //variant="contained"
                 //color="primary"
                 cta={ isRecording ? '録音中...(クリックで終了)' : '会話の録音を開始' } // from the template
                 onClick={ () => { isRecording ? stopRecording() : startRecording() } }
             >
-            </Button>
+            </Button> */}
+            {
+                !isRecording
+                    ? <div>
+                        <MicNoneTwoToneIcon style={ { fontSize: 100 } } onClick={ () => { startRecording() } }></MicNoneTwoToneIcon>
+                        <p>会話の録音を開始</p>
+                    </div>
+                    : <div>
+                        <StopTwoToneIcon style={ { fontSize: 100 } } onClick={ () => { stopRecording() } }></StopTwoToneIcon>
+                        <p>録音中...(クリックで終了)</p>
+                    </div>
+            }
 
         </div>
     );
