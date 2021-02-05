@@ -23,7 +23,7 @@ const LIFF_task = () => {
 
     // LIFF processes
     useEffect( () => {
-        ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID } )
+        ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID_question } )
             .then( () => {
                 console.log( 'Success in LIFF initialisation' );
                 liffFechID();
