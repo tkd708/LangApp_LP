@@ -387,7 +387,7 @@ const AudioRecorder = () => {
                 </Select>
             </div>
 
-            <h3>実際の英会話をこちらで録音し、記録・分析をしてみましょう！</h3>
+            <h3>実際の英会話をこちらで録音し、記録・分析をしてみましょう！(現在PCでのChrome、FireFox、Microsoft Edgeのブラウザに対応しております。)</h3>
             {
                 !lineLoginStatus
                     ? <div>

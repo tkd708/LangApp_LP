@@ -151,6 +151,8 @@ module.exports.handler = async function ( event, context ) {
 
 
     ///////////////// push message of audio
+    console.log( metadata.streams[ 0 ] )
+    console.log( metadata.streams[ 0 ].duration )
     const audio = {
         'type': 'audio',
         'originalContentUrl': fileURL, //fileURL,
