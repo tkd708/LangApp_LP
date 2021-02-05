@@ -68,7 +68,7 @@ const LIFF_task = () => {
                 id="filled-required"
                 label="英語で言いたいこと" // to be replaced with LangApp ID
                 variant="filled"
-                value={ intervalSeconds }
+                value={ question }
                 onChange={ ( e ) => { setQuestion( e.target.value ); } }
                 inputProps={ {
                     style: { backgroundColor: 'white', marginBottom: '20px' },
