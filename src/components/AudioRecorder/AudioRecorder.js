@@ -387,7 +387,8 @@ const AudioRecorder = () => {
                 </Select>
             </div>
 
-            <h3>実際の英会話をこちらで録音し、記録・分析をしてみましょう！(現在PCでのChrome、FireFox、Microsoft Edgeのブラウザに対応しております。)</h3>
+            <h3>実際の英会話をこちらで録音し、記録・分析しましょう！</h3>
+            <p>(現在PCでのChrome、FireFox、Microsoft Edgeのブラウザ対応です。)</p>
             {
                 !lineLoginStatus
                     ? <div>
@@ -412,11 +413,15 @@ const AudioRecorder = () => {
             {
                 !isRecording
                     ? <div>
-                        <a><MicNoneTwoToneIcon style={ { fontSize: 100 } } onClick={ () => { startRecording() } }></MicNoneTwoToneIcon></a>
+                        <button style={ { cursor: 'pointer', borderRadius: '30px', boxShadow: '0px 3px 3px black' } }>
+                            <MicNoneTwoToneIcon style={ { fontSize: 100 } } onClick={ () => { startRecording() } }></MicNoneTwoToneIcon>
+                        </button>
                         <p>会話の録音を開始</p>
                     </div>
                     : <div>
-                        <a><StopTwoToneIcon style={ { fontSize: 100 } } onClick={ () => { stopRecording() } }></StopTwoToneIcon></a>
+                        <button style={ { cursor: 'pointer', borderRadius: '30px', boxShadow: '0px 3px 3px black' } }>
+                            <StopTwoToneIcon style={ { fontSize: 100 } } onClick={ () => { stopRecording() } }></StopTwoToneIcon>
+                        </button>
                         <p>録音中...(クリックで終了)</p>
                     </div>
             }

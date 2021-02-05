@@ -113,8 +113,8 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'converted audio: ' + encodedFile.toString( 'base64' ).slice( 0, 100 ) )
     console.log( 'converted audio length: ' + encodedFile.toString( 'base64' ).length )
 
-    const metadata1 = await ffmpeg_checkMetaData( encodedPath );
-    console.log( 'ffmpeg metadata of encoded audio...', metadata1 );
+    const metadata_encoded = await ffmpeg_checkMetaData( encodedPath );
+    console.log( 'ffmpeg metadata of encoded audio...', metadata_encoded );
 
 
     ////////////////////////// initialise AWS
@@ -151,12 +151,10 @@ module.exports.handler = async function ( event, context ) {
 
 
     ///////////////// push message of audio
-    console.log( metadata.streams[ 0 ] )
-    console.log( metadata.streams[ 0 ].duration )
     const audio = {
         'type': 'audio',
         'originalContentUrl': fileURL, //fileURL,
-        'duration': metadata.streams[ 0 ].duration, //body.audioInterval,
+        'duration': metadata_encoded.streams[ 0 ].duration, //body.audioInterval,
     };
     await client.pushMessage( userLineId, audio, notificationDisabled = true )
         .then( res => console.log( 'audio push message successful...', res ) )
