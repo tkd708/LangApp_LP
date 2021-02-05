@@ -79,6 +79,8 @@ const AudioRecorder = () => {
         transcriptArrayYouRef.current = transcriptArrayYou
     }, [ transcriptArrayYou ] )
 
+    const [ isAnalysis, setIsAnalysis ] = useState( false );
+
     const [ transcribeLang, setTranscribeLang ] = useState( 'en-US' );
 
     const myURL = typeof window !== `undefined` ? window.URL || window.webkitURL : ''
@@ -215,7 +217,9 @@ const AudioRecorder = () => {
         const recordLengthSeconds = ( endTime.getTime() - startTime ) / 1000;
         console.log( 'recoding ended, it took', recordLengthSeconds, 'seconds' );
 
-        setTimeout( () => { vocabAnalysis( transcriptArrayYouRef.current.join( ' ' ), recordLengthSeconds ); }, 30 * 1000 );
+        setIsAnalysis( true );
+        console.log( 'analysis started...' );
+        setTimeout( () => { conversationAnalysis( transcriptArrayYouRef.current.join( ' ' ), recordLengthSeconds ); }, 30 * 1000 );
     }
 
 
@@ -292,16 +296,15 @@ const AudioRecorder = () => {
 
 
     //////// After transcribing... vocab analysis
-    const vocabAnalysis = async ( transcript, recordLengthSeconds ) => {
+    const conversationAnalysis = async ( transcript, recordLengthSeconds ) => {
 
         if( transcript === null ) return
 
-        axios
+        await axios
             .request( {
-                url: 'https://langapp.netlify.app/.netlify/functions/LineBotReport',
+                url: 'https://langapp.netlify.app/.netlify/functions/LineBotReportAnalysis',
                 method: 'POST',
                 data: {
-                    appID: appIDRef.current, //tentative
                     lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
                     lengthMinute: ( recordLengthSeconds / 60 ).toFixed( 1 ),
@@ -309,8 +312,23 @@ const AudioRecorder = () => {
                     errors: transcribeErrorArrray,
                 },
             } )
-            .then( ( res ) => { console.log( 'report to LINE bot and dynamoDB success...', res ) } )
-            .catch( ( err ) => { console.log( 'report to LINE bot and dynamoDB error...', err ) } )
+            .then( ( res ) => { console.log( 'conversation analysis success...', res ) } )
+            .catch( ( err ) => { console.log( 'conversation analysis error...', err ) } )
+
+        await axios
+            .request( {
+                url: 'https://langapp.netlify.app/.netlify/functions/LineBotReportGraphs',
+                method: 'POST',
+                data: {
+                    lineIdToken: lineIdTokenRef.current,
+                    recordingID: recordingIDRef.current,
+                },
+            } )
+            .then( ( res ) => { console.log( 'reporting graphs success...', res ) } )
+            .catch( ( err ) => { console.log( 'reporting graphs error...', err ) } )
+
+        setIsAnalysis( false );
+        console.log( 'analysis finished...' );
     }
 
 
