@@ -254,6 +254,7 @@ module.exports.handler = async function ( event, context ) {
 
 
     ///////////////////////////////////////// Upload to S3
+    const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
 
     // Total words
     const paramsS3WordsTotal = {

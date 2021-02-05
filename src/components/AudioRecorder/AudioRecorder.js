@@ -202,9 +202,9 @@ const AudioRecorder = () => {
 
     const repeatMediaRecorders = () => {
         //mediaRecorderMic.stop();
-        console.log( 'recorders off' )
         if( !isRecordingRef.current ) return
         mediaRecorderMic.stop();
+        console.log( 'recorders off' )
         startMediaRecorders()
     }
 
@@ -412,13 +412,17 @@ const AudioRecorder = () => {
             {
                 !isRecording
                     ? <div>
-                        <MicNoneTwoToneIcon style={ { fontSize: 100 } } onClick={ () => { startRecording() } }></MicNoneTwoToneIcon>
+                        <a><MicNoneTwoToneIcon style={ { fontSize: 100 } } onClick={ () => { startRecording() } }></MicNoneTwoToneIcon></a>
                         <p>会話の録音を開始</p>
                     </div>
                     : <div>
-                        <StopTwoToneIcon style={ { fontSize: 100 } } onClick={ () => { stopRecording() } }></StopTwoToneIcon>
+                        <a><StopTwoToneIcon style={ { fontSize: 100 } } onClick={ () => { stopRecording() } }></StopTwoToneIcon></a>
                         <p>録音中...(クリックで終了)</p>
                     </div>
+            }
+            <p>{ transcriptArrayYou.length >= 1 }</p>
+            {( transcriptArrayYou.length >= 1 ) && ( !isRecording ) &&
+                <p>{ isAnalysis ? '分析中...少々お待ちください。' : '分析完了！LINE botをご確認ください。' }</p>
             }
 
         </div>

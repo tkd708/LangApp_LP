@@ -60,8 +60,10 @@ module.exports.handler = async function ( event, context ) {
             console.log( 'Error in geting LINE user info using id token...', err )
             return ( err )
         } );
-    const userLineId_token = userLineData.sub;
+    const userLineId = userLineData.sub;
     const userLineName = userLineData.name;
+
+
 
 
     /////////////////////// Encoding wav audio to m4a
@@ -148,174 +150,11 @@ module.exports.handler = async function ( event, context ) {
 
 
 
-    /////////////////////////////////////////////////////////////////////////////////////////// tentatively tests.... just delete the section later
-    //console.log( 'received audio buffer...', JSON.stringify( body.audioBuffer ) );
-    //console.log( 'received audio buffer in base64: ' + body.audioBuffer.toString( 'base64' ) )
-    //console.log( 'received audio buffer in base64 length: ' + body.audioBuffer.toString( 'base64' ).length )
-    //const audioBufferPath = '/tmp/audioBuffer.mp4';
-    //await fsp.writeFile( audioBufferPath, body.audioBuffer );
-    //const audioBufferFile = await fsp.readFile( audioBufferPath );
-    //console.log( 'received and read audio buffer: ' + audioBufferFile.toString( 'base64' ) )
-    //console.log( 'received and read audio buffer length: ' + audioBufferFile.toString( 'base64' ).length )
-    //const bufferMetadata = await ffmpeg_checkMetaData( audioBufferPath );
-    //console.log( 'ffmpeg metadata of audio buffer...', bufferMetadata );
-
-
-    //const audioBuffer64Path = '/tmp/audioBuffer64.mp4';
-    //await fsp.writeFile( audioBuffer64Path, body.audioBuffer.toString( 'base64' ) );
-    //const audioBuffer64File = await fsp.readFile( audioBuffer64Path );
-    //console.log( 'received and read audio buffer in base64: ' + audioBuffer64File.toString( 'base64' ) )
-    //console.log( 'received and read audio buffer in base64 length: ' + audioBuffer64File.toString( 'base64' ).length )
-    //const buffer64Metadata = await ffmpeg_checkMetaData( audioBuffer64Path );
-    //console.log( 'ffmpeg metadata of audio buffer in base64...', buffer64Metadata );
-
-
-    //const uploadParamsB = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
-    //uploadParamsB.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioBuffer-${ time }.mp4`;
-    //uploadParamsB.Body = audioBufferFile;
-    //const fileURLB = await s3.upload( uploadParamsB )
-    //    .promise()
-    //    .then( ( data ) => {
-    //        console.log( "Audio buffer successfully uploaded to S3", data )
-    //        return ( data.Location );
-    //    } )
-    //    .catch( err => console.log( "Audio buffer upload to S3 error", err ) );
-    //console.log( 's3 audio buffer file url...', fileURLB );
-
-    //const uploadParams0 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
-    //uploadParams0.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioNoEncode-${ time }.mp4`;
-    //uploadParams0.Body = decodedFile;
-    //const fileURL0 = await s3.upload( uploadParams0 )
-    //    .promise()
-    //    .then( ( data ) => {
-    //        console.log( "Not encoded Audio chunk successfully uploaded to S3", data )
-    //        return ( data.Location );
-    //    } )
-    //    .catch( err => console.log( "Not encoded Audio chunk upload to S3 error", err ) );
-    //console.log( 's3 not encoded file url...', fileURL0 );
-
-
-    /////////////////////////////////////////////////////////
-    //const encodedPath2 = '/tmp/encodedT15.m4a';
-    //const ffmpeg_encode_audio2 = () => {
-    //    return new Promise( ( resolve, reject ) => {
-    //        ffmpeg()
-    //            .input( decodedPath )
-    //            .inputFormat( 'mp4' )
-    //            .outputOptions( [
-    //                //'-f s16le',
-    //                '-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac... audio from ios >> copy?
-    //                '-t 15',
-    //                //'-ac 1',
-    //                //'-ar 16k', //41k or 16k
-    //                //'-map_metadata -1',
-    //            ] )
-    //            .save( encodedPath2 )
-    //            .on( 'end', async () => {
-    //                console.log( 'encoding done' );
-    //                resolve();
-    //            } )
-    //    } )
-    //}
-    //await ffmpeg_encode_audio2()
-    //const encodedFile2 = await fsp.readFile( encodedPath2 );
-    //console.log( 'converted audio acodec copy t15 extention set m4a audio: ' + encodedFile2.toString( 'base64' ).slice( 0, 100 ) )
-    //console.log( 'converted audio acodec copy t15 extention set m4a audio length: ' + encodedFile2.toString( 'base64' ).length )
-
-    //const metadata2 = await ffmpeg_checkMetaData( encodedPath2 );
-    //console.log( 'ffmpeg metadata of acodec copy t15 extention set m4a audio...', metadata2 );
-
-    //const uploadParams2 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
-    //uploadParams2.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioT15-${ time }.m4a`;
-    //uploadParams2.Body = encodedFile2;
-    //const fileURL2 = await s3.upload( uploadParams2 )
-    //    .promise()
-    //    .then( ( data ) => {
-    //        console.log( "audio acodec copy t15 extention set m4a audio chunk successfully uploaded to S3", data )
-    //        return ( data.Location );
-    //    } )
-    //    .catch( err => console.log( "audio acodec copy t15 extention set m4a audio chunk upload to S3 error", err ) );
-    //console.log( 's3 audio acodec copy t15 extention set m4a audio file url...', fileURL2 );
-
-
-    /////////////////////////////////////////////////////////
-    //const encodedPath3 = '/tmp/encodedDurationNA.m4a';
-    const ffmpeg_encode_audio3 = () => {
-        return new Promise( ( resolve, reject ) => {
-            ffmpeg()
-                .input( decodedPath )
-                .inputFormat( 'mp4' )
-                .outputOptions( [
-                    //'-f s16le',
-                    '-acodec copy', /// GCP >> pcm_s16le, LINE(m4a) >> aac... audio from ios >> copy?
-                    //'-ac 1',
-                    //'-ar 16k', //41k or 16k
-                    //'-map_metadata -1',
-                ] )
-                .save( encodedPath3 )
-                .on( 'end', async () => {
-                    console.log( 'encoding done' );
-                    resolve();
-                } )
-        } )
-    }
-    //await ffmpeg_encode_audio3()
-    //const encodedFile3 = await fsp.readFile( encodedPath3 );
-    //console.log( 'encoded audio acodec copy set duration 15: ' + encodedFile3.toString( 'base64' ).slice( 0, 100 ) )
-    //console.log( 'encoded audio acodec copy set duration 15 length: ' + encodedFile3.toString( 'base64' ).length )
-
-    //const metadata3 = await ffmpeg_checkMetaData( encodedPath3 );
-    //console.log( 'ffmpeg metadata of acodec copy set duration 15, extention change to m4a audio...', metadata3 );
-
-    //const uploadParams3 = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
-    //uploadParams3.Key = `${ date }-${ userLineName }-${ body.recordingID }/audioDuration15-${ time }.m4a`;
-    //uploadParams3.Body = encodedFile3;
-    //const fileURL3 = await s3.upload( uploadParams3 )
-    //    .promise()
-    //    .then( ( data ) => {
-    //        console.log( "Duration 15 Audio chunk successfully uploaded to S3", data )
-    //        return ( data.Location );
-    //    } )
-    //    .catch( err => console.log( "Duration 15 Audio chunk upload to S3 error", err ) );
-    //console.log( 's3 audio duration 15 file url...', fileURL3 );
-
-
-    ///////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-    ///////////////// Get LINE user ID from dynamoDB corresponding to the user name (appID) input by the user on LP
-    const docClient = new AWS.DynamoDB.DocumentClient();
-    const params = {
-        TableName: 'LangAppUsers',
-        KeyConditionExpression: 'UserName = :UserName ',
-        ExpressionAttributeValues: { ':UserName': body.appID, }
-    };
-    const userLineId_dynamo = await docClient.query( params )
-        .promise()
-        .then( ( data ) => {
-            console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
-            return ( data.Items[ 0 ].UserLineId );
-        } )
-        .catch( err => {
-            console.log( 'LINE user ID fetch from dynamoDB failed...', err )
-            return ( err )
-        } );
-    //console.log( 'fetched line id...', userLineId )
-
-
-
-    const userLineId = ( body.lineIdToken === undefined ) ? userLineId_dynamo : userLineId_token;
-
-
     ///////////////// push message of audio
     const audio = {
         'type': 'audio',
         'originalContentUrl': fileURL, //fileURL,
-        'duration': body.audioInterval,
+        'duration': metadata.streams[ 0 ].duration, //body.audioInterval,
     };
     await client.pushMessage( userLineId, audio, notificationDisabled = true )
         .then( res => console.log( 'audio push message successful...', res ) )
