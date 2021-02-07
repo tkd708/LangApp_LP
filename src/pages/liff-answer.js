@@ -12,15 +12,6 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 
-import { v4 as uuidv4 } from 'uuid';
-
-import AWS from 'aws-sdk';
-AWS.config = new AWS.Config( {
-    accessKeyId: process.env.GATSBY_AWS_accessKey,
-    secretAccessKey: process.env.GATSBY_AWS_secretKey,
-    region: 'us-east-2',
-} );
-const docClient = new AWS.DynamoDB.DocumentClient();
 
 
 //import liff from '@line/liff';
