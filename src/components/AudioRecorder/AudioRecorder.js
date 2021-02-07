@@ -267,7 +267,7 @@ const AudioRecorder = () => {
                     const errorStatus = {
                         errorMessage: err,
                         errorAt: speaker,
-                        errorTimeFromStartTime: ( ( errorTime.getTime() - startTimeRef.current ) / 1000 ),
+                        errorTimeFromStartTime: ( ( errorTime.getTime() - startTimeRef.current ) / 1000 / 60 ),
                     }
                     setTranscribeErrorArray( [ ...transcribeErrorArrrayRef.current, errorStatus ] );
                     console.log( errorStatus );

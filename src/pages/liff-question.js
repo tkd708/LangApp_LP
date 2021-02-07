@@ -7,16 +7,14 @@ import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 //import Button from '@material-ui/core/Button';
 
-import Button from "../components/Button/button";
-
-import TranscribeLangs from '../constants/transcribeLangs.json';
-
 import { v4 as uuidv4 } from 'uuid';
 
 //import liff from '@line/liff';
 const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '';//"window" is not available during server side rendering.
 
-const LIFF_task = () => {
+
+
+const LiffQuestion = () => {
 
     const [ lineIdToken, setLineIdToken ] = useState( '' );
     const [ question, setQuestion ] = useState( '' );
@@ -41,20 +39,23 @@ const LIFF_task = () => {
         }
     }
 
-    const sendQuestion = async () => {
 
-        axios
+    const sendQuestion = async () => {
+        const taskId = uuidv4();
+        await axios
             .request( {
-                url: 'https://langapp.netlify.app/.netlify/functions/Liff-question',
+                url: 'https://langapp.netlify.app/.netlify/functions/lambda-liff-question',
                 method: 'POST',
                 data: {
                     lineIdToken: lineIdToken,
                     question: question,
+                    taskId: taskId,
                 },
             } )
             .then( ( res ) => { console.log( 'LIFF send question success...', res ) } )
             .catch( ( err ) => { console.log( 'LIFF send question error...', err ) } )
 
+        setQuestion()
     }
 
     /////////////// UI //////////////////////
@@ -62,22 +63,25 @@ const LIFF_task = () => {
         <div
             style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', maxWidth: '90%' } }
         >
-
-            <TextField
-                required
-                id="filled-required"
-                label="英語で言いたいこと" // to be replaced with LangApp ID
-                variant="filled"
-                value={ question }
-                onChange={ ( e ) => { setQuestion( e.target.value ); } }
-                inputProps={ {
-                    style: { backgroundColor: 'white', marginBottom: '20px' },
-                } }
-            />
-            <button style={ { fontSize: 40 } } onClick={ () => { sendQuestion(); } }>登録</button>
+            <div
+                style={ { display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', maxWidth: '90%' } }
+            >
+                <TextField
+                    required
+                    id="filled-required"
+                    label="英語で言いたいこと" // to be replaced with LangApp ID
+                    variant="filled"
+                    value={ question }
+                    onChange={ ( e ) => { setQuestion( e.target.value ); } }
+                    inputProps={ {
+                        style: { backgroundColor: 'white', marginBottom: '20px' },
+                    } }
+                />
+                <button style={ { fontSize: 20 } } onClick={ () => { sendQuestion(); } }>追加</button>
+            </div >
         </div >
 
     );
 }
 
-export default LIFF_task;
+export default LiffQuestion;
