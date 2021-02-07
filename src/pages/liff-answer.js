@@ -37,7 +37,7 @@ const LiffAnswer = () => {
 
     // LIFF processes
     useEffect( () => {
-        ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID_question } )
+        ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID_answer } )
             .then( () => {
                 console.log( 'Success in LIFF initialisation' );
                 liffFechID();
@@ -94,6 +94,18 @@ const LiffAnswer = () => {
     const addAnswer = async ( taskId, answer ) => {
         console.log( taskId );
         console.log( answer );
+
+        await axios
+            .request( {
+                url: 'https://langapp.netlify.app/.netlify/functions/lambda-liff-answer',
+                method: 'POST',
+                data: {
+                    taskId: taskId,
+                    answer: answer,
+                },
+            } )
+            .then( ( res ) => { console.log( 'LIFF send answer success...', res ) } )
+            .catch( ( err ) => { console.log( 'LIFF send answer error...', err ) } )
 
         setAnswer( '' );
         getTaskList();

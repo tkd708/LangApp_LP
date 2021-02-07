@@ -36,7 +36,7 @@ const LiffReview = () => {
 
     // LIFF processes
     useEffect( () => {
-        ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID_question } )
+        ( typeof window !== `undefined` ) && liff.init( { liffId: process.env.GATSBY_LINE_LIFFID_review } )
             .then( () => {
                 console.log( 'Success in LIFF initialisation' );
                 liffFechID();

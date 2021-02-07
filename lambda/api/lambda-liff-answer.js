@@ -38,7 +38,7 @@ module.exports.handler = async function ( event, context ) {
     }
 
     const body = JSON.parse( event.body );
-    console.log( 'received line id token...', body );
+    console.log( 'received answer...', body );
 
 
 
@@ -66,57 +66,34 @@ module.exports.handler = async function ( event, context ) {
 
 
 
-    ////////////////////////////// Fetch tasks from dynamoDB
+    ////////////////////////////// Store the analysis results to dynamoDB (atm from LP but analysis will be moved to this netlify functions)
+    const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
+
     const params = {
         TableName: 'LangAppRevision',
-        IndexName: 'userLineId-index',
-        KeyConditionExpression: 'userLineId = :userLineId ',
-        ExpressionAttributeValues: { ':userLineId': userLineId, } //
+        Item: {
+            taskId: body.taskId,
+            userLineId: userLineId,
+            userLineName: userLineName,
+            //date: date,
+            //question: body.question,
+            answer: body.answer,
+            answerComplete: 'Y',
+            practiceComplete: 'N',
+        }
     };
-
-    const userTasks = await docClient.query( params )
+    await docClient.put( params )
         .promise()
-        .then( data => data.Items )
-        .catch( err => {
-            console.log( 'Fetch tasks from dynamoDB failed...', err );
-            return ( [] );
-        } );
+        .then( res => console.log( 'Uploading answer to dynamoDB was successful...', res ) )
+        .catch( err => console.log( 'Uploading asnwer to dynamoDB failed...', err ) );
 
-    // in case of error or an empty array...
-    if( userTasks == [] ) return {
-        statusCode: 200, // http status code
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "Content-Type",
-        },
-        body: JSON.stringify( {
-            request: event.body,
-            tasks: userTasks
-        } )
-    }
 
-    // if not empty, select data and return
-    userTasks.sort( function ( a, b ) {
-        return a.Date < b.Date ? -1 : 1;
-    } );
-    const userTasksSelected = userTasks.map( x => ( {
-        taskId: x.taskId,
-        date: x.date,
-        question: x.question,
-        answer: x.answer,
-        answerComplete: x.answerComplete,
-        practiceComplete: x.practiceComplete
-    } ) )
 
-    return {
-        statusCode: 200, // http status code
-        headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "Content-Type",
-        },
-        body: JSON.stringify( {
-            request: event.body,
-            tasks: userTasksSelected
-        } )
-    }
+    //////////// Finish the api
+    let lambdaResponse = {
+        statusCode: 200,
+        headers: { "X-Line-Status": "OK" },
+        body: '{"result":"completed"}'
+    };
+    context.succeed( lambdaResponse );
 };
