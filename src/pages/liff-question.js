@@ -55,7 +55,7 @@ const LiffQuestion = () => {
             .then( ( res ) => { console.log( 'LIFF send question success...', res ) } )
             .catch( ( err ) => { console.log( 'LIFF send question error...', err ) } )
 
-        setQuestion()
+        setQuestion( '' )
     }
 
     /////////////// UI //////////////////////

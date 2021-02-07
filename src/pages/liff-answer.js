@@ -41,7 +41,6 @@ const LiffAnswer = () => {
             .then( () => {
                 console.log( 'Success in LIFF initialisation' );
                 liffFechID();
-                getTaskList()
             } )
             .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
     }, [] )
@@ -55,6 +54,12 @@ const LiffAnswer = () => {
             setLineIdToken( idToken )
         }
     }
+
+    useEffect( () => {
+        if( lineIdToken === '' ) return
+        getTaskList()
+    }, [ lineIdToken ] )
+
 
     const getTaskList = async () => {
 

@@ -28,10 +28,11 @@ const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '';//"win
 
 
 
-const LIFF_task = () => {
+const LiffReview = () => {
 
     const [ lineIdToken, setLineIdToken ] = useState( '' );
-    const [ question, setQuestion ] = useState( '' );
+    const [ taskList, setTaskList ] = useState( [] );
+
 
     // LIFF processes
     useEffect( () => {
@@ -43,9 +44,9 @@ const LIFF_task = () => {
             .catch( err => window.alert( 'Error in LIFF initialisation: ' + err ) )
     }, [] )
 
-    const redirectUrl = 'https://langapp.netlify.app/liff-question';
+    const redirectUrl = 'https://langapp.netlify.app/liff-review';
     const liffFechID = async () => {
-        //!( liff.isLoggedIn() ) && liff.login( { redirectUri: redirectUrl } ) // ログインしていなければ最初にログインする
+        !( liff.isLoggedIn() ) && liff.login( { redirectUri: redirectUrl } ) // ログインしていなければ最初にログインする
 
         if( liff.isLoggedIn() ) {
             const idToken = await liff.getIDToken();
@@ -53,177 +54,64 @@ const LIFF_task = () => {
         }
     }
 
-    const taskUpload = async () => {
-        const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
-        const taskID = uuidv4();
+    useEffect( () => {
+        if( lineIdToken === '' ) return
+        getTaskList()
+    }, [ lineIdToken ] )
 
-        const params = {
-            TableName: 'LangAppRevision',
-            Item: {
-                TaskID: taskID,
-                UserLineID: 'userLineId',
-                UserLineName: "userLineName",
-                Date: date,
-                Question: question,
-                AnswerComplete: 'N',
-                PracticeComplete: 'N',
-            }
-        };
-        await docClient.put( params )
-            .promise()
-            .then( res => console.log( 'Uploading question to dynamoDB was successful...', res ) )
-            .catch( err => console.log( 'Uploading question to dynamoDB failed...', err ) );
+    const getTaskList = async () => {
 
-        setQuestion( '' )
-    }
-
-    const sendQuestion = async () => {
-        const taskID = uuidv4();
-        await axios
+        const tasks = await axios
             .request( {
-                url: 'https://langapp.netlify.app/.netlify/functions/Liff-question',
+                url: 'https://langapp.netlify.app/.netlify/functions/lambda-liff-getTasks',
                 method: 'POST',
                 data: {
                     lineIdToken: lineIdToken,
-                    question: question,
-                    taskID: taskID,
                 },
             } )
-            .then( ( res ) => { console.log( 'LIFF send question success...', res ) } )
-            .catch( ( err ) => { console.log( 'LIFF send question error...', err ) } )
+            .then( ( res ) => {
+                console.log( 'LIFF fetch tasks success...', res )
+                return ( res.data.tasks )
+            } )
+            .catch( ( err ) => {
+                console.log( 'LIFF fetch tasks error...', err )
+                return ( [] )
+            } )
 
-        setQuestion()
-    }
+        console.log( 'fetched tasks...', tasks );
 
-    const addAnswer = async ( taskID, answer ) => {
-
-        var params = {
-            TableName: 'LangAppRevision',
-            Key: { TaskId: taskID },
-            ExpressionAttributeNames: {
-                '#a': 'Answer',
-            },
-            ExpressionAttributeValues: {
-                ':newAnswer': answer,
-            },
-            UpdateExpression: 'SET #a = :newAnswer'
-        };
-        docClient.update( params )
-            .promise()
-            .then( res => console.log( 'adding answer to dynamoDB was successful...', res ) )
-            .catch( err => console.log( 'adding answer to dynamoDB failed...', err ) );
-
-
-        setQuestion()
-    }
-
-    const getTasks = async () => {
-
-        const userLineId = 'userLineId';
-
-        const params = {
-            TableName: 'LangAppRevision',
-            IndexName: 'UserLineID-index',
-            KeyConditionExpression: 'UserLineID = :UserLineID ',
-            ExpressionAttributeValues: { ':UserLineID': userLineId, } //
-        };
-
-        const userTasks = await docClient.query( params )
-            .promise()
-            .then( data => data.Items )
-            .catch( err => console.log( 'Fetch tasks from dynamoDB failed...', err ) );
-
-        userTasks.sort( function ( a, b ) {
-            return a.Date < b.Date ? -1 : 1;
+        tasks.sort( function ( a, b ) {
+            return a.date < b.date ? -1 : 1;
         } );
+        const tasksFiltered = tasks.filter( x => x.answerComplete == 'Y' );
 
-        console.log( userTasks )
+        setTaskList( tasksFiltered )
+
     }
 
-    const SimpleSlider = () => {
-        return (
-            <Carousel itemsToShow={ 1 }>
-                <Card className='card'>
-                    <CardContent>
-                        <Typography color="textSecondary" component="h3">STEP 1</Typography>
-                        <Typography component="h3">{ `英会話を録音` }</Typography>
-                        <Typography variant="body2" component="p">
-                            { `こちらのウェブページでLINEログインをして録音を開始します。そのまま普段通りオンライン英会話を行います。` }
-                        </Typography>
-                        <TextField
-                            required
-                            id="filled-required"
-                            label="英語" // to be replaced with LangApp ID
-                            variant="filled"
-                            value={ question }
-                            onChange={ ( e ) => { setQuestion( e.target.value ); } }
-                            inputProps={ {
-                                style: { backgroundColor: 'white', marginBottom: '20px' },
-                            } }
-                        />
-                    </CardContent>
-                </Card>
-                <Card className='card'>
-                    <CardContent>
-                        <Typography color="textSecondary" component="h3">STEP 1</Typography>
-                        <Typography component="h3">{ `英会話を録音` }</Typography>
-                        <Typography variant="body2" component="p">
-                            { `こちらのウェブページでLINEログインをして録音を開始します。そのまま普段通りオンライン英会話を行います。` }
-                        </Typography>
-                    </CardContent>
-                </Card>
-                <Card className='card'>
-                    <CardContent>
-                        <Typography color="textSecondary" component="h3">STEP 1</Typography>
-                        <Typography component="h3">{ `英会話を録音` }</Typography>
-                        <Typography variant="body2" component="p">
-                            { `こちらのウェブページでLINEログインをして録音を開始します。そのまま普段通りオンライン英会話を行います。` }
-                        </Typography>
-                    </CardContent>
-                </Card>
-                <Card className='card'>
-                    <CardContent>
-                        <Typography color="textSecondary" component="h3">STEP 1</Typography>
-                        <Typography component="h3">{ `英会話を録音` }</Typography>
-                        <Typography variant="body2" component="p">
-                            { `こちらのウェブページでLINEログインをして録音を開始します。そのまま普段通りオンライン英会話を行います。` }
-                        </Typography>
-                    </CardContent>
-                </Card>
 
-            </Carousel>
-        );
-    }
 
     /////////////// UI //////////////////////
     return (
         <div
             style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', maxWidth: '90%' } }
         >
-            <button style={ { fontSize: 20 } } onClick={ () => { getTasks(); } }>Tasks</button>
+            <Carousel itemsToShow={ 1 }>
 
-            <div
-                style={ { display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', maxWidth: '90%' } }
-            >
-                <TextField
-                    required
-                    id="filled-required"
-                    label="英語で言いたいこと" // to be replaced with LangApp ID
-                    variant="filled"
-                    value={ question }
-                    onChange={ ( e ) => { setQuestion( e.target.value ); } }
-                    inputProps={ {
-                        style: { backgroundColor: 'white', marginBottom: '20px' },
-                    } }
-                />
-                <button style={ { fontSize: 20 } } onClick={ () => { taskUpload(); } }>追加</button>
-            </div >
-
-            <SimpleSlider />
-
+                { taskList.map( ( x ) => {
+                    return (
+                        <Card className='card' style={ {} }>
+                            <CardContent>
+                                <Typography color="textSecondary" component="p">{ `${ x.date }` }</Typography>
+                                <Typography component="h3">{ `${ x.question }` }</Typography>
+                                <Typography component="h3">{ `${ x.answer }` }</Typography>
+                            </CardContent>
+                        </Card> )
+                } ) }
+            </Carousel>
         </div >
 
     );
 }
 
-export default LIFF_task;
+export default LiffReview;
