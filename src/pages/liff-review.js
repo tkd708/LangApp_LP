@@ -91,7 +91,7 @@ const LiffReview = () => {
 
                 { taskList.map( ( x ) => {
                     return (
-                        <Card className='card' style={ {} }>
+                        <Card className='card' style={ { width: '90vw' } }>
                             <CardContent>
                                 <Typography color="textSecondary" component="p">{ `${ x.date }` }</Typography>
                                 <Typography component="h3">{ `${ x.question }` }</Typography>
