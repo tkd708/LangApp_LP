@@ -69,9 +69,9 @@ module.exports.handler = async function ( event, context ) {
     ////////////////////////////// Fetch tasks from dynamoDB
     const params = {
         TableName: 'LangAppRevision',
-        IndexName: 'UserLineID-index',
-        KeyConditionExpression: 'UserLineID = :UserLineID ',
-        ExpressionAttributeValues: { ':UserLineID': userLineId, } //
+        IndexName: 'userLineId-index',
+        KeyConditionExpression: 'userLineId = :userLineId ',
+        ExpressionAttributeValues: { ':userLineId': userLineId, } //
     };
 
     const userTasks = await docClient.query( params )

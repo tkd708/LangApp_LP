@@ -73,7 +73,7 @@ module.exports.handler = async function ( event, context ) {
         TableName: 'LangAppRevision',
         Item: {
             taskId: body.taskId,
-            UserLineId: userLineId,
+            userLineId: userLineId,
             userLineName: userLineName,
             date: date,
             question: body.question,
