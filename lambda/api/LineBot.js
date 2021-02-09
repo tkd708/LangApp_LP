@@ -102,20 +102,21 @@ module.exports.handler = async function ( event, context ) {
 
 
     //////////////////////////////////////// Fetch user tasks
-    if( body.events[ 0 ].message.text == '登録' ) {
-    }
+    if( body.events[ 0 ].message.text == '登録' ) { }
 
-    const paramsDynamo = {
+    const params = {
         TableName: 'LangAppRevision',
         IndexName: 'userLineId-index',
         KeyConditionExpression: 'userLineId = :userLineId ',
-        ExpressionAttributeValues: { ':userLineID': userLineId, } //
+        ExpressionAttributeValues: { ':userLineId': userLineId, } //
     };
-
-    const userTaskList = await docClient.query( paramsDynamo )
+    const userTaskList = await docClient.query( params )
         .promise()
         .then( data => data.Items )
-        .catch( err => console.log( 'Fetch records from dynamoDB failed...', err ) );
+        .catch( err => {
+            console.log( 'Fetch tasks from dynamoDB failed...', err );
+            return ( [] );
+        } );
     userTaskList.sort( function ( a, b ) {
         return a.date < b.date ? -1 : 1;
     } );

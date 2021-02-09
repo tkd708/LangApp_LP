@@ -16,7 +16,6 @@ const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '';//"win
 const LiffAnswer = () => {
 
     const [ lineIdToken, setLineIdToken ] = useState( '' );
-    const [ taskList, setTaskList ] = useState( [] );
     const [ answer, setAnswer ] = useState( '' );
 
 
@@ -47,6 +46,7 @@ const LiffAnswer = () => {
 
 
     const getParam = ( name, url ) => {
+        //if( typeof window !== `undefined` ) return
         if( !url ) url = window.location.href;
         name = name.replace( /[\[\]]/g, "\\$&" );
         var regex = new RegExp( "[?&]" + name + "(=([^&#]*)|&|#|$)" ),
