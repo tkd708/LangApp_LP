@@ -55,12 +55,12 @@ const LiffAnswer = () => {
         if( !results[ 2 ] ) return '';
         return decodeURIComponent( results[ 2 ].replace( /\+/g, " " ).replace( " ", "" ) );
     }
-    const taskId = getParam( 'taskId' );
-    const question = getParam( 'question' );
-    const date = getParam( 'date' );
 
 
-    const addAnswer = async ( taskId, date, question, answer ) => {
+    const addAnswer = async () => {
+        const taskId = getParam( 'taskId' );
+        const question = getParam( 'question' );
+        const date = getParam( 'date' );
 
         await axios
             .request( {
@@ -78,7 +78,6 @@ const LiffAnswer = () => {
             .catch( ( err ) => { console.log( 'LIFF send answer error...', err ) } )
 
         setAnswer( '' );
-        getTaskList();
     }
 
 
@@ -98,7 +97,7 @@ const LiffAnswer = () => {
                     style: { backgroundColor: 'white', marginBottom: '20px' },
                 } }
             />
-            <button style={ { fontSize: 20 } } onClick={ () => { addAnswer( x.taskId, x.date, x.question, answer ); } }>追加</button>
+            <button style={ { fontSize: 20 } } onClick={ () => { addAnswer(); } }>追加</button>
         </div >
 
     );
