@@ -36,7 +36,95 @@ module.exports.handler = async function ( event, context ) {
 
 
 
-    ///////////////////////////// // Twinword api
+    ////////////////////////////////////////////// on postback actions /////////////////////////////////////////////
+    if( body.events[ 0 ].type == 'postback' ) {
+        //body.events[ 0 ].replyToken == '登録'
+        //body.events[ 0 ].postback.data == "action=buy&itemid=222"
+
+    }
+
+
+
+    ////////////////////////////////////// Fetch user tasks and push message a carousel /////////////////////////////
+    if( body.events[ 0 ].message.text == ':一覧' ) {
+
+        const params = {
+            TableName: 'LangAppRevision',
+            IndexName: 'userLineId-index',
+            KeyConditionExpression: 'userLineId = :userLineId ',
+            ExpressionAttributeValues: { ':userLineId': userLineId, } //
+        };
+        const userTaskList = await docClient.query( params )
+            .promise()
+            .then( data => data.Items )
+            .catch( err => {
+                console.log( 'Fetch tasks from dynamoDB failed...', err );
+                return ( [] );
+            } );
+        userTaskList.sort( function ( a, b ) {
+            return a.date < b.date ? -1 : 1;
+        } );
+        console.log( 'User task list object...', userTaskList )
+
+        const userTaskColumnList = userTaskList.map( task =>
+        ( {
+            "thumbnailImageUrl": "https://example.com/bot/images/item1.jpg",
+            "imageBackgroundColor": "#FFFFFF",
+            "title": task.question,
+            "text": `ID: ${ task.taskId }, made on ${ task.date }, in Englsih: ${ task.answer } `,
+            "defaultAction": {
+                "type": "uri",
+                "label": "View detail",
+                "uri": "http://example.com/page/123"
+            },
+            "actions": [
+                {
+                    "type": "postback",
+                    "label": "Answer",
+                    "uri": `https://liff.line.me/1655583943-EoWpj6aB?taskId=${ task.taskId }&date=${ task.date }&question=${ task.question }`
+                },
+                {
+                    "type": "postback",
+                    "label": "Practiced!",
+                    "data": "action=add&itemid=111"
+                },
+                {
+                    "type": "uri",
+                    "label": "Acquired!",
+                    "uri": "http://example.com/page/111"
+                }
+            ]
+        } )
+        )
+        console.log( 'User task list object in columns...', userTaskColumnList )
+
+        const messageCarousel = {
+            "type": "template",
+            "altText": "Here is the list of taks",
+            "template": {
+                "type": "carousel",
+                "columns": userTaskColumnList,
+                "imageAspectRatio": "rectangle",
+                "imageSize": "cover"
+            }
+        }
+
+        await client.replyMessage( body.events[ 0 ].replyToken, messageCarousel )
+            .then( res => console.log( 'User tasks in a caroucsel message successful...', res ) )
+            .catch( err => console.log( 'User tasks in a carousel message error...', err ) )
+
+        ///// Finish the api
+        let lambdaResponse = {
+            statusCode: 200,
+            headers: { "X-Line-Status": "OK" },
+            body: '{"result":"completed"}'
+        };
+        context.succeed( lambdaResponse );
+    }
+
+
+
+    //////////////////////////////////////////////  Twinword api ///////////////////////////////////////////////
     const urlAssociation = 'https://api.twinword.com/api/word/association/latest/';
     const urlExamples = 'https://api.twinword.com/api/word/example/latest/';
     const word = body.events[ 0 ].message.text;
@@ -97,85 +185,6 @@ module.exports.handler = async function ( event, context ) {
         : await client.replyMessage( body.events[ 0 ].replyToken, messageTwinwordNotFound )
             .then( res => console.log( 'Twinword reply message successful...', res ) )
             .catch( err => console.log( 'Error in Twinword reply message...', err ) );
-
-
-
-
-    //////////////////////////////////////// Fetch user tasks
-    if( body.events[ 0 ].message.text == '登録' ) { }
-
-    const params = {
-        TableName: 'LangAppRevision',
-        IndexName: 'userLineId-index',
-        KeyConditionExpression: 'userLineId = :userLineId ',
-        ExpressionAttributeValues: { ':userLineId': userLineId, } //
-    };
-    const userTaskList = await docClient.query( params )
-        .promise()
-        .then( data => data.Items )
-        .catch( err => {
-            console.log( 'Fetch tasks from dynamoDB failed...', err );
-            return ( [] );
-        } );
-    userTaskList.sort( function ( a, b ) {
-        return a.date < b.date ? -1 : 1;
-    } );
-    console.log( 'User task list object...', userTaskList )
-
-    const userTaskColumnList = userTaskList.map( task => {
-        ( {
-            "thumbnailImageUrl": "https://example.com/bot/images/item1.jpg",
-            "imageBackgroundColor": "#FFFFFF",
-            "title": task.question,
-            "text": `ID: ${ task.taskId }, made on ${ task.date }, in Englsih: ${ task.answer } `,
-            "defaultAction": {
-                "type": "uri",
-                "label": "View detail",
-                "uri": "http://example.com/page/123"
-            },
-            "actions": [
-                {
-                    "type": "postback",
-                    "label": "Answered!",
-                    "data": "action=buy&itemid=111"
-                },
-                {
-                    "type": "postback",
-                    "label": "Practiced!",
-                    "data": "action=add&itemid=111"
-                },
-                {
-                    "type": "uri",
-                    "label": "Acquired!",
-                    "uri": "http://example.com/page/111"
-                }
-            ]
-        } )
-    } )
-    console.log( 'User task list object in columns...', userTaskColumnList )
-
-
-    const messageCarousel = {
-        "type": "template",
-        "altText": "Here is the list of taks",
-        "template": {
-            "type": "carousel",
-            "columns": userTaskColumnList,
-            "imageAspectRatio": "rectangle",
-            "imageSize": "cover"
-        }
-    }
-
-    await client.replyMessage( body.events[ 0 ].replyToken, messageCarousel )
-        .then( res => console.log( 'User tasks in a caroucsel message successful...', res ) )
-        .catch( err => console.log( 'User tasks in a carousel message error...', err ) )
-
-
-    //////////////////////////////////// on postback actions
-    //body.events[ 0 ].type == 'postback'
-    //body.events[ 0 ].replyToken == '登録'
-    //body.events[ 0 ].postback.data == "action=buy&itemid=222"
-
 
     ///// Finish the api
     let lambdaResponse = {
