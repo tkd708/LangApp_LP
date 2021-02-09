@@ -82,9 +82,7 @@ const LiffAnswer = () => {
 
     }
 
-    const addAnswer = async ( taskId, answer ) => {
-        console.log( taskId );
-        console.log( answer );
+    const addAnswer = async ( taskId, date, question, answer ) => {
 
         await axios
             .request( {
@@ -93,6 +91,8 @@ const LiffAnswer = () => {
                 data: {
                     lineIdToken: lineIdToken,
                     taskId: taskId,
+                    date: date,
+                    question: question,
                     answer: answer,
                 },
             } )
@@ -128,7 +128,7 @@ const LiffAnswer = () => {
                                         style: { backgroundColor: 'white', marginBottom: '20px' },
                                     } }
                                 />
-                                <button style={ { fontSize: 20 } } onClick={ () => { addAnswer( x.taskId, answer ); } }>追加</button>
+                                <button style={ { fontSize: 20 } } onClick={ () => { addAnswer( x.taskId, x.date, x.question, answer ); } }>追加</button>
                             </CardContent>
                         </Card> )
                 } ) }

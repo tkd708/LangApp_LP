@@ -23,159 +23,157 @@ module.exports.handler = async function ( event, context ) {
     console.log( event );
     const body = JSON.parse( event.body );
 
-
-    //////////////////////////// Registration.... deprecated, does nothing actually
-    if( body.events[ 0 ].message.text == '登録' ) {
-        console.log( 'the user to be registered...', body.events[ 0 ].source.userId )
-
-        // Get the user profile
-        const userProfile = await client.getProfile( body.events[ 0 ].source.userId )
-            .then( ( res ) => {
-                console.log( 'get profile attempted...', res );
-                return ( res )
-            } )
-            .catch( ( err ) => console.log( 'get profile failed...', err ) );
-        console.log( 'get profile event executed' );
-
-        // Store the user name and ID in the dynamoDB
-        const params = {
-            TableName: 'LangAppUsers',
-            Item: {
-                UserName: userProfile.displayName,
-                UserLineId: body.events[ 0 ].source.userId,
-            }
-        };
-        await docClient.put( params )
-            .promise()
-            .then( res => console.log( 'Adding the user name and id on dynamoDB was successful...', res ) )
-            .catch( err => console.log( 'Adding the user name and id on dynamoDB failed...', err ) );
-
-        ///// Finish the api
-        let lambdaResponse = {
-            statusCode: 200,
-            headers: { "X-Line-Status": "OK" },
-            body: '{"result":"completed"}'
-        };
-        context.succeed( lambdaResponse );
-
-    }
-
-
-    ///////////////////////////// LINE ID check >> Prompt to registration
-    const paramsIdCheck = {
-        TableName: 'LangAppUsers',
-        IndexName: 'UserLineId-index',
-        KeyConditionExpression: 'UserLineId = :UserLineId ',
-        ExpressionAttributeValues: { ':UserLineId': body.events[ 0 ].source.userId, } //
-    };
-    const userLineIdCheck = await docClient.query( paramsIdCheck )
-        .promise()
-        .then( ( data ) => {
-            console.log( 'LINE user ID fetch from dynamoDB was successful...', data );
-            return ( data.Count );
+    const userLineId = body.events[ 0 ].source.userId;
+    const userLineName = await client.getProfile( UserLineId )
+        .then( res => {
+            console.log( 'get profile attempted...', res );
+            return ( res.displayName )
         } )
-        .catch( err => console.log( 'LINE user ID fetch from dynamoDB failed...', err ) );
-    console.log( "LINE ID registered?... YES: 1, NO: 0", userLineIdCheck );
-
-    ( userLineIdCheck === 0 ) && await client.replyMessage(
-        body.events[ 0 ].replyToken,
-        {
-            'type': 'text',
-            'text': `ウェブサイトとの連動のため、下記に「登録」という言葉を送信してください！`,
-        }
-    )
-        .then( res => console.log( 'registration prompt message sent...', res ) )
-        .catch( err => console.log( 'error in registration prompt message...', err ) );
+        .catch( err => {
+            console.log( 'get profile failed...', err )
+            return ( 'NotFound' )
+        } );
 
 
-    //////////////////////////////// LINE ID confirmed >> Twinword API
-    if( userLineIdCheck === 1 ) {
 
-        ///////////////////////////// // Twinword api
-        const urlAssociation = 'https://api.twinword.com/api/word/association/latest/';
-        const urlExamples = 'https://api.twinword.com/api/word/example/latest/';
-        const word = body.events[ 0 ].message.text;
-        const headers = {
-            'Content-Type': 'application/json',
-            'Host': 'api.twinword.com',
-            'X-Twaip-Key': process.env.GATSBY_Twinword_API_KEY,
-        }
-
-        const twinwordAssociation =
-            await axios
-                .request( {
-                    url: urlAssociation,
-                    method: 'GET',
-                    params: { entry: word },
-                    headers: headers,
-                    //data: { entry: word }
-                } )
-                .then( res => {
-                    //console.log( 'Twinword success...', res )
-                    return ( res.data )
-                } )
-                .catch( err => console.log( 'ERROR in Twinword api...', err ) );
-        //console.log( twinword.data );
-
-        const twinwordExamples =
-            await axios
-                .request( {
-                    url: urlExamples,
-                    method: 'GET',
-                    params: { entry: word },
-                    headers: headers,
-                    //data: { entry: word }
-                } )
-                .then( res => {
-                    //console.log( 'Twinword success...', res )
-                    return ( res.data )
-                } )
-                .catch( err => console.log( 'ERROR in Twinword api...', err ) );
-        //console.log( twinword.data );
-
-
-        ///////////// LINE reply message
-
-        // Word not found
-        const messageTwinwordNotFound = {
-            'type': 'text',
-            'text': `"${ word }" は見つかりませんでした。動詞は原型に、名詞は単数形にして検索してみてください！`
-        };
-        !( twinwordAssociation.result_code === "200" && twinwordExamples.result_code === "200" ) && await client.replyMessage( body.events[ 0 ].replyToken, messageTwinwordNotFound )
-            .then( res => console.log( 'Twinword reply message successful...', res ) )
-            .catch( err => console.log( 'Error in Twinword reply message...', err ) );
-
-        // Word found    
-        const messageTwinword = {
-            'type': 'text',
-            'text': `"${ word }" は "${ twinwordExamples.example[ 0 ] }" や "${ twinwordExamples.example[ 1 ] }" などの使い方ができます。関連語として、${ twinwordAssociation.assoc_word[ 0 ] }、${ twinwordAssociation.assoc_word[ 1 ] }、${ twinwordAssociation.assoc_word[ 2 ] }などがあります！` //data.example[], data.assoc_word[]
-        };
-        ( twinwordAssociation.result_code === "200" && twinwordExamples.result_code === "200" ) && await client.replyMessage( body.events[ 0 ].replyToken, messageTwinword )
-            .then( res => console.log( 'Twinword reply message successful...', res ) )
-            .catch( err => console.log( 'Error in Twinword reply message...', err ) );
-
+    ///////////////////////////// // Twinword api
+    const urlAssociation = 'https://api.twinword.com/api/word/association/latest/';
+    const urlExamples = 'https://api.twinword.com/api/word/example/latest/';
+    const word = body.events[ 0 ].message.text;
+    const headers = {
+        'Content-Type': 'application/json',
+        'Host': 'api.twinword.com',
+        'X-Twaip-Key': process.env.GATSBY_Twinword_API_KEY,
     }
 
-    //////// Reply the same message
-    //const message = {
-    //    'type': 'text',
-    //    'text': text
-    //};
-    //await client.replyMessage( body.events[ 0 ].replyToken, message )
-    //    .then( ( response ) => {
-    //        console.log( 'reply attempted...', response );
-    //    } )
-    //    .catch( ( err ) => console.log( 'error in reply...', err ) );
-    //console.log( 'reply event executed' );
+    const twinwordAssociation =
+        await axios
+            .request( {
+                url: urlAssociation,
+                method: 'GET',
+                params: { entry: word },
+                headers: headers,
+                //data: { entry: word }
+            } )
+            .then( res => {
+                //console.log( 'Twinword success...', res )
+                return ( res.data )
+            } )
+            .catch( err => console.log( 'ERROR in Twinword api...', err ) );
+    //console.log( twinword.data );
+
+    const twinwordExamples =
+        await axios
+            .request( {
+                url: urlExamples,
+                method: 'GET',
+                params: { entry: word },
+                headers: headers,
+                //data: { entry: word }
+            } )
+            .then( res => {
+                //console.log( 'Twinword success...', res )
+                return ( res.data )
+            } )
+            .catch( err => console.log( 'ERROR in Twinword api...', err ) );
+    //console.log( twinword.data );
 
 
-    ////// Transfer the message to me
-    //await client.pushMessage( "Udad2da023a7d6c812ae68b2c6e5ea858", message )
-    //    .then( ( response ) => {
-    //        console.log( 'additional push message attempted...', response );
-    //    } )
-    //    .catch( ( err ) => console.log( 'error in additional push message...', err ) );
-    //console.log( 'additional push message event executed' );
+    ///////////// LINE reply message
+    // Word found    
+    const messageTwinword = {
+        'type': 'text',
+        'text': `"${ word }" は "${ twinwordExamples.example[ 0 ] }" や "${ twinwordExamples.example[ 1 ] }" などの使い方ができます。関連語として、${ twinwordAssociation.assoc_word[ 0 ] }、${ twinwordAssociation.assoc_word[ 1 ] }、${ twinwordAssociation.assoc_word[ 2 ] }などがあります！` //data.example[], data.assoc_word[]
+    };
+    // Word not found
+    const messageTwinwordNotFound = {
+        'type': 'text',
+        'text': `"${ word }" は見つかりませんでした。動詞は原型に、名詞は単数形にして検索してみてください！`
+    };
+    ( twinwordAssociation.result_code === "200" && twinwordExamples.result_code === "200" )
+        ? await client.replyMessage( body.events[ 0 ].replyToken, messageTwinword )
+            .then( res => console.log( 'Twinword reply message successful...', res ) )
+            .catch( err => console.log( 'Error in Twinword reply message...', err ) )
+        : await client.replyMessage( body.events[ 0 ].replyToken, messageTwinwordNotFound )
+            .then( res => console.log( 'Twinword reply message successful...', res ) )
+            .catch( err => console.log( 'Error in Twinword reply message...', err ) );
+
+
+
+
+    //////////////////////////////////////// Fetch user tasks
+    if( body.events[ 0 ].message.text == '登録' ) {
+    }
+
+    const paramsDynamo = {
+        TableName: 'LangAppRevision',
+        IndexName: 'userLineId-index',
+        KeyConditionExpression: 'userLineId = :userLineId ',
+        ExpressionAttributeValues: { ':userLineID': userLineId, } //
+    };
+
+    const userTaskList = await docClient.query( paramsDynamo )
+        .promise()
+        .then( data => data.Items )
+        .catch( err => console.log( 'Fetch records from dynamoDB failed...', err ) );
+    userTaskList.sort( function ( a, b ) {
+        return a.date < b.date ? -1 : 1;
+    } );
+    console.log( 'User task list object...', userTaskList )
+
+    const userTaskColumns = userTaskList.map( task => {
+        ( {
+            "thumbnailImageUrl": "https://example.com/bot/images/item1.jpg",
+            "imageBackgroundColor": "#FFFFFF",
+            "title": task.question,
+            "text": `ID: ${ task.taskId }, made on ${ task.date }, in Englsih: ${ task.answer } `,
+            "defaultAction": {
+                "type": "uri",
+                "label": "View detail",
+                "uri": "http://example.com/page/123"
+            },
+            "actions": [
+                {
+                    "type": "postback",
+                    "label": "Answered!",
+                    "data": "action=buy&itemid=111"
+                },
+                {
+                    "type": "postback",
+                    "label": "Practiced!",
+                    "data": "action=add&itemid=111"
+                },
+                {
+                    "type": "uri",
+                    "label": "Acquired!",
+                    "uri": "http://example.com/page/111"
+                }
+            ]
+        } )
+    } )
+    console.log( 'User task list object in columns...', userTaskColumns )
+
+
+    const messageCarousel = {
+        "type": "template",
+        "altText": "Here is the list of taks",
+        "template": {
+            "type": "carousel",
+            "columns": userTaskColumns,
+            "imageAspectRatio": "rectangle",
+            "imageSize": "cover"
+        }
+    }
+
+    await client.replyMessage( body.events[ 0 ].replyToken, messageCarousel )
+        .then( res => console.log( 'User tasks in a caroucsel message successful...', res ) )
+        .catch( err => console.log( 'User tasks in a carousel message error...', err ) )
+
+
+    //////////////////////////////////// on postback actions
+    //body.events[ 0 ].type == 'postback'
+    //body.events[ 0 ].replyToken == '登録'
+    //body.events[ 0 ].postback.data == "action=buy&itemid=222"
 
 
     ///// Finish the api
