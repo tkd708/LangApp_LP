@@ -108,6 +108,7 @@ module.exports.handler = async function ( event, context ) {
                 "imageSize": "cover"
             }
         }
+        console.log( 'User task carousel message...', messageCarousel )
 
         await client.pushMessage( userLineId, messageCarousel )
             //await client.replyMessage( body.events[ 0 ].replyToken, messageCarousel )
