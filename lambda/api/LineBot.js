@@ -24,7 +24,7 @@ module.exports.handler = async function ( event, context ) {
     const body = JSON.parse( event.body );
 
     const userLineId = body.events[ 0 ].source.userId;
-    const userLineName = await client.getProfile( UserLineId )
+    const userLineName = await client.getProfile( userLineId )
         .then( res => {
             console.log( 'get profile attempted...', res );
             return ( res.displayName )
@@ -121,7 +121,7 @@ module.exports.handler = async function ( event, context ) {
     } );
     console.log( 'User task list object...', userTaskList )
 
-    const userTaskColumns = userTaskList.map( task => {
+    const userTaskColumnList = userTaskList.map( task => {
         ( {
             "thumbnailImageUrl": "https://example.com/bot/images/item1.jpg",
             "imageBackgroundColor": "#FFFFFF",
@@ -151,7 +151,7 @@ module.exports.handler = async function ( event, context ) {
             ]
         } )
     } )
-    console.log( 'User task list object in columns...', userTaskColumns )
+    console.log( 'User task list object in columns...', userTaskColumnList )
 
 
     const messageCarousel = {
@@ -159,7 +159,7 @@ module.exports.handler = async function ( event, context ) {
         "altText": "Here is the list of taks",
         "template": {
             "type": "carousel",
-            "columns": userTaskColumns,
+            "columns": userTaskColumnList,
             "imageAspectRatio": "rectangle",
             "imageSize": "cover"
         }
