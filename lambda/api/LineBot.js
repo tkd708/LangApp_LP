@@ -109,7 +109,8 @@ module.exports.handler = async function ( event, context ) {
             }
         }
 
-        await client.replyMessage( body.events[ 0 ].replyToken, messageCarousel )
+        await client.pushMessage( userLineId, messageCarousel )
+            //await client.replyMessage( body.events[ 0 ].replyToken, messageCarousel )
             .then( res => console.log( 'User tasks in a caroucsel message successful...', res ) )
             .catch( err => console.log( 'User tasks in a carousel message error...', err ) )
 

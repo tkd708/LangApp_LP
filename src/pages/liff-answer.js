@@ -39,11 +39,6 @@ const LiffAnswer = () => {
         }
     }
 
-    useEffect( () => {
-        if( lineIdToken === '' ) return
-        getTaskList()
-    }, [ lineIdToken ] )
-
 
     const getParam = ( name, url ) => {
         //if( typeof window !== `undefined` ) return
@@ -58,6 +53,8 @@ const LiffAnswer = () => {
 
 
     const addAnswer = async () => {
+        if( lineIdToken === '' ) return
+
         const taskId = getParam( 'taskId' );
         const question = getParam( 'question' );
         const date = getParam( 'date' );
