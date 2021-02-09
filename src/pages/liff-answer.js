@@ -7,12 +7,6 @@ import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 //import Button from '@material-ui/core/Button';
 
-import Carousel from 'react-elastic-carousel'
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-
-
 
 //import liff from '@line/liff';
 const liff = typeof window !== `undefined` ? require( "@line/liff" ) : '';//"window" is not available during server side rendering.
@@ -52,35 +46,19 @@ const LiffAnswer = () => {
     }, [ lineIdToken ] )
 
 
-    const getTaskList = async () => {
-
-        const tasks = await axios
-            .request( {
-                url: 'https://langapp.netlify.app/.netlify/functions/lambda-liff-getTasks',
-                method: 'POST',
-                data: {
-                    lineIdToken: lineIdToken,
-                },
-            } )
-            .then( ( res ) => {
-                console.log( 'LIFF fetch tasks success...', res )
-                return ( res.data.tasks )
-            } )
-            .catch( ( err ) => {
-                console.log( 'LIFF fetch tasks error...', err )
-                return ( [] )
-            } )
-
-        console.log( 'fetched tasks...', tasks );
-
-        tasks.sort( function ( a, b ) {
-            return a.date < b.date ? -1 : 1;
-        } );
-        const tasksFiltered = tasks.filter( x => x.answerComplete != 'Y' );
-
-        setTaskList( tasksFiltered )
-
+    const getParam = ( name, url ) => {
+        if( !url ) url = window.location.href;
+        name = name.replace( /[\[\]]/g, "\\$&" );
+        var regex = new RegExp( "[?&]" + name + "(=([^&#]*)|&|#|$)" ),
+            results = regex.exec( url );
+        if( !results ) return null;
+        if( !results[ 2 ] ) return '';
+        return decodeURIComponent( results[ 2 ].replace( /\+/g, " " ).replace( " ", "" ) );
     }
+    const taskId = getParam( 'taskId' );
+    const question = getParam( 'question' );
+    const date = getParam( 'date' );
+
 
     const addAnswer = async ( taskId, date, question, answer ) => {
 
@@ -109,30 +87,18 @@ const LiffAnswer = () => {
         <div
             style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', maxWidth: '90%' } }
         >
-            <Carousel itemsToShow={ 1 }>
-
-                { taskList.map( ( x ) => {
-                    return (
-                        <Card className='card' style={ { width: '90vw' } }>
-                            <CardContent>
-                                <Typography color="textSecondary" component="p">{ `${ x.date }` }</Typography>
-                                <Typography component="h3">{ `${ x.question }` }</Typography>
-                                <TextField
-                                    required
-                                    id="filled-required"
-                                    label="In English?" // to be replaced with LangApp ID
-                                    variant="filled"
-                                    value={ answer }
-                                    onChange={ ( e ) => { setAnswer( e.target.value ); } }
-                                    inputProps={ {
-                                        style: { backgroundColor: 'white', marginBottom: '20px' },
-                                    } }
-                                />
-                                <button style={ { fontSize: 20 } } onClick={ () => { addAnswer( x.taskId, x.date, x.question, answer ); } }>追加</button>
-                            </CardContent>
-                        </Card> )
-                } ) }
-            </Carousel>
+            <TextField
+                required
+                id="filled-required"
+                label="In English?" // to be replaced with LangApp ID
+                variant="filled"
+                value={ answer }
+                onChange={ ( e ) => { setAnswer( e.target.value ); } }
+                inputProps={ {
+                    style: { backgroundColor: 'white', marginBottom: '20px' },
+                } }
+            />
+            <button style={ { fontSize: 20 } } onClick={ () => { addAnswer( x.taskId, x.date, x.question, answer ); } }>追加</button>
         </div >
 
     );
