@@ -68,10 +68,10 @@ module.exports.handler = async function ( event, context ) {
 
         const userTaskColumnList = userTaskList.map( task =>
         ( {
-            "thumbnailImageUrl": "https://example.com/bot/images/item1.jpg",
+            //"thumbnailImageUrl": "https://example.com/bot/images/item1.jpg",
             "imageBackgroundColor": "#FFFFFF",
             "title": task.question,
-            "text": `ID: ${ task.taskId }, made on ${ task.date }, in Englsih: ${ task.answer } `,
+            "text": `In Englsih: ${ task.answer } `,
             "defaultAction": {
                 "type": "uri",
                 "label": "View detail",
@@ -85,12 +85,12 @@ module.exports.handler = async function ( event, context ) {
                 },
                 {
                     "type": "postback",
-                    "label": "Practiced!",
+                    "label": `ID: ${ task.taskId }`,
                     "data": "action=add&itemid=111"
                 },
                 {
                     "type": "uri",
-                    "label": "Acquired!",
+                    "label": `Made on ${ task.date } `,
                     "uri": "http://example.com/page/111"
                 }
             ]
