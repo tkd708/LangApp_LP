@@ -85,7 +85,7 @@ const LiffQuestion = () => {
                         style: { backgroundColor: 'white', width: '80vw' },
                     } }
                 />
-                <button style={ { fontSize: 20 } } onClick={ () => { sendQuestion(); } }>追加</button>
+                <button style={ { fontSize: 20 } } onClick={ () => { sendQuestion(); } }>課題を追加</button>
             </div >
     );
 }

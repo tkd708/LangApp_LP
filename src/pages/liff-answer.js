@@ -101,7 +101,7 @@ const LiffAnswer = () => {
                         style: { backgroundColor: 'white', width: '80vw' },
                     } }
                 />
-                <button style={ { fontSize: 20 } } onClick={ () => { addAnswer(); } }>追加</button>
+                <button style={ { fontSize: 20 } } onClick={ () => { addAnswer(); } }>回答を追加/更新</button>
             </div >
 
     );
