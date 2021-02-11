@@ -6,6 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 //import Button from '@material-ui/core/Button';
+import loadingImg from "../images/loading.gif"
 
 
 //import liff from '@line/liff';
@@ -17,7 +18,6 @@ const LiffAnswer = () => {
 
     const [ lineIdToken, setLineIdToken ] = useState( '' );
     const [ answer, setAnswer ] = useState( '' );
-
 
     // LIFF processes
     useEffect( () => {
@@ -56,8 +56,7 @@ const LiffAnswer = () => {
         if( lineIdToken === '' ) return
 
         const taskId = getParam( 'taskId' );
-        const question = getParam( 'question' );
-        const date = getParam( 'date' );
+        const dateAnswered = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
 
         await axios
             .request( {
@@ -66,8 +65,7 @@ const LiffAnswer = () => {
                 data: {
                     lineIdToken: lineIdToken,
                     taskId: taskId,
-                    date: date,
-                    question: question,
+                    dateAnswered: dateAnswered,
                     answer: answer,
                 },
             } )
@@ -80,22 +78,31 @@ const LiffAnswer = () => {
 
     /////////////// UI //////////////////////
     return (
-        <div
-            style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', maxWidth: '90%' } }
-        >
-            <TextField
-                required
-                id="filled-required"
-                label="In English?" // to be replaced with LangApp ID
-                variant="filled"
-                value={ answer }
-                onChange={ ( e ) => { setAnswer( e.target.value ); } }
-                inputProps={ {
-                    style: { backgroundColor: 'white', marginBottom: '20px' },
-                } }
-            />
-            <button style={ { fontSize: 20 } } onClick={ () => { addAnswer(); } }>追加</button>
-        </div >
+        ( lineIdToken === '' )
+            ? <div style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }>
+                <img src={ loadingImg }
+                    style={ { width: '180px' } }
+                />
+            </div>
+            : <div
+                style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }
+            >
+                <TextField
+                    required
+                    id="outlined-multiline-static"
+                    label="In English?" // to be replaced with LangApp ID
+                    multiline
+                    rows="4"
+                    margin="normal"
+                    variant="outlined"
+                    value={ answer }
+                    onChange={ ( e ) => { setAnswer( e.target.value ); } }
+                    inputProps={ {
+                        style: { backgroundColor: 'white', width: '80vw' },
+                    } }
+                />
+                <button style={ { fontSize: 20 } } onClick={ () => { addAnswer(); } }>追加</button>
+            </div >
 
     );
 }

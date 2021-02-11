@@ -76,6 +76,7 @@ module.exports.handler = async function ( event, context ) {
             userLineId: userLineId,
             userLineName: userLineName,
             date: date,
+            dateAnswered: '',
             question: body.question,
             answer: '',
             answerComplete: 'N',

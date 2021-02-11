@@ -65,24 +65,41 @@ module.exports.handler = async function ( event, context ) {
     const userLineName = userLineData.name;
 
 
+    ////////////////////////////// Get task info
+    const paramsQuery = {
+        TableName: 'LangAppRevision',
+        KeyConditionExpression: 'taskId = :taskId',
+        ExpressionAttributeValues: {
+            ':taskId': body.taskId
+        }
+    };
+    const userTask = await docClient.query( paramsQuery )
+        .promise()
+        .then( data => data.Items[ 0 ] )
+        .catch( err => {
+            console.log( 'Fetch tasks from dynamoDB failed...', err );
+            return ( [] );
+        } );
+    console.log( 'User task object...', userTask )
 
-    ////////////////////////////// Store the analysis results to dynamoDB (atm from LP but analysis will be moved to this netlify functions)
-    const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
 
-    const params = {
+
+    ////////////////////////////// Update task info
+    const paramsUpdate = {
         TableName: 'LangAppRevision',
         Item: {
             taskId: body.taskId,
             userLineId: userLineId,
             userLineName: userLineName,
-            date: body.date,
-            question: body.question,
+            date: userTask.date,
+            dateAnswered: body.dateAnswered,
+            question: userTask.question,
             answer: body.answer,
             answerComplete: 'Y',
             practiceComplete: 'N',
         }
     };
-    await docClient.put( params )
+    await docClient.put( paramsUpdate )
         .promise()
         .then( res => console.log( 'Uploading answer to dynamoDB was successful...', res ) )
         .catch( err => console.log( 'Uploading asnwer to dynamoDB failed...', err ) );

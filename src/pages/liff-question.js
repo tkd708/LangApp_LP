@@ -6,6 +6,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 //import Button from '@material-ui/core/Button';
+import loadingImg from "../images/loading.gif"
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -60,27 +61,32 @@ const LiffQuestion = () => {
 
     /////////////// UI //////////////////////
     return (
-        <div
-            style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', maxWidth: '90%' } }
-        >
-            <div
-                style={ { display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', maxWidth: '90%' } }
+        ( lineIdToken === '' )
+            ? <div style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }>
+                <img src={ loadingImg }
+                    style={ { width: '180px' } }
+                />
+            </div>
+            : <div
+                style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }
             >
                 <TextField
                     required
-                    id="filled-required"
+                    id="outlined-multiline-static"
                     label="英語で言いたいこと" // to be replaced with LangApp ID
-                    variant="filled"
+                    multiline
+                    rows="4"
+                    //defaultValue="英語で言いたいこと"
+                    margin="normal"
+                    variant="outlined"
                     value={ question }
                     onChange={ ( e ) => { setQuestion( e.target.value ); } }
                     inputProps={ {
-                        style: { backgroundColor: 'white', marginBottom: '20px' },
+                        style: { backgroundColor: 'white', width: '80vw' },
                     } }
                 />
                 <button style={ { fontSize: 20 } } onClick={ () => { sendQuestion(); } }>追加</button>
             </div >
-        </div >
-
     );
 }
 

@@ -7,7 +7,7 @@ const client = new line.Client( {
     channelSecret: process.env.GATSBY_LINE_channelsecret
 } );
 
-/////////////// initialise AWS
+///////////////  AWS
 const AWS = require( 'aws-sdk' );
 AWS.config = new AWS.Config( {
     accessKeyId: process.env.GATSBY_AWS_accessKey,
@@ -37,16 +37,32 @@ module.exports.handler = async function ( event, context ) {
 
 
     ////////////////////////////////////////////// on postback actions /////////////////////////////////////////////
+    const queryStringParserUrl = url => url.slice( url.indexOf( '?' ) + 1 )
+        .split( '&' )
+        .reduce( ( a, c ) => {
+            let [ key, value ] = c.split( '=' );
+            a[ key ] = value;
+            return a;
+        }, {} );
+
+    //body.events[ 0 ].postback.data == "action=buy&itemid=222"
+    const queryStringParser = queryStr => queryStr
+        .split( '&' )
+        .reduce( ( a, c ) => {
+            let [ key, value ] = c.split( '=' );
+            a[ key ] = value;
+            return a;
+        }, {} );
+
     if( body.events[ 0 ].type == 'postback' ) {
         //body.events[ 0 ].replyToken == '登録'
-        //body.events[ 0 ].postback.data == "action=buy&itemid=222"
 
     }
 
 
 
     ////////////////////////////////////// Fetch user tasks and push message a carousel /////////////////////////////
-    if( body.events[ 0 ].message.text == ':一覧' ) {
+    if( body.events[ 0 ].message.text == ':リスト' ) {
 
         const params = {
             TableName: 'LangAppRevision',
@@ -66,52 +82,81 @@ module.exports.handler = async function ( event, context ) {
         } );
         console.log( 'User task list object...', userTaskList )
 
-        const userTaskColumnList = userTaskList.map( task =>
+        const userTaskColumnListFlex = userTaskList.slice( 0, 10 ).map( task =>
         ( {
-            //"thumbnailImageUrl": "https://example.com/bot/images/item1.jpg",
-            "imageBackgroundColor": "#FFFFFF",
-            "title": task.question,
-            "text": `In Englsih: ${ task.answer } `,
-            "defaultAction": {
-                "type": "uri",
-                "label": "View detail",
-                "uri": "http://example.com/page/123"
+            "type": "bubble",
+            "body": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "text",
+                        "wrap": true,
+                        "text": `登録日: ${ task.date } `
+                    },
+                    {
+                        "type": "separator",
+                        "margin": "15px",
+                    },
+                    {
+                        "type": "text",
+                        "text": `言いたいこと？`
+                    },
+                    {
+                        "type": "text",
+                        "wrap": true,
+                        "text": `「${ task.question }」`
+                    },
+                    {
+                        "type": "separator",
+                        "margin": "15px",
+                    },
+                    {
+                        "type": "text",
+                        "wrap": true,
+                        "text": `In English？`
+                    },
+                    {
+                        "type": "text",
+                        "wrap": true,
+                        "text": `"${ task.answer }"`
+                    },
+                ]
             },
-            "actions": [
-                {
-                    "type": "postback",
-                    "label": "Answer",
-                    "uri": `https://liff.line.me/1655583943-EoWpj6aB?taskId=${ task.taskId }&date=${ task.date }&question=${ task.question }`
-                },
-                {
-                    "type": "postback",
-                    "label": `ID: ${ task.taskId }`,
-                    "data": "action=add&itemid=111"
-                },
-                {
-                    "type": "uri",
-                    "label": `Made on ${ task.date } `,
-                    "uri": "http://example.com/page/111"
-                }
-            ]
+            "footer": {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [
+                    {
+                        "type": "button",
+                        "style": "primary",
+                        "action": {
+                            "type": "uri",
+                            "label": "英語の回答を追加/変更",
+                            "uri": `https://liff.line.me/1655583943-EoWpj6aB?taskId=${ task.taskId }`
+                        }
+                    },
+                ]
+            }
         } )
         )
-        console.log( 'User task list object in columns...', userTaskColumnList )
+        console.log( 'User task list object in carousel bubbles...', userTaskColumnListFlex )
 
-        const messageCarousel = {
-            "type": "template",
-            "altText": "Here is the list of taks",
-            "template": {
+
+        const messageCarouselFlex = {
+            "type": "flex",
+            "altText": "登録されている課題一覧です！",
+            "contents": {
                 "type": "carousel",
-                "columns": userTaskColumnList,
-                "imageAspectRatio": "rectangle",
-                "imageSize": "cover"
+                "contents": userTaskColumnListFlex
             }
         }
-        console.log( 'User task carousel message...', messageCarousel )
+        console.log( 'User task carousel message...', messageCarouselFlex )
 
-        await client.pushMessage( userLineId, messageCarousel )
-            //await client.replyMessage( body.events[ 0 ].replyToken, messageCarousel )
+
+
+        //await client.pushMessage( userLineId, messageCarousel )
+        await client.replyMessage( body.events[ 0 ].replyToken, messageCarouselFlex )
             .then( res => console.log( 'User tasks in a caroucsel message successful...', res ) )
             .catch( err => console.log( 'User tasks in a carousel message error...', err ) )
 
