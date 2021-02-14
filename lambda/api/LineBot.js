@@ -78,7 +78,7 @@ module.exports.handler = async function ( event, context ) {
                 return ( [] );
             } );
         userTaskList.sort( function ( a, b ) {
-            return a.date < b.date ? -1 : 1;
+            return a.date > b.date ? -1 : 1; // newer comes first
         } );
         console.log( 'User task list object...', userTaskList )
 
@@ -92,7 +92,8 @@ module.exports.handler = async function ( event, context ) {
                     {
                         "type": "text",
                         "wrap": true,
-                        "text": `登録日: ${ task.date } `
+                        "text": `登録日: ${ task.date } `,
+                        "color": "#777777"
                     },
                     {
                         "type": "separator",
@@ -100,7 +101,8 @@ module.exports.handler = async function ( event, context ) {
                     },
                     {
                         "type": "text",
-                        "text": `言いたいこと？`
+                        "text": `英語で言いたいこと？`,
+                        "color": "#777777"
                     },
                     {
                         "type": "text",
@@ -113,8 +115,8 @@ module.exports.handler = async function ( event, context ) {
                     },
                     {
                         "type": "text",
-                        "wrap": true,
-                        "text": `In English？`
+                        "text": `In English？`,
+                        "color": "#777777"
                     },
                     {
                         "type": "text",

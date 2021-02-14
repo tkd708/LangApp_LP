@@ -19,6 +19,7 @@ const LiffQuestion = () => {
 
     const [ lineIdToken, setLineIdToken ] = useState( '' );
     const [ question, setQuestion ] = useState( '' );
+    const [ isSending, setIsSending ] = useState( false );
 
     // LIFF processes
     useEffect( () => {
@@ -43,6 +44,8 @@ const LiffQuestion = () => {
 
     const sendQuestion = async () => {
         const taskId = uuidv4();
+        setIsSending( true )
+
         await axios
             .request( {
                 url: 'https://langapp.netlify.app/.netlify/functions/lambda-liff-question',
@@ -53,18 +56,27 @@ const LiffQuestion = () => {
                     taskId: taskId,
                 },
             } )
-            .then( ( res ) => { console.log( 'LIFF send question success...', res ) } )
-            .catch( ( err ) => { console.log( 'LIFF send question error...', err ) } )
+            .then( ( res ) => {
+                console.log( 'LIFF send question success...', res )
+                alert( "登録が完了しました。" )
+            } )
+            .catch( ( err ) => {
+                console.log( 'LIFF send question error...', err )
+                alert( "エラーが発生しました。もう一度お試しください。" )
+            } )
 
         setQuestion( '' )
+        setIsSending( false )
+        setTimeout( () => { liff.closeWindow(); }, 700 );
+
     }
 
     /////////////// UI //////////////////////
     return (
-        ( lineIdToken === '' )
+        ( lineIdToken === '' | isSending === true )
             ? <div style={ { display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' } }>
                 <img src={ loadingImg }
-                    style={ { width: '180px' } }
+                    style={ { width: '150px' } }
                 />
             </div>
             : <div
