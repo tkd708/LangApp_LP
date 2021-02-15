@@ -91,16 +91,6 @@ module.exports.handler = async function ( event, context ) {
                 "contents": [
                     {
                         "type": "text",
-                        "wrap": true,
-                        "text": `登録日: ${ task.date } `,
-                        "color": "#777777"
-                    },
-                    {
-                        "type": "separator",
-                        "margin": "15px",
-                    },
-                    {
-                        "type": "text",
                         "text": `英語で言いたいこと？`,
                         "color": "#777777"
                     },
@@ -122,6 +112,16 @@ module.exports.handler = async function ( event, context ) {
                         "type": "text",
                         "wrap": true,
                         "text": `"${ task.answer }"`
+                    },
+                    {
+                        "type": "separator",
+                        "margin": "15px",
+                    },
+                    {
+                        "type": "text",
+                        "wrap": true,
+                        "text": `登録日: ${ task.date } `,
+                        "color": "#777777"
                     },
                 ]
             },
