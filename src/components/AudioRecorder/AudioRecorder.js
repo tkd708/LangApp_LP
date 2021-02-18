@@ -60,6 +60,12 @@ const AudioRecorder = () => {
         isRecordingRef.current = isRecording
     }, [ isRecording ] )
 
+    const [ recordChunkCount, setRecordChunkCount ] = useState( 0 );
+    const recordChunkCountRef = useRef( recordChunkCount )
+    useEffect( () => {
+        recordChunkCountRef.current = recordChunkCount
+    }, [ recordChunkCount ] )
+
     const [ startTime, setStartTime ] = useState( '' ); // milliseconds
     const startTimeRef = useRef( startTime )
     useEffect( () => {
@@ -179,6 +185,11 @@ const AudioRecorder = () => {
 
     /////////////// Audio recorder operation ////////////////
     const startRecording = () => {
+        if( !lineLoginStatus ) {
+            alert( 'LINEログインを行ってから録音を開始してください。' )
+            return
+        }
+
         const uuid = uuidv4();
         setRecordingID( uuid )
 
@@ -186,6 +197,7 @@ const AudioRecorder = () => {
         setTranscriptArrayYou( [] )
 
         setIsRecording( true );
+        setRecordChunkCount( 0 );
         startMediaRecorders();
 
         const startTime = new Date();
@@ -219,7 +231,7 @@ const AudioRecorder = () => {
 
         setIsAnalysis( true );
         console.log( 'analysis started...' );
-        setTimeout( () => { conversationAnalysis( transcriptArrayYouRef.current.join( ' ' ), recordLengthSeconds ); }, 30 * 1000 );
+        setTimeout( () => { conversationAnalysis( transcriptArrayYouRef.current, recordLengthSeconds ); }, 30 * 1000 );
     }
 
 
@@ -241,6 +253,9 @@ const AudioRecorder = () => {
 
     ////////////////////////// Send audio strings to Google for transcription //////////////////////
     const sendGoogle = async ( recordString, speaker ) => {
+
+        setRecordChunkCount( recordChunkCountRef.current + 1 );
+
         const url = 'https://langapp.netlify.app/.netlify/functions/speech-to-text-expo';
 
         const transcript =
@@ -276,6 +291,9 @@ const AudioRecorder = () => {
         setTranscriptArrayYou( [ ...transcriptArrayYouRef.current, transcript ] )
 
         /////////////////////// Transferring the transcript and the audio to LINE via AWS S3
+
+        //console.log( recordChunkCountRef.current );
+
         axios
             .request( {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotTranscript',
@@ -285,6 +303,7 @@ const AudioRecorder = () => {
                     source: 'LP',
                     lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
+                    recordChunkCount: recordChunkCountRef.current,
                     audioString: recordString,
                     transcript: transcript,
                     audioInterval: intervalSeconds * 1000,
@@ -296,9 +315,18 @@ const AudioRecorder = () => {
 
 
     //////// After transcribing... vocab analysis
-    const conversationAnalysis = async ( transcript, recordLengthSeconds ) => {
+    const conversationAnalysis = async ( transcriptArray, recordLengthSeconds ) => {
 
-        if( transcript === null ) return
+        if( transcriptArray.length === 0 ) return
+
+        // const transcript = transcriptArray.join( ' ' );
+        // console.log( transcript );
+        //const wordDynamicsArray = transcriptArray.map( ( x, index ) => ( { transcript: x, chunkNo: index + 1, wordCount: x.split( " " ).length } ) )
+        //wordDynamicsArray.sort( function ( a, b ) {
+        //    return a.wordCount > b.wordCount ? -1 : 1;
+        //} );
+        //console.log( wordDynamicsArray );
+        //console.log( 'highest word count transcript chunk...', wordDynamicsArray[ 0 ].transcript );
 
         await axios
             .request( {
@@ -308,14 +336,14 @@ const AudioRecorder = () => {
                     lineIdToken: lineIdTokenRef.current,
                     recordingID: recordingIDRef.current,
                     lengthMinute: ( recordLengthSeconds / 60 ).toFixed( 1 ),
-                    transcript: transcript,
+                    transcriptArray: transcriptArray,
                     errors: transcribeErrorArrray,
                 },
             } )
             .then( ( res ) => { console.log( 'conversation analysis success...', res ) } )
-            .catch( ( err ) => { console.log( 'conversation analysis error...', err ) } )
+            .catch( ( err ) => { console.log( 'conversation analysis error...', err ) } );
 
-        await axios
+        ( false ) && await axios
             .request( {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotReportGraphs',
                 method: 'POST',
@@ -325,7 +353,7 @@ const AudioRecorder = () => {
                 },
             } )
             .then( ( res ) => { console.log( 'reporting graphs success...', res ) } )
-            .catch( ( err ) => { console.log( 'reporting graphs error...', err ) } )
+            .catch( ( err ) => { console.log( 'reporting graphs error...', err ) } );
 
         setIsAnalysis( false );
         console.log( 'analysis finished...' );
@@ -427,7 +455,7 @@ const AudioRecorder = () => {
             }
             <p>{ transcriptArrayYou.length >= 1 }</p>
             {( transcriptArrayYou.length >= 1 ) && ( !isRecording ) &&
-                <p>{ isAnalysis ? '分析中...少々お待ちください。' : '分析完了！LINE botをご確認ください。' }</p>
+                <p>{ isAnalysis ? '分析完了まで少々お待ちください。' : '分析完了！LINE botをご確認ください。' }</p>
             }
 
         </div>

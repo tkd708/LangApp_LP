@@ -60,6 +60,28 @@ module.exports.handler = async function ( event, context ) {
     }
 
 
+    ////////////////////////////////////// Fetch user tasks and push message a carousel /////////////////////////////
+    if( body.events[ 0 ].message.text == ':グラフ' ) {
+        await axios
+            .request( {
+                url: 'https://langapp.netlify.app/.netlify/functions/LineBotReportGraphs',
+                method: 'POST',
+                data: {
+                    userLineId: userLineId,
+                },
+            } )
+            .then( ( res ) => { console.log( 'reporting graphs success...', res ) } )
+            .catch( ( err ) => { console.log( 'reporting graphs error...', err ) } )
+
+
+        ///// Finish the api
+        let lambdaResponse = {
+            statusCode: 200,
+            headers: { "X-Line-Status": "OK" },
+            body: '{"result":"completed"}'
+        };
+        context.succeed( lambdaResponse );
+    }
 
     ////////////////////////////////////// Fetch user tasks and push message a carousel /////////////////////////////
     if( body.events[ 0 ].message.text == ':リスト' ) {
@@ -91,13 +113,8 @@ module.exports.handler = async function ( event, context ) {
                 "contents": [
                     {
                         "type": "text",
-                        "text": `英語で言いたいこと？`,
-                        "color": "#777777"
-                    },
-                    {
-                        "type": "text",
-                        "wrap": true,
-                        "text": `「${ task.question }」`
+                        "weight": "bold",
+                        "text": `キーワード: ${ task.keyword }`,
                     },
                     {
                         "type": "separator",
@@ -105,13 +122,27 @@ module.exports.handler = async function ( event, context ) {
                     },
                     {
                         "type": "text",
-                        "text": `In English？`,
+                        "text": `おすすめの英語表現`,
                         "color": "#777777"
                     },
                     {
                         "type": "text",
                         "wrap": true,
                         "text": `"${ task.answer }"`
+                    },
+                    {
+                        "type": "separator",
+                        "margin": "15px",
+                    },
+                    {
+                        "type": "text",
+                        "text": `日本語`,
+                        "color": "#777777"
+                    },
+                    {
+                        "type": "text",
+                        "wrap": true,
+                        "text": `「${ task.question }」`
                     },
                     {
                         "type": "separator",

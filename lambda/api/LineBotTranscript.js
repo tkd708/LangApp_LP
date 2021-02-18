@@ -134,7 +134,8 @@ module.exports.handler = async function ( event, context ) {
     const uploadParams = { Bucket: 'langapp-audio-analysis', Key: '', Body: '' };
     const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
     const time = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( -8 );
-    uploadParams.Key = `${ date }-${ userLineName }-${ body.recordingID }/audio-${ time }.m4a`;
+    const recordChunkCountPadding = ( '000' + body.recordChunkCount ).slice( -3 );
+    uploadParams.Key = `${ date }-${ body.recordingID }/audio-${ body.recordingID }-${ recordChunkCountPadding }.m4a`;
     uploadParams.Body = encodedFile;
 
     // call S3 to retrieve upload file to specified bucket and obtain the file url

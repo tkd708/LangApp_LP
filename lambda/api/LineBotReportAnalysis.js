@@ -20,7 +20,6 @@ const s3 = new AWS.S3( {
 } );
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-const QuickChart = require( 'quickchart-js' );
 
 
 module.exports.handler = async function ( event, context ) {
@@ -41,10 +40,46 @@ module.exports.handler = async function ( event, context ) {
     const body = JSON.parse( event.body );
     console.log( 'received report...', body );
 
-    ////////////////////////// Conversation analysis (duplicate from LP atm) /////////////////////////////
+
+
+    ///////////////// Get LINE user info using ID token
+    var qs = require( 'qs' );
+    const userLineData = await axios
+        .request( {
+            url: 'https://api.line.me/oauth2/v2.1/verify',
+            method: 'POST',
+            data: qs.stringify( {
+                id_token: body.lineIdToken,
+                client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
+            } ),
+        } )
+        .then( res => {
+            console.log( 'Success in geting LINE user info using id token...' + res.data )
+            return ( res.data )
+        } )
+        .catch( err => {
+            console.log( 'Error in geting LINE user info using id token...', err )
+            return ( err )
+        } );
+    const userLineId = userLineData.sub;
+    const userLineName = userLineData.name;
+
+
+
+
+    ////////////////////////// Conversation analysis /////////////////////////////
+
+    // dynamics of the word counts in the conversation
+    const wordDynamicsArray = body.transcriptArray.map( ( x, index ) => ( { transcript: x, chunkNo: index + 1, wordCount: x.split( " " ).length } ) )
+    wordDynamicsArray.sort( function ( a, b ) {
+        return a.wordCount > b.wordCount ? -1 : 1;
+    } );
+
+    // all joined transcript
+    const transcript = body.transcriptArray.join( ' ' );
 
     // total words
-    const transcriptWordArray = body.transcript.replace( /[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "" ).split( " " );
+    const transcriptWordArray = transcript.replace( /[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "" ).split( " " );
     const wordsTotal = transcriptWordArray.length;
     console.log( wordsTotal );
 
@@ -89,30 +124,6 @@ module.exports.handler = async function ( event, context ) {
 
 
 
-    ///////////////// Get LINE user info using ID token
-    var qs = require( 'qs' );
-    const userLineData = await axios
-        .request( {
-            url: 'https://api.line.me/oauth2/v2.1/verify',
-            method: 'POST',
-            data: qs.stringify( {
-                id_token: body.lineIdToken,
-                client_id: process.env.GATSBY_LINE_LIFF_Channel_ID,
-            } ),
-        } )
-        .then( res => {
-            console.log( 'Success in geting LINE user info using id token...' + res.data )
-            return ( res.data )
-        } )
-        .catch( err => {
-            console.log( 'Error in geting LINE user info using id token...', err )
-            return ( err )
-        } );
-    const userLineId = userLineData.sub;
-    const userLineName = userLineData.name;
-
-
-
     ////////////////////////////// Store the analysis results to dynamoDB (atm from LP but analysis will be moved to this netlify functions)
     const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
 
@@ -124,7 +135,9 @@ module.exports.handler = async function ( event, context ) {
             UserLineID: userLineId,
             Date: date,
             LengthMinute: body.lengthMinute,
-            Transcript: body.transcript,
+            Transcript: transcript,
+            TranscriptArray: body.transcriptArray,
+            WordDynamicsArray: wordDynamicsArray,
             WordsTotal: wordsTotal,
             WordsPerMinute: wordsPerMinute,
             VocabSize: vocabSize,
@@ -139,7 +152,7 @@ module.exports.handler = async function ( event, context ) {
 
 
 
-    ////////////////////////// Push message to LINE bot the analysis resutls
+    ////////////////////////// Push message to LINE bot the analysis resutls //////////////////////
 
     // Conversation summary
     const message = {
@@ -149,6 +162,7 @@ module.exports.handler = async function ( event, context ) {
     await client.pushMessage( userLineId, message )
         .then( res => console.log( 'report push message successful...', res ) )
         .catch( ( err ) => console.log( 'error in report push message...', err ) );
+
 
 
     // vocab counts
@@ -170,6 +184,84 @@ module.exports.handler = async function ( event, context ) {
     await client.pushMessage( userLineId, messageVocabCount )
         .then( res => console.log( 'vocab counts push message successful...', res ) )
         .catch( ( err ) => console.log( 'error in vocab counts push message...', err ) );
+
+
+
+    // A messege prompting review
+    const messagePromptReview = {
+        'type': 'text',
+        'text': `書き起こしを見ながら、気になった部分の録音を確認してみましょう！分析による会話のハイライトはこちらになります！`
+    };
+    await client.pushMessage( userLineId, messagePromptReview )
+        .then( res => console.log( 'review prompt message successful...', res ) )
+        .catch( ( err ) => console.log( 'error in review prompt message...', err ) );
+
+
+
+
+    /////// highlights from the conversation.... word count top 3
+    const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
+
+    // push messages of highlight audio & transcript 1
+    const recordChunkCountPadding1 = ( '000' + wordDynamicsArray[ 0 ].chunkNo ).slice( -3 );
+    const audioHighlightUrl1 = `https://langapp-audio-analysis.s3.us-east-2.amazonaws.com/${ date }-${ body.recordingID }/audio-${ body.recordingID }-${ recordChunkCountPadding1 }.m4a`
+    const audio1 = {
+        'type': 'audio',
+        'originalContentUrl': audioHighlightUrl1, //fileURL,
+        'duration': 30 * 1000, //body.audioInterval, ... in mill seconds
+    };
+    await client.pushMessage( userLineId, audio1, notificationDisabled = true )
+        .then( res => console.log( 'audio 1 push message successful...', res ) )
+        .catch( err => console.log( 'audio 1 push message error...', err ) );
+
+    const transcript1 = {
+        'type': 'text',
+        'text': wordDynamicsArray[ 0 ].transcript
+    };
+    await client.pushMessage( userLineId, transcript1, notificationDisabled = true )
+        .then( res => console.log( 'transcript 1 push message successful...', res ) )
+        .catch( err => console.log( 'transcript 1 push message error...', err ) );
+
+
+    // push messages of highlight audio & transcript 2
+    const recordChunkCountPadding2 = ( '000' + wordDynamicsArray[ 1 ].chunkNo ).slice( -3 );
+    const audioHighlightUrl2 = `https://langapp-audio-analysis.s3.us-east-2.amazonaws.com/${ date }-${ body.recordingID }/audio-${ body.recordingID }-${ recordChunkCountPadding2 }.m4a`
+    const audio2 = {
+        'type': 'audio',
+        'originalContentUrl': audioHighlightUrl2, //fileURL,
+        'duration': 30 * 1000, //body.audioInterval, ... in mill seconds
+    };
+    await client.pushMessage( userLineId, audio2, notificationDisabled = true )
+        .then( res => console.log( 'audio 1 push message successful...', res ) )
+        .catch( err => console.log( 'audio 1 push message error...', err ) );
+
+    const transcript2 = {
+        'type': 'text',
+        'text': wordDynamicsArray[ 1 ].transcript
+    };
+    await client.pushMessage( userLineId, transcript2, notificationDisabled = true )
+        .then( res => console.log( 'transcript 1 push message successful...', res ) )
+        .catch( err => console.log( 'transcript 1 push message error...', err ) );
+
+    // push messages of highlight audio & transcript 2
+    const recordChunkCountPadding3 = ( '000' + wordDynamicsArray[ 2 ].chunkNo ).slice( -3 );
+    const audioHighlightUrl3 = `https://langapp-audio-analysis.s3.us-east-2.amazonaws.com/${ date }-${ body.recordingID }/audio-${ body.recordingID }-${ recordChunkCountPadding3 }.m4a`
+    const audio2 = {
+        'type': 'audio',
+        'originalContentUrl': audioHighlightUrl3, //fileURL,
+        'duration': 30 * 1000, //body.audioInterval, ... in mill seconds
+    };
+    await client.pushMessage( userLineId, audio3, notificationDisabled = true )
+        .then( res => console.log( 'audio 1 push message successful...', res ) )
+        .catch( err => console.log( 'audio 1 push message error...', err ) );
+
+    const transcript3 = {
+        'type': 'text',
+        'text': wordDynamicsArray[ 2 ].transcript
+    };
+    await client.pushMessage( userLineId, transcript3, notificationDisabled = true )
+        .then( res => console.log( 'transcript 1 push message successful...', res ) )
+        .catch( err => console.log( 'transcript 1 push message error...', err ) );
 
 
 

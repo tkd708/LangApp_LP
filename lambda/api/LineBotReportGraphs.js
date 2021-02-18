@@ -42,9 +42,9 @@ module.exports.handler = async function ( event, context ) {
     console.log( 'received report...', body );
 
 
-    ///////////////// Get LINE user info using ID token
+    ///////////////// Get LINE user info using ID token.... deprecated, not from the LP but directly from LineBot now
     var qs = require( 'qs' );
-    const userLineData = await axios
+    const userLineData = ( false ) && await axios
         .request( {
             url: 'https://api.line.me/oauth2/v2.1/verify',
             method: 'POST',
@@ -61,12 +61,15 @@ module.exports.handler = async function ( event, context ) {
             console.log( 'Error in geting LINE user info using id token...', err )
             return ( err )
         } );
-    const userLineId = userLineData.sub;
-    const userLineName = userLineData.name;
+    //const userLineId = userLineData.sub;
+    //const userLineName = userLineData.name;
+
+    const userLineId = body.userLineId;
 
 
 
-    //////////////////////////////////////// Fetch the past records from dynamoDB by UserName
+
+    //////////////////////////////////////// Fetch the past records from dynamoDB by UserLineId
     const paramsDynamo = {
         TableName: 'LangAppData',
         IndexName: 'UserLineID-index',
@@ -78,20 +81,22 @@ module.exports.handler = async function ( event, context ) {
         .promise()
         .then( data => data.Items )
         .catch( err => console.log( 'Fetch records from dynamoDB failed...', err ) );
-    userRecords.sort( function ( a, b ) {
+
+    const userRecordsFiltered = userRecords.filter( x => x.LengthMinute > 3.0 );
+    userRecordsFiltered.sort( function ( a, b ) {
         return a.Date < b.Date ? -1 : 1;
     } );
 
     //////////// record dates array
     const recordDateArray = [];
-    userRecords.forEach( ( record ) => {
+    userRecordsFiltered.forEach( ( record ) => {
         recordDateArray.push( record.Date )
     } );
     console.log( 'record dates array...', recordDateArray )
 
     //////////// total words data
     const wordsTotalDataArray = [];
-    userRecords.forEach( ( record ) => {
+    userRecordsFiltered.forEach( ( record ) => {
         const wordsTotalData = { "x": record.Date, "y": record.WordsTotal }
         wordsTotalDataArray.push( wordsTotalData )
     } );
@@ -99,7 +104,7 @@ module.exports.handler = async function ( event, context ) {
 
     //////////// words per minute data
     const wordsPerMinuteDataArray = [];
-    userRecords.forEach( ( record ) => {
+    userRecordsFiltered.forEach( ( record ) => {
         const wordsPerMinuteData = { "x": record.Date, "y": record.WordsPerMinute }
         wordsPerMinuteDataArray.push( wordsPerMinuteData )
     } );
@@ -107,11 +112,13 @@ module.exports.handler = async function ( event, context ) {
 
     //////////// vocab size data
     const vocabSizeDataArray = [];
-    userRecords.forEach( ( record ) => {
+    userRecordsFiltered.forEach( ( record ) => {
         const vocabSizeData = { "x": record.Date, "y": record.VocabSize }
         vocabSizeDataArray.push( vocabSizeData )
     } );
     console.log( 'fetched user records sorted by date...for vocab size', vocabSizeDataArray )
+
+
 
 
 
@@ -253,13 +260,14 @@ module.exports.handler = async function ( event, context ) {
 
 
 
+
+
     ///////////////////////////////////////// Upload to S3
-    const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
 
     // Total words
     const paramsS3WordsTotal = {
         Bucket: 'langapp-audio-analysis',
-        Key: `${ date }-${ userLineName }-${ body.recordingID }/wordsTotal.png`,
+        Key: `${ userLineId }/wordsTotal.png`,
         Body: imageWordsTotal, // buffer or base
         ContentType: 'image/png',
         ACL: 'public-read',
@@ -275,7 +283,7 @@ module.exports.handler = async function ( event, context ) {
     // Words per minute
     const paramsS3WordsPerMinute = {
         Bucket: 'langapp-audio-analysis',
-        Key: `${ date }-${ userLineName }-${ body.recordingID }/wordsPerMinute.png`,
+        Key: `${ userLineId }/wordsPerMinute.png`,
         Body: imageWordsPerMinute, // buffer or base
         ContentType: 'image/png',
         ACL: 'public-read',
@@ -291,7 +299,7 @@ module.exports.handler = async function ( event, context ) {
     // Vocab size
     const paramsS3VocabSize = {
         Bucket: 'langapp-audio-analysis',
-        Key: `${ date }-${ userLineName }-${ body.recordingID }/vocabSize.png`,
+        Key: `${ userLineId }/vocabSize.png`,
         Body: imageVocabSize, // buffer or base
         ContentType: 'image/png',
         ACL: 'public-read',
@@ -306,9 +314,9 @@ module.exports.handler = async function ( event, context ) {
 
 
 
-    ////////////////////////// Push message to LINE bot the analysis resutls
 
-    // Progress charts
+
+    ////////////////////////// Push message to LINE bot the analysis resutls
     const pushImage1 = {
         'type': 'image',
         'originalContentUrl': dataURLWordsTotal,
@@ -336,16 +344,6 @@ module.exports.handler = async function ( event, context ) {
         .then( res => console.log( 'image 3 push message successful...', res ) )
         .catch( err => console.log( 'error in image 3 push message...', err ) );
 
-
-
-    // A messege prompting review
-    const messagePromptReview = {
-        'type': 'text',
-        'text': `書き起こしを見ながら、気になった部分の録音を確認してみましょう！また、単語を送信していただければその単語を使った例文や関連語をお届けします！`
-    };
-    await client.pushMessage( userLineId, messagePromptReview )
-        .then( res => console.log( 'review prompt message successful...', res ) )
-        .catch( ( err ) => console.log( 'error in review prompt message...', err ) );
 
 
 
