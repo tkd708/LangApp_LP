@@ -200,7 +200,6 @@ module.exports.handler = async function ( event, context ) {
 
 
     /////// highlights from the conversation.... word count top 3
-    const date = new Date().toISOString().substr( 0, 19 ).replace( 'T', ' ' ).slice( 0, 10 );
 
     // push messages of highlight audio & transcript 1
     const recordChunkCountPadding1 = ( '000' + wordDynamicsArray[ 0 ].chunkNo ).slice( -3 );

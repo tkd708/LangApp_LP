@@ -343,6 +343,7 @@ const AudioRecorder = () => {
             .then( ( res ) => { console.log( 'conversation analysis success...', res ) } )
             .catch( ( err ) => { console.log( 'conversation analysis error...', err ) } );
 
+        // graphs are currently called directly from LineBot backend
         ( false ) && await axios
             .request( {
                 url: 'https://langapp.netlify.app/.netlify/functions/LineBotReportGraphs',
