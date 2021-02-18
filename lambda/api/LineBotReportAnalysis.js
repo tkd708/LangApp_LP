@@ -245,7 +245,7 @@ module.exports.handler = async function ( event, context ) {
     // push messages of highlight audio & transcript 2
     const recordChunkCountPadding3 = ( '000' + wordDynamicsArray[ 2 ].chunkNo ).slice( -3 );
     const audioHighlightUrl3 = `https://langapp-audio-analysis.s3.us-east-2.amazonaws.com/${ date }-${ body.recordingID }/audio-${ body.recordingID }-${ recordChunkCountPadding3 }.m4a`
-    const audio2 = {
+    const audio3 = {
         'type': 'audio',
         'originalContentUrl': audioHighlightUrl3, //fileURL,
         'duration': 30 * 1000, //body.audioInterval, ... in mill seconds
