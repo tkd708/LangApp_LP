@@ -188,11 +188,11 @@ module.exports.handler = async function ( event, context ) {
 
 
     // A messege prompting review
-    const messagePromptReview = {
+    const messageHighlight = {
         'type': 'text',
         'text': `分析による会話のハイライトはこちらになります！`
     };
-    await client.pushMessage( userLineId, messagePromptReview )
+    await client.pushMessage( userLineId, messageHighlight )
         .then( res => console.log( 'review prompt message successful...', res ) )
         .catch( ( err ) => console.log( 'review prompt message error...', err ) );
 
