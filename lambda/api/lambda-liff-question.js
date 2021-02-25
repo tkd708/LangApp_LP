@@ -78,6 +78,7 @@ module.exports.handler = async function ( event, context ) {
             date: date,
             dateAnswered: '',
             question: body.question,
+            keyword: '',
             answer: '',
             answerComplete: 'N',
             practiceComplete: 'N',

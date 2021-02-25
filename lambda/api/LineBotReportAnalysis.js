@@ -136,7 +136,7 @@ module.exports.handler = async function ( event, context ) {
             Date: date,
             LengthMinute: body.lengthMinute,
             Transcript: transcript,
-            TranscriptArray: body.transcriptArray,
+            //TranscriptArray: body.transcriptArray, //...too many object >> error in dynamoDB upload
             WordDynamicsArray: wordDynamicsArray,
             WordsTotal: wordsTotal,
             WordsPerMinute: wordsPerMinute,
@@ -190,11 +190,11 @@ module.exports.handler = async function ( event, context ) {
     // A messege prompting review
     const messagePromptReview = {
         'type': 'text',
-        'text': `書き起こしを見ながら、気になった部分の録音を確認してみましょう！分析による会話のハイライトはこちらになります！`
+        'text': `分析による会話のハイライトはこちらになります！`
     };
     await client.pushMessage( userLineId, messagePromptReview )
         .then( res => console.log( 'review prompt message successful...', res ) )
-        .catch( ( err ) => console.log( 'error in review prompt message...', err ) );
+        .catch( ( err ) => console.log( 'review prompt message error...', err ) );
 
 
 
@@ -263,6 +263,15 @@ module.exports.handler = async function ( event, context ) {
         .catch( err => console.log( 'transcript 1 push message error...', err ) );
 
 
+
+    // A messege prompting review
+    const messagePromptReview = {
+        'type': 'text',
+        'text': `気になった部分の録音を確認して、メニューから言いたいことを日本語で登録してみましょう！`
+    };
+    await client.pushMessage( userLineId, messagePromptReview )
+        .then( res => console.log( 'review prompt message successful...', res ) )
+        .catch( ( err ) => console.log( 'review prompt message error...', err ) );
 
 
 
