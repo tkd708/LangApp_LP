@@ -4,7 +4,7 @@ import Layout from "../components/layout"
 export default () => (
     <>
         <Layout>
-            <p>Privacy policy</p>
+            <p>Privacy Policy</p>
             <p>LangAppは、以下のとおり個人情報保護方針を定め、個人情報保護の仕組みを構築し、全従業員に個人情報保護の重要性の認識と取組みを徹底させることにより、個人情報の保護を推進致します。</p>
 
             <p>個人情報の管理</p>
